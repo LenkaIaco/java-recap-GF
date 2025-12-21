@@ -1,0 +1,84 @@
+Review for repeating: Diagonal matrix + onwards
+
+IntelliJ shortcuts:
+sout + tab                      System.out.println()
+ctrl + alt + l                  automatic formatting
+ctrl + click class name         opens documentation (class info)
+
+char[] arr = new char[5];
+String s = new String();
+
+char[] arr = {'a', 'b'};
+String s = "ab";
+String s = new String("ab");
+
+-----------------------------------
+String.valueOf(char c)	  --> String result
+String.valueOf(char[] c)  --> String result
+new String(char[] c)      --> String result
+Integer.valueOf(int i)    --> Integer result
+Integer.intValue(Integer i) --> int result
+-------------------------------------
+String s2 = myString.substring(begin, end+1);
+String s3 = s2.concat(s1)		 same as:   s1 + s2
+StringBuilder sb = new StringBuilder(s2);
+sb.append(s1);
+
+String reverseStr = sb.reverse().toString();
+
+Obtaining input from input stream (usually keyboard):
+Scanner scan = new Scanner(System.in);   // ctrl + click on Scanner variable type (Scanner scan) opens class info doc
+        int input = scan.nextInt();
+
+
+Print 1D array: 			System.out.println(Arrays.toString(myArray)) 
+Print 2D array of primitives/objects	System.out.println(Arrays.deepToString(array2D))
+
+Print line manually: 			System.out.print ("Hello\nWorld")   where "\n" stands for escape sign \ + new line shortcut
+					System.out.print ("Hello" + "\n" + "World") 
+\t → tab
+\\ → literal backslash
+\" → double quote
+
+-----------------------------------
+x appendAFunc, x Doubling xSum
+
+sorting non-manually:
+
+Arrays.sort(arr[])
+List.sort() 
+List.sort(Comparator.reverseOrder()) 
+Collections.sort(myList)  --> Collections.reverse(myList)
+List.stream().sorted() // sorted(Comparator.reverseOrder()) 
+
++ sort using lambdas: to fill in an anonymous function (parameters, body), by which we implement a functional interface(i. with exactly one abstract method). This is more lightweight on memory than implementing functional interfaces as JVM uses a lambda metafactory which produces fewer objects, lighter on memory. Lambdas(since Java 9) also bring functional programming (passing behavior as function argument)
+
+.sorted( (a, b) -> {
+if (a>b){
+return 1;
+}else if (a==b){
+return 0;
+}else {return -1;}
+}
+)
+
+@FunctionalInterface
+interface Comparator {
+public abstract int compare(int a, int b);
+}
+
+Comparator createAnonymousClassImplementingComparator = new Comparator() {
+@Override
+public int compare (int a, int b){
+// write here the lambda expression body
+}
+}
+
+-----------------
+List.toArray() 							returns Object[] !
+List.toArray(new String[0]) 					returns String[] 
+integerList.toArray(new Integer[0]) 				returns Integer[] (no primitive parameters)
+
+integerList.stream().mapToInt(Integer::intValue).toArray() 	returns int[] 	 intStream.toArray() != List.toArray()
+
+List<String> l = new ArrayList<>(Arrays.asList(stringArr));
