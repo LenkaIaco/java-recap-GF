@@ -1,0 +1,61 @@
+Install Git - distributed version control system (distributed = apart from centralized access to versions(e.g. server), every developer has a local copy of the entire remote repository(snapshot of last time you synced local+remote) -> backup in case something happens)
+Git tracks changes, not files, and then modifies it in the existing local/remote repo
+
+http://git-scm.com/download/win		++ comes with Git Bash (command line tool) for windows 
+http://git-scm.com/download/mac		Mac
+$ sudo yum install git			Linux
+
+Git guides
+https://www.youtube.com/watch?v=SWYqp7iY_Tc	until 32:41
+https://www.youtube.com/watch?v=6YUPw9Do3uQ	until 9:05
+https://www.youtube.com/watch?v=3hbqDtfI3zE	4:47
+https://www.youtube.com/watch?v=HVsySz-h9r4	20:43
+https://www.youtube.com/watch?v=s3ii48qYBxA	25:20
+https://ohshitgit.com/
+https://rogerdudler.github.io/git-guide/
+
+git init  					curr. folder initialized as repository  (creates a hidden .git folder)
+git help add					same as below
+git add --help					any command +  --help opens advisory info page on that command
+git add file.txt  				add file (from untracked) into staging area(index) - NOT yet in LOCAL git repository
+git rm --cached file.txt			remove file from staging area (back to untracked)
+git reset 					remove all files from staging area
+git add *.java					add all java files to staging
+git add .					add new/modified files/folders from cur.dir.
+git add --all		above ++ deletions(prev.present file deleted in folder) and renames
+git status					what is in staging area?
+git diff					literal changes in files, not yet added
+git log						details on last commit incl commit hash
+git config --global user.email "x@mail.com" 	see comment below
+git config --global user.name "MyRepoUsername"	see comment below
+if remote repo not defined yet, before committing to LOCAL git repo, git asks to define the corresponding local repo credentials. They don't have to match your remote git repo details, but git will then display the remote commits not as 'verified'linked to the remote repo profile + the inserted email must match one of the emails registered in your GitHub (remote) account
+git config user.email "xmail.com"		without --global, counts only for this local repo
+git config user.name "MyRepoUsername"
+git commit -m "Fix bug"				from index(staging) -> into LOCAL git repository !
+
+---afterwards go to GitHub to create a REMOTE repo, or install git CLI locally to create it ---
+
+git remote add origin https://github.com/YourName/RepoName.git
+git remote -v					check the remote URL
+git push -u origin master			-u = --set-upstream(see below); 
+git push --set-upstream origin master		origin = remo.repo URL; main = branch of remo.repo
+
+git pull			!ALWAYS DO BEFORE GIT PUSH! Pull changes from remote repo to local
+git push				local origin -> to remote repo(upstream already set) 
+git push origin master		exact remote/local stated: possible even if no upstream set yet
+git clone					copy a remote repo into local folder
+
+git branch mybranch // git checkout -b mybranch		create a branch
+git checkout mybranch //git checkout master		switch between branches	
+git add, git commit, git push -u origin dataStructures	push local branch into origin(remote)
+Open a pull request on GitHub ->review -> merge into master ->(delete (local/on GitHub) branch if desired). The local branch is now out of date compared to the merge happened remotely, but it still exists locally.
+
+
+git merge mybranch 		(when in master) merge dialog opens in bash: enter merge message, press escape, then type :wq , press Enter
+git branch --merged		lists already merged branches
+git branch -d myBranch		locally deletes branch. Combine with:
+git push origin --delete myBranch	to delete branch in remote repo
+git branch -a			list of local/remote branches: branch deleted locally/remotely?
+
+
+git clone https://github.com/GitAccount/GitRepo.git  /users/myProject 

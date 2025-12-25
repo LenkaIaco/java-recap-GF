@@ -1,0 +1,70 @@
+shell 			 	program that interprets your commands
+terminal			window/app that displays command
+command line interface(CLI)	interaction point where you type commands(sits inside a terminal and is powered by a shell)
+
+Git Bash Terminal	The window you open when you click “Git Bash” (Git Bash window, Windows Terminal, IntelliJ’s built‑in terminal)
+Git Bash Shell		Inside that window, the shell running is bash (a Unix-like shell; other programs: PowerShell, zsh, fish) 
+Git Bash Command Line	The prompt where you type commands inside that shell
+
+cd ~	navigate to home (user home folder of user Lenka in Windows, not C:, while C also has access to it, via its folder 'Users'-> 'lenka' )
+up arrow / down arrow				scroll previously used commands one by one
+
+!!	repeat previous command
+! git	repeat last command which started with git
+cd !$	use last argument of the last command in combo with current argument (e.g. las argument here was mkdir myfolder)
+
+pwd		cur. dir. absolute address
+which java	shows absol.path to a program (path to binary in Linux)
+		c/..../Oracle/Java/javapath/java
+where java 	full path to java executable: 		c/..../Oracle/Java/javapath/java.exe
+
+echo sometext			prints text to command line
+printf some\nformatted\ntext	considers format characters like \n
+javac -d ../out Arrays/Excercises/*.java	“d- flag means to compile into 'out' folder, incl. folder structure leading to java files" Works w  both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
+
+javac Arrays/Exercises/*.java			compile files(.class) into same folder as *.java. While the compiler still checks the package statement for correct placement, it does not consider it while deciding where to put the .class files. Simply puts them into same folder as the .java files.
+
+java package.statement.folders.Classname	run compiled class file from 1. folder where the subfolders mentioned in the 'package' statement are placed (a.k.a. fully qualified class name) 	2. or, add another location on the classpath: a location from where java should start searching for packages from 'package' statement: java -cp 
+
+java -cp out fully.qualified.classname	run class file + add the out folder to classpath - where java should look for packages from the fully-qualified-class-name (=package statement packages + classname)
+
+ls -l		list of folders/files in cur.dir. With -l, details on files are shown
+ls path/to/dir	list content in another dir.
+ls -a 	(incl hidden folders)
+ls -la	 long file info
+ls -c 	(sorts: changed first)
+cd + type first letters of folder + tab -> access folder
+cd .. 	level up folder
+cd + full path: /c/Users/Lenka
+
+mkdir 		create folder
+rmdir 		remove EMPTY dir.
+rm -rf folder\with\content 	remove recursively forcefully - BYPASS TRASH, delete PERMANENTLY (alternatively use mv to move to trash, if you have the specific path to trash bin)
+rm 1.txt 2.txt	remove file(s)
+printf "1\n2\n3" > file.txt	writes formatted(\n) text into existing/new file
+touch file.txt 		creates file
+nano newfile.txt 	creates/modifies file + reading/writing line-by-line in terminal (ctrl+s save changes, ctrl+x close /ctl+c cancel a file modif. command / ctrl+q quit writing mode)
+less Myfile.txt 	also read file in terminal, but incl scrolling: arrowkeys scroll, q exit 
+
+man		manual w commands (?windows?)
+
+cp FileToCopy C:\Absolute\Or\Relative\Path.txt	
+cp -avr MyFolder  Into\Address		-r incl. sub-folder content; -a archive(preserve permissions, timestamps); -v verbose (write out what has been copied-for verification)
+mv MyFile.txt MyFolder Destination		move file(s)/ directory(s)
+
+history		commands used previously
+history -c	 clear history
+
+grep searchterm
+sed "s/OLD/NEW/g"	search and replace in text for multiple use [] -> [aeiou]/y
+cat Myfile.txt 		open file in terminal	
+piping commands together:
+cat list.txt | sort	
+cat list.txt | head -8			only first 8 lines
+cat list.txt | head -8 | tail -4	8 lines fed to tail cmd, displays last 4 of these 8
+cat list.txt | wc			word count
+cat list.txt | wc > another.txt		redirect word count into another file(pastes there)	
+ls -l | sort | grep Local |sed "s/[oa]/i/g"		sorted files containing 'Local'-> 'Licil'
+
+
+
