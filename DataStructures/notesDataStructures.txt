@@ -1,0 +1,111 @@
+ x exclude files: Test, ProductDatabase1, ProductDatabase2, ShoppingList, TelephoneBook
+
+float result = (float) int1 / int2; //Always at least one float! otherwise the division will result integer -> then cast to float!
+
+String text = text.replace("\n", " ");	//just one escape slash is working
+String text = text.replace("(", ""); 
+String text = text.replace(")", "");
+String text = text.replace("-", " ");
+String text = text.replace(",", "");
+String text = text.replace(".", "");
+
+String text = text.toLowerCase();
+
+String[] arr = text.split(" ");		//parameter regex. For words, before this function, remove any special characters(above). And, put all words LOWERCASE.
+
+Integer.sum(1,2)
+Integer.max(1,2);  | Integer.min(1,2)  
+myInteger.intValue()  | .doubleValue()  |  .longValue()  |  .floatValue()  // returns primitive
+Integer.parseInt("-123");  // returns primitive
+Integer.valueOf("-123")  |  Integer.valueOf(4)  // returns Integer
+//Integer enums: 			// enum class contains constants; each is a singleton: 	 enum Colors {RED, GREEN, BLUE}
+Integer.MAX_VALUE  | Integer.MIN_VALUE  // enum returning max/min value possible in the integer capacity.
+Integer.BYTES  // returns size of integer in bytes: 4
+
+
+== compares memory location
+equals() by def. too; however many classes override it to show content equality(e.g. String)
+overriding equals() should be followed by overriding hashcode() to guarantee the method working properly:
+Java's contract:  2 obj. w. equals() must have also the same hashcode() )
+HashMap, HashSet etc use 1. hashcode()  then  2.equals() to check their objects
+Because the hashcode() might incidentally produce the same result on 2 diff.objects, but for them to be truly equal, they would have to result equals() true
+
+HashSet also internally uses HashMap: the internal map's keys are the set's values; while the internal map's values are all the same dummy value PRESENT
+
+List<Integer> l = l1.isEmpty() ? new ArrayList<>() : new ArrayList<>(l1);	//throws NullPointerException if input List is empty!
+List <Integer> l = new ArrayList<>(Arrays.asList(myArray));
+Map<Integer, Character> hm1 = new HashMap<>();  | Map<Integer, Character> hm2 = new LinkedHashMap<>();
+Set<Character> s = new HashSet<>(); | Set<Character> s = new LinkedHashSet<>();
+
+Collections.max(l)  |  Collections.max(s)	// returns Reference type of the inserted collection	
+Collections.min(l)  |  Collections.min(s)
+Double average = CollectionX.stream().mapToInt(Integer::intValue).average().getAsDouble()   //mapToInt(Integer::intValue) produces an intStream, like the one in above Arrays' stream.
+int sum = CollectionX.stream().mapToInt(Integer::intValue).sum();
+long count = CollX.stream().mapToInt(Integer::intValue).count();
+
+Collections.reverse(list)   // (return void) modifies the original list!!
+
+// vs. arrays - need a stream() for that (primitive arrays via Arrays class, Reference arrays directly): 
+int[] / Integer[] arr   ->      int max = Arrays.stream(arr).max().getAsInt();   
+int[] / Integer[] arr   ->      int min = Arrays.stream(arr).min().getAsInt();   //min() returns OptionalInt +  getAsInt() throws NullPointerException if no value present!!
+
+
+Arrays.stream(new Integer[5]).mapToInt(Integer::intValue)
+							.sum();
+							.average().getAsDouble(); //average() returns OptionalDouble + throws NullPointerException if no value present!!
+							.min().getAsInt(); //min()/max() returns OptionalInt +  throws NullPointerException if no value present!!
+							.max().getAsInt();
+							.count().getAsLong;
+
+Arrays.stream(new int[5]).sum() /min() / max() / ... // primitive array skips the mapping Integer -> int
+
+Arrays.sort(Comparator.naturalOrder()) | Arrays.sort(Comparator.reverseOrder())  // what you can do in Arrays without stream()
+
+
+Collections.sort(l)   //only for Lists, natural order
+Collections.sort(l, Comparator.reverseOrder()) 
+
+
+l.sort(Comparator.naturalOrder())   |   l.sort(Comparator.reverseOrder())  
+l.add(369); || l.remove(index); /l.remove(object) || l.addAll(anotherList); --vs-- l.removeAll(anotherList);
+l.set(index, object);
+boolean removed = l.contains(356) ? l.remove(356) : false;
+l.addAll(List.of(1,2,356));
+l.replaceAll(x -> x*2);
+
+s1.add('A'); s2.add('A'); || s.remove('A'); || s.addAll(Collection); --vs-- s.removeAll(Collection); //set.addAll() use to remove duplicates from a different collection
+
+
+hm1.put(1,'A'); hm2.put(1,'A');
+hm.putAll(Map);
+hm.keySet(); 
+hm.values();   |  hm.values().contains(valX);  
+hm.get(key);  -vs- hm.keySet() || hm.containsKey(); / hm.containsValue();
+hm.remove(key); (HM does not contain removeAll options!)
+
+l.isEmpty();  | hm.isEmpty();  | s.isEmpty();
+l.size(); hm.size(); s.size();
+l.clear(); | hm.clear(); | s.clear(); //clears all entries
+
+//below, if only 'Map.Entry e' would remain without Types("raw type", no generics), each entry value would have to be cast in its proper type before using it.
+Generics = specifying type parameters inside < >, that this class/interface works with. Generics require Reference types, not primitives:
+	ArrayList<int> list = new ArrayList<>(); // ❌ compile error
+Java has kept raw types even after generics introduction(Java 5, along with autoboxing/unboxing), but only for backwards compatibility. While writing raw types code, a warning will show up about its use. 
+The issue with casting is, that compiler cannot enforce type safety and so any error would become apparent only later at runtime.
+This makes human error at casting possible, or future possible errors, after the codebase expands, which could lead to ClassCastException at runtime.
+Advatage of parameterized types is the compiler check enabled which guarantees type safety at runtime. 
+- Generics are compile‑time only. 
+- Type erasure removes all <T> info and inserts casts: List<String> → List  || String s = list.get(0); -> String s = (String) list.get(0);
+	- That's why this cannot work:  if (list instanceof List<String>) { } // Because at runtime, the JVM only sees: 'List'
+	- Resulting bytecode contains casts, which get resolved at runtime
+- Type erasure replaces type variables with bounds: class Box<T extends Number> { ... }  --> class Box { Number field; }
+
+for(Map.Entry<Integer, String> e : hm.entrySet() ) {
+e.getKey();
+e.getValue();
+System.out.println(e); 
+}
+Integer key = (Integer) e.getKey(); // example without type safety, needs manual casting
+
+
+
