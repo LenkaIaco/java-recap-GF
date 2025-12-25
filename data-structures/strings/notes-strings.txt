@@ -1,0 +1,35 @@
+boolean b = s.isBlank()  // unlike isEmpty(), also checks if contains just whitespace(s)
+
+String s4 = s.substring(3);   /until end of string
+String s5 = s.substring(1,3);  / mid of string, end index is +1
+char c = quote.charAt(2); 
+char[] charArr = word.toCharArray();
+
+int i = s.indexOf("ab")  | .indexOf('c')  | .lastIndexOf("ab")  |  .lastIndexOf('c')
+int i = s.indexOf("a", 3) | .lastIndexOf('c')   // starting from a certain point in text
+
+String[] strArr = s.split(" ")
+String bigFix = quote.replace("It", "That"); | replace('a', 'b') //replaces each occurence in text!
+String regexFix = quote.replaceAll("\\d+", "")   "Time: 10:00" -> "Time: :" // regex: 1 or more digits 
+String smallFix = quote.replaceFirst("It you", "It always takes longer than you");
+
+String lowerUpper = s.toLowerCase() // s.toUpperCase();
+String together = "to".concat("get").concat("her");  // "to"+"get"+"her"
+
+String s1 = " hello "; 		//standard whitespace
+String s2 = "\u2002hello\u2002"; // EN SPACE (Unicode whitespace)
+String result = s.trim();  / s.strip()   // 1.removes ACII whitespace only(above) 2.removes both ASCII and UNICODE whitespace(below):
+String result =  s.stripLeading();  // s.stripTrailing();
+
+boolean b = s.startsWith("beginning")  // s.endsWith("end") 
+boolean b = s.contains("abc")
+
+StringBuilder sb = new StringBuilder(s2)'
+sb.append('a')  | append("AB")
+sb.deleteCharAt(2);
+
+String s3 = sb.reverse().toString();
+sb.append(Object o)  //appends the string representation of the object
+sb.insert(0, "XY") "AB" -> "AXYB" // inserts string at beginnning
+sb.replace(int begin, int end, "ABC")  // replaces a substring with another end is index+1
+sb.delete(int begin, int end)  // end is index+1

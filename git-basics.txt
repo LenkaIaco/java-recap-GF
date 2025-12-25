@@ -21,8 +21,8 @@ git add file.txt  				add file (from untracked) into staging area(index) - NOT y
 git rm --cached file.txt			remove file from staging area (back to untracked)
 git reset 					remove all files from staging area
 git add *.java					add all java files to staging
-git add .					add new/modified files/folders from cur.dir.
-git add --all		above ++ deletions(prev.present file deleted in folder) and renames
+git add .			CURRENT FOLDER: add new/modified files/folders from cur.dir.
+git add --all		CURRENT AND SUBFOLDERS changes ++ deletions(prev.present file deleted in folder) and renames
 git status					what is in staging area?
 git diff					literal changes in files, not yet added
 git log						details on last commit incl commit hash
