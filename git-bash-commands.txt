@@ -20,7 +20,7 @@ where java 	full path to java executable: 		c/..../Oracle/Java/javapath/java.exe
 
 echo sometext			prints text to command line
 printf some\nformatted\ntext	considers format characters like \n
-javac -d ../out Arrays/Excercises/*.java	“d- flag means to compile into 'out' folder, incl. folder structure leading to java files" Works w  both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
+javac -d ../out Arrays/Excercises/*.java	“d- compile into 'out' folder(pre-existing!), incl. folder structure leading to java files" Works w  both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
 
 javac Arrays/Exercises/*.java			compile files(.class) into same folder as *.java. While the compiler still checks the package statement for correct placement, it does not consider it while deciding where to put the .class files. Simply puts them into same folder as the .java files.
 
@@ -46,11 +46,12 @@ touch file.txt 		creates file
 nano newfile.txt 	creates/modifies file + reading/writing line-by-line in terminal (ctrl+s save changes, ctrl+x close /ctl+c cancel a file modif. command / ctrl+q quit writing mode)
 less Myfile.txt 	also read file in terminal, but incl scrolling: arrowkeys scroll, q exit 
 
-man		manual w commands (?windows?)
-
+mv MyFile.txt MyFolder Destination		move file(s)/ directory(s)
+mv old-folder-name new-folder-name		//rename folder / file
 cp FileToCopy C:\Absolute\Or\Relative\Path.txt	
 cp -avr MyFolder  Into\Address		-r incl. sub-folder content; -a archive(preserve permissions, timestamps); -v verbose (write out what has been copied-for verification)
-mv MyFile.txt MyFolder Destination		move file(s)/ directory(s)
+
+man		manual w commands (?windows?)
 
 history		commands used previously
 history -c	 clear history
