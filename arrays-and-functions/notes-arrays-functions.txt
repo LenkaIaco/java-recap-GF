@@ -6,9 +6,11 @@ ctrl + alt + l                  automatic formatting
 ctrl + click class name         opens documentation (class info)
 
 char[] arr = new char[5];
-String s = new String();
+int[] consumes less (4 bytes) memory than Integer[] (24–32 bytes: reference, object, int inside,padding-The JVM tries to place objects at memory addresses divisible by 8. If the object’s size is not a multiple of 8, the JVM adds padding bytes at the end to round it up.)
+String s = new String(); 
 
 char[] arr = {'a', 'b'};
+String[] arr = new String[] {"One", "Two"};
 String s = "ab";
 String s = new String("ab");
 
@@ -29,6 +31,8 @@ String reverseStr = sb.reverse().toString();
 Obtaining input from input stream (usually keyboard):
 Scanner scan = new Scanner(System.in);   // ctrl + click on Scanner variable type (Scanner scan) opens class info doc
         int input = scan.nextInt();
+	String input = scan.nextLine();
+
 
 
 Print 1D array: 			System.out.println(Arrays.toString(myArray)) 

@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class JosephusProblem {
     /**
@@ -21,37 +18,36 @@ public class JosephusProblem {
      * - Input: Please enter the number of players:  12
      * - Output: The winning seat is 9
      */
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Enter the number of players:");
-        int circleOfDeathSize = scan.nextInt();
-        List<Integer> groupArray = new ArrayList<>();
-        for (int i = 0; i < circleOfDeathSize; i++) {
-            groupArray.add(i + 1);
-        }
-        System.out.println(groupArray);
-        int loop = 0;
-        while (groupArray.size() > 1) {
 
-            {
-                if (loop % 2 == 0) {
-                    {List<Integer> intermediate = new ArrayList<>();
-                        for (int j=0; j<groupArray.size();j+=2) {
-                               intermediate.add( groupArray.get(j));
-                            } groupArray = intermediate;
-                    }
-                } else if (loop % 2 != 0) {
-                    List<Integer> intermediate = new ArrayList<>();
-                        for (int j=1; j<groupArray.size();j+=2) {
-                            intermediate.add( groupArray.get(j));
-                        }groupArray = intermediate;
-                }
-                System.out.println(groupArray);
-                loop = loop + 1;
+public static void main (String[] args){
+    System.out.println(winningSeat(3));
+        System.out.println(winningSeat(7));
+        System.out.println(winningSeat(12));
+        System.out.println(winningSeat(41));
+}
+
+public static int winningSeat(int amtPeople){
+
+    List<Integer> people = new ArrayList<>();
+    for (int i = 0; i<amtPeople; i++){
+        people.add(i+1);
+    }
+
+
+    boolean toDelete = false;
+    while (people.size()>1){
+        Iterator<Integer> itr = people.iterator();
+        while (itr.hasNext()){
+            itr.next();
+            if (toDelete) {
+                itr.remove();
+                toDelete = false;
+            } else{
+                toDelete = true;
             }
         }
-        System.out.println("The survivor is number "+groupArray.get(0));
-
-
     }
+
+    return people.get(0);
+}
 }

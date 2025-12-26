@@ -45,38 +45,36 @@ public class StudentCounter {
         student5.put("candies", 2);
         studentMaps.add(student5);
 
-
         // Create a function called getListOfNames() which takes a list of student maps (studentMaps) and returns
         // the names of students (as a list of strings) who have more than 4 candies
-
         // Expected output: [Peter, Olaf]
-        System.out.println(getListOfNames(studentMaps));
 
         // Create a function called getSumOfAges() which takes a list of student maps (studentMaps) and returns
         // the sum (as an integer) of the ages of students who have less than 5 candies
-
         // Expected output: 29
+
+        System.out.println(getListOfNames(studentMaps));
         System.out.println(getSumOfAges(studentMaps));
 
     }
 
     public static int getSumOfAges(List<Map<String, Object>> listOfMaps) {
-        int sumAges = 0;
+        int agesLess5 = 0;
         for (Map<String, Object> entry : listOfMaps) {
             if ((int) entry.get("candies") < 5) {
-                sumAges = sumAges + (int) entry.get("age");
+                agesLess5 = agesLess5 + (int) entry.get("age");
             }
         }
-        return sumAges;
+        return agesLess5;
     }
 
     public static List getListOfNames(List<Map<String, Object>> listOfMaps) {
-        List<String> candyMoguls = new ArrayList<>();
+        List<String> namesMore4 = new ArrayList<>();
         for (Map map : listOfMaps) {
             if ((int) map.get("candies") > 4) {
-                candyMoguls.add(map.get("name").toString());
+                namesMore4.add(map.get("name").toString());
             }
         }
-        return candyMoguls;
+        return namesMore4;
     }
 }

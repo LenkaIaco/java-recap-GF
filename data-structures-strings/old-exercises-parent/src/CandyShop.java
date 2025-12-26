@@ -19,18 +19,17 @@ public class CandyShop {
 
         System.out.println(repairSweetList(sweets));
     }
-    public static List repairSweetList(List sweets) {
-        String[] replacementSweets = {"Croissant", "Ice Cream"};
-        int replacement = 0;
-        // https://stackoverflow.com/questions/106336/how-do-i-find-out-what-type-each-object-is-in-a-arraylistobject
-        for (int i = 0; i < sweets.size(); i++) {
-            if (sweets.get(i).getClass() != String.class) {
-//                https://www.geeksforgeeks.org/how-to-replace-a-element-in-java-arraylist/
-                sweets.set(i, replacementSweets[replacement]);
-                replacement++;
+    public static ArrayList<Object> repairSweetList(ArrayList<Object> arrL){
+        for (Object o: arrL){
+            if (o.equals(2)){
+                int index = arrL.indexOf(o);
+                arrL.set(index,"Croissant");
+            } else if (o.equals(false)){
+                int index = arrL.indexOf(o);
+                arrL.set(index,"Ice Cream");
             }
         }
-        return sweets;
+        return arrL;
     }
 
 }

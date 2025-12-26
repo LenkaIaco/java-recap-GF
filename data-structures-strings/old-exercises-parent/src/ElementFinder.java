@@ -18,14 +18,19 @@ public class ElementFinder {
         // The output should be "Noooooo", again!
         System.out.println(containsSevenDifferent(listOfNumbers));
     }
-    public static String containsSeven(List list){
-        String result ="";
-        for ( Object element: list){
-            result = (int) element == 7 ? "Hoorray" : "Noooooo";
+
+
+
+    public static String containsSeven(List<Integer> list){
+        for (Integer i :list){
+            if (i.equals(7)){
+                return "Hooray";
+            }
         }
-        return result;
+        return "Noooooo";
     }
-    public static String containsSevenDifferent(List list){
+
+    public static String containsSevenDifferent(List<Integer>  list){
         String result ="";
         result = list.contains(7) ? "Hoorray" : "Noooooo, again!";
         return result;

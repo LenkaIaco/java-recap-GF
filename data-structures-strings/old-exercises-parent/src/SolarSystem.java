@@ -5,20 +5,25 @@ import java.util.List;
 public class SolarSystem {
     public static void main(String... args) {
         List<String> planetList = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Uranus", "Neptune");
-/*        ArrayList <String> concreteList = new ArrayList<>(planetList);
-        concreteList.add((int)(concreteList.indexOf("Jupiter")+1), "Saturn");
-       System.out.println(concreteList);
-         "Saturn" is missing from the planetList below
+/*
+         "Saturn" is missing from the planetList above
         Insert it into the correct position (should go between Jupiter and Uranus)
          Create a method called "putSaturn()" which has a list parameter and returns the correct list
 
          Expected output: [Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune]
  */
+
         System.out.println(putSaturn(planetList));
+
     }
-    public static List putSaturn(List list){
-        List nonAbstractList = new ArrayList<>(list);
-        nonAbstractList.add(nonAbstractList.indexOf("Jupiter")+1, "Saturn");
-        return nonAbstractList;
+
+    public static List putSaturn(List<String> list) {
+
+        List<String> expandableList = new ArrayList<>(list);
+
+        int index = list.indexOf("Jupiter");
+        expandableList.add(index + 1, "Saturn");
+
+        return expandableList;
     }
 }

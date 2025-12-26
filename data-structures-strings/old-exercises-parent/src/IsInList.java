@@ -24,13 +24,14 @@ public class IsInList {
 }
 
    public static boolean checkNumbers( List<Integer> numbers){
-       Integer [] mustNumbers = {4, 8, 12, 16};
-
-       ArrayList<Integer> mustContain = new ArrayList<>(Arrays.stream(mustNumbers).toList());
-       boolean result = numbers.containsAll(mustContain) ? true : false;
-
-        return result;
-   };
+       ArrayList<Integer> mustContain = new ArrayList<>(List.of(4, 8, 12, 16));
+        for (Integer in: mustContain){
+            if (!numbers.contains(in)){
+                return false;
+            }
+        }
+        return true;
+   }
     public static boolean checkAllNumbers(List<Integer> list1, List<Integer> list2){
         return list1.containsAll(list2);
 

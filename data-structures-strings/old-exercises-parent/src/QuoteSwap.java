@@ -18,25 +18,19 @@ public class QuoteSwap {
 
     }
 
-    public static String swapQuote(List<String> list) {
-        int positionCannot = list.indexOf("cannot");
-        int positionDo = list.indexOf("do");
-        List<String> list2 = new ArrayList<>();
-        list2.addAll(list);
-        System.out.println(list2);
 
-        list2.remove("cannot");
-        list2.add(positionCannot, "do");
-        list2.remove("do");
-        list2.add(positionDo, "cannot");
-        String resultString = "";
-        for (int i = 0; i < list2.size(); i++) {
-            if (i == 0) {
-                resultString = list2.get(i);
-            } else {
-                resultString = resultString + " " + list2.get(i);
-            }
+    public static String swapQuote(List<String> l) {
+        int indexDo = l.indexOf("do");
+        int indexCannot = l.indexOf("cannot");
+        l.set(indexDo, "cannot");
+        l.set(indexCannot, "do");
+        String s = "";
+
+        for (int i = 0; i < l.size() - 1; i++) {
+            s = s.concat(l.get(i)).concat(" ");
         }
-        return resultString;
+        s = s.concat(l.get(l.size() - 1));
+
+        return s;
     }
 }
