@@ -28,6 +28,32 @@ java package.statement.folders.Classname	run compiled class file from 1. folder 
 
 java -cp out fully.qualified.classname	run class file + add the out folder to classpath - where java should look for packages from the fully-qualified-class-name (=package statement packages + classname)
 
+Creating JAR file:
+
+Before creating a jar file, consider whether you need a manually created manifest file first, or not. Once a jar is created, java automatically looks inside for manifest file, so any consequent modification requires creating a separate manifest file and re-creating the jar anew with the manual manifest reference:
+
+A JAR is just a ZIP file with:
+	your compiled .class files
+	optional resources
+	a META-INF/MANIFEST.MF file
+
+The manifest we specify:
+	Manifest-Version: 1.0   	//there exists only 1.0 version 
+	Main-Class: StudentCounter	//fully qualified class name (same as package statement; for folders between source root and class, use dots: com.example.StudentCounter
+	Class-Path: lib/gson.jar lib/commons-lang3.jar	// (list only EXTERNAL dependencies - not java standard libraries(starting java.* and javax.*), they are already part of JDK/JRE). This does not affect compiler's classpath (javac ..), but runtime classpath (by JRE, but not the general one, just to run this JAR)
+
+1. manual manifest:
+jar cfm MyApp.jar MANIFEST.MF -C out . // 'c' create a jar  'f' specify jar file name (command executed in this folder) 'm' use given manifest file '-C out' Change directory into out. Then, include everything inside it ('.') ( content ++subfolders&subcontent! )
+
+2. automatic manifest:
+jar cf JarExample.jar out/*.class	// 'c' create a file  'f' file name (look in out folder(no subpackages!)). If message "jar:command not found", bash cannot find the jar tool (Java isn't installed // JDK's bin folder isn't on your PATH inside Git Bash. Alternatively use full path to jar tool instead of just jar reference:
+"/c/Program Files/Java/jdk-17/bin/jar" cf MyJar.jar out/*.class 
+- Alternatively, only for this gitbash window session, add the jar location to gitbash's PATH:
+export PATH="/c/Program Files/Java/jdk-17/bin:$PATH" adds the JDK’s bin directory in front of your existing PATH. If you would run the command without $PATH, it would replace the ENTIRE existing git path with just this folder location and the git commands like ls, git, bash, grep,... would not work anymore until the gitbash window gets closed. 
+- If the JAR should be runnable per double-click, it needs to contain one main class reference per jar. So a project folder of indipendent classes with each a main method would work only if one separate main method class is used to launch all small classes mains. Otherwise, each file with main class needs its separate jar. If the jar does not need to be double-clickable, then it does not matter. 
+
+After jar created, run it by double-click on the file, or by bash command: java -jar MyJar.jar
+
 ls -l		list of folders/files in cur.dir. With -l, details on files are shown
 ls path/to/dir	list content in another dir.
 ls -a 	(incl hidden folders)

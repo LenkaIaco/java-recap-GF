@@ -39,7 +39,9 @@ public class Calculator {
         String inputs = sc.nextLine();
 
         String[] splits = inputs.split(" ");
-        if (!splits[0].equals("+") || splits[0].equals("-") || splits[0].equals("*") || splits[0].equals("/")) {
+        if (!
+                (splits[0].equals("+") || splits[0].equals("-") || splits[0].equals("*") || splits[0].equals("/")
+                )) {
             System.out.println("The format of the function could not be recognised. Please match the format in the given example.");
             return 0;
         }

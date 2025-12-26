@@ -4,6 +4,12 @@
 *.tmp
 logs
 .idea
+*.jar
+
+# Training files
+**/data-structures/MANIFEST.mf
+**/old-exercises/MANIFEST.txt
+
 
 out
 
