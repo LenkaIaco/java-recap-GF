@@ -40,7 +40,9 @@ A JAR is just a ZIP file with:
 The manifest we specify:
 	Manifest-Version: 1.0   	//there exists only 1.0 version 
 	Main-Class: StudentCounter	//fully qualified class name (same as package statement; for folders between source root and class, use dots: com.example.StudentCounter
-	Class-Path: lib/gson.jar lib/commons-lang3.jar	// (list only EXTERNAL dependencies - not java standard libraries(starting java.* and javax.*), they are already part of JDK/JRE). This does not affect compiler's classpath (javac ..), but runtime classpath (by JRE, but not the general one, just to run this JAR)
+	Class-Path: lib/gson.jar lib/commons-lang3.jar	// (list only EXTERNAL dependencies - not java standard libraries(starting java.* and javax.*), they are already part of JDK/JRE). This does not affect compiler's classpath (javac ..), but runtime classpath (by JRE, but not the general one, just to run this JAR).
+							// the default, but Java’s built‑in jar DOES NOT contain external dependencies within! Therefore, the Class-Path variable is needed (lib/gson.jar mentioned above is a path relative to the position of the JAR file itself(next to it)). 
+However, you can build own zip file manually(which a jar essentialy is), I can create a "fat jar" ("uber JAR") which usually includes the external dependencies in it. When double-clicking a fat jar, JVM  opens the Jar - reads the Manifest - scans the JAR content for whichever classes it finds referenced. When your code references a class (e.g., com.google.gson.Gson), the class loader looks for that entry inside the JAR.
 
 1. manual manifest:
 jar cfm MyApp.jar MANIFEST.MF -C out . // 'c' create a jar  'f' specify jar file name (command executed in this folder) 'm' use given manifest file '-C out' Change directory into out. Then, include everything inside it ('.') ( content ++subfolders&subcontent! )
@@ -48,11 +50,26 @@ jar cfm MyApp.jar MANIFEST.MF -C out . // 'c' create a jar  'f' specify jar file
 2. automatic manifest:
 jar cf JarExample.jar out/*.class	// 'c' create a file  'f' file name (look in out folder(no subpackages!)). If message "jar:command not found", bash cannot find the jar tool (Java isn't installed // JDK's bin folder isn't on your PATH inside Git Bash. Alternatively use full path to jar tool instead of just jar reference:
 "/c/Program Files/Java/jdk-17/bin/jar" cf MyJar.jar out/*.class 
+
 - Alternatively, only for this gitbash window session, add the jar location to gitbash's PATH:
 export PATH="/c/Program Files/Java/jdk-17/bin:$PATH" adds the JDK’s bin directory in front of your existing PATH. If you would run the command without $PATH, it would replace the ENTIRE existing git path with just this folder location and the git commands like ls, git, bash, grep,... would not work anymore until the gitbash window gets closed. 
 - If the JAR should be runnable per double-click, it needs to contain one main class reference per jar. So a project folder of indipendent classes with each a main method would work only if one separate main method class is used to launch all small classes mains. Otherwise, each file with main class needs its separate jar. If the jar does not need to be double-clickable, then it does not matter. 
 
 After jar created, run it by double-click on the file, or by bash command: java -jar MyJar.jar
+
+Creating a FAT JAR:
+1. Fat jar manifest:
+A correct fat‑JAR manifest contains no Class-Path entry at all, only: Manifest-Version: 1.0 and Main-Class: your.package.Main. 
+The reason is that while running a Jar file, JVM automatically looks inside the JAR for all referenced dependencies. As external dependencies in the fat jar are already within the jar file (unlike with classic java-built jars, where they are outside it), there is no need for JVM scanning any additional folder outside that jar. 
+2. Unzip all dependency JARs. Put them into one directory with the compiled class files. Then re-create the JAR.
+	# unpack dependencies: 			jar xf lib/gson.jar
+	# unpack original jar(if needed): 	jar xf MyApp.jar
+3. Put all files in a folder together: mkdir temp
+4. create JAR based on the manifest: jar cfm MyAppFat.jar ../MANIFEST.mf .		// I am positioned inside the temp folder, and manifest file is outside, next to it
+5. Run the JAR: java -jar MyAppFat.jar
+
+Editing JAR file:
+If an error in the application is detected: 1. Correct java class 2. Re-compile correct classes 3. Re-create JAR with correct classes
 
 ls -l		list of folders/files in cur.dir. With -l, details on files are shown
 ls path/to/dir	list content in another dir.

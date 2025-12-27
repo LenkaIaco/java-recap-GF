@@ -1,5 +1,13 @@
 x Exclude ArmstrongNumber, GuessMyNumber, SubStrList, TCC
 
+How to exclude multi-arguments with binary operators:
+1.option:
+	if (!splits[0].equals("+")&&!splits[0].equals("-")&&!splits[0].equals("*")&&!splits[0].equals("/"))  {...}
+2.option(same result):
+	if (!
+                (splits[0].equals("+") || splits[0].equals("-") || splits[0].equals("*") || splits[0].equals("/") 
+   	 ))  {...}
+
 below: object check for equality works with diff types of objects at once
 also below: ArrayList get and set method
 
