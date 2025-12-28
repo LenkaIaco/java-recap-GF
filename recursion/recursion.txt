@@ -1,0 +1,28 @@
+x exclude Main, TT, MaxSum
+
+most recursive problems can be also written via loops
+Each recursive call can either add a constant, or there can be multiple recursive calls with different parameter mutations:
+
+public static int countBunnyEars(int nthBunny){
+if (nthBunny<=0) {return 0;}
+
+return (2 + countBunnyEars(nthBunny-1);}	//adding constant per each call
+}
+
+
+public static int fibonacciValue(int nth){
+if (nth<=0) {return 0;}
+if (nth==1) {return 1;}
+
+return fibonacciValue(n-1) + fibonacciValue(n-2); 	//multiple calls with different parameter modification
+}
+
+
+T[] arr2 = Arrays.copyOf(T[] arr1, length2)  //if length2 < length1, remaining elements are cut off. If length2 > lenght1, additional elements are assigned value equivalent 0 (primitives) or null (reference types(objects))
+
+T[] arr2 = Arrays.copyOfRange(T[] arr1, indexFrom, indexTo+1)  //possible to copy starting from any arr element
+
+
+String.valueOf() accepts primitives incl char, but also char[]
+Integer.valueOf() accepts just int or String - not char! (with char, it will transform a char into its ASCII value)
+

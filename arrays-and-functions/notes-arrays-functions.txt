@@ -2,6 +2,7 @@ Review for repeating: Diagonal matrix + onwards
 
 IntelliJ shortcuts:
 sout + tab                      System.out.println()
+main + tab			public static void main(String[] args){}
 ctrl + alt + l                  automatic formatting
 ctrl + click class name         opens documentation (class info)
 
@@ -46,6 +47,15 @@ Print line manually: 			System.out.print ("Hello\nWorld")   where "\n" stands fo
 
 -----------------------------------
 x appendAFunc, x Doubling xSum
+
+copying arrays:
+
+T[] arr2 = Arrays.copyOf(T[] arr1, length2)  //if length2 < length1, remaining elements are cut off. If length2 > lenght1, additional elements are assigned value equivalent 0 (primitives) or null (reference types(objects))
+
+T[] arr2 = Arrays.copyOfRange(T[] arr1, indexFrom, indexTo+1)  //possible to copy starting from any arr element
+
+Collections has only an overwrite-copy for List-type classes:
+Collections.copy(List dest, List source);	// the destination must be >= in size and the elements of the dest. will be overwritten by the source elements at the respective indices
 
 sorting non-manually:
 

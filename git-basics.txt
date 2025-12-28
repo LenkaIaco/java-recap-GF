@@ -37,7 +37,7 @@ git commit -m "Fix bug"				from index(staging) -> into LOCAL git repository !
 
 git remote add origin https://github.com/YourName/RepoName.git
 git remote -v					check the remote URL
-git push -u origin master			-u = --set-upstream(see below); 
+git push -u origin master			-u = --set-upstream(see below); origin = remo.repo   Git interprets it as: Local branch: mybranch; Remote branch: origin/mybranch.  If that reference already exists remotely, git pushes it, otherwise git creates+pushes
 git push --set-upstream origin master		origin = remo.repo URL; main = branch of remo.repo
 
 git pull			!ALWAYS DO BEFORE GIT PUSH! Pull changes from remote repo to local
