@@ -22,3 +22,7 @@ T[] arr2 = Arrays.copyOf(T[] arr1, length2)  //if length2 < length1, remaining e
 
 T[] arr2 = Arrays.copyOfRange(T[] arr1, indexFrom, indexTo+1)  //possible to copy starting from any arr element
 
+
+String.valueOf() accepts primitives incl char, but also char[]
+Integer.valueOf() accepts just int or String - not char! (with char, it will transform a char into its ASCII value)
+

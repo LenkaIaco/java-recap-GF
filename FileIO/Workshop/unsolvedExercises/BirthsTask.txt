@@ -1,0 +1,12 @@
+public class Births {
+  // Create a function `getMostFrequentYear` which takes the name of a CSV file as a parameter,
+  // - every row is in the following format: <person name>;<birthdate in YYYY-MM-DD format>;<city name>
+  // and returns the year (as a String) when the most births happened.
+  // If there were multiple years with the same number of births then return any of them.
+  // If the given file doesn't exist, the function should return "File not found"
+  
+  // Change the path of the /births.csv source file to the path where you saved it on your computer.
+  // You can find the source file in a link next to this exercise.
+  System.out.println(getMostFrequentYear("src/main/resources/static/births.csv")); // should print "2006" or "2016"
+  System.out.println(getMostFrequentYear("src/main/resources/static/not-existing-file.csv")); // should print "File not found"
+}

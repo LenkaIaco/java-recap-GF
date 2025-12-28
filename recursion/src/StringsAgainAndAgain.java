@@ -6,15 +6,15 @@ public class StringsAgainAndAgain {
      // the string `word` should be changed to `w*o*r*d`.
      */
     public static void main(String[] args) {
-        System.out.println(starText("stars"));
+        System.out.println(addAsterisk("word"));
+        System.out.println(addAsterisk("stars"));
     }
 
-    public static String starText(String s) {
-        if (s.length() == 1) {
-            return s;
-        } else {
-            String sub = s.substring(1);
-            return s.charAt(0) + "*" + starText(sub);
-        }
+    public static String addAsterisk(String s){
+        if (s.length()==1){return s;}
+
+        return String.valueOf(s.charAt(0))
+                .concat("*")
+                .concat(addAsterisk(s.substring(1)));
     }
 }

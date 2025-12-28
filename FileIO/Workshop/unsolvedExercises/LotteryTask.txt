@@ -1,0 +1,21 @@
+import java.util.Arrays;
+
+public class Lottery {
+  public static void main(String[] args) {
+    // Create a method which determines the 5 most common lottery numbers
+    // in lottery.csv and returns them in an array.
+    // If there were multiple numbers with the same occurrences then return any of them.
+    // Return an empty array if the specified file does not exist
+    // The lottery.csv format is as follows:
+    // <year>;<week>;<date>;[<no_of_winners>;<winnings> 4x];[drawn number 5x]
+    // i.e. the year; week number; date of the lottery draw;
+    // the number of winners and their winnings matching (5, 4, 3 or 2 numbers);
+    // the 5 drawn numbers
+    // Change the path of the lottery.csv source file to the path
+    // where you saved it on your computer.
+    // You can find the source file in a link next to this exercise.
+    // If you pass "lottery.csv" to your function, the result should be
+    // either [3, 29, 75, 66, 77] or [3, 29, 75, 66, 86].
+    System.out.println(Arrays.toString(getMostFrequentNumbers("src/main/resources/static/lottery.csv")));
+  }
+}

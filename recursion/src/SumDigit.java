@@ -19,20 +19,26 @@ public class SumDigit {
     }
 
     public static int sumTheseDigits(int n) {
-//        char[] digitArray = String.valueOf(n).toCharArray();
-//        int[] integerArray = new int[digitArray.length];
-//
-//        for (int i = 0; i <digitArray.length ; i++) {
-//            integerArray[i] = Integer.valueOf(String.valueOf(digitArray[i]));
-//        }
-//        System.out.println(Arrays.toString(integerArray));
-
         if (n <= 0) {
             return 0;
         } else {
             return n % 10 + sumTheseDigits((int) n / 10);
         }
-
     }
+
+    /*alternatively:
+
+    public static int sumTheseDigits(int number){
+        if (number <=0){return 0;}
+        char[] digits = String.valueOf(number).toCharArray();
+        if (digits.length==1) {return Integer.valueOf(String.valueOf(digits[0]));}
+
+        char[] subDigits = Arrays.copyOfRange(digits,1,digits.length);
+        String remainingNumber = String.valueOf(subDigits);
+
+        Integer first = Integer.valueOf(String.valueOf(digits[0]));
+    return first + sumDigits(Integer.valueOf(remainingNumber));
+}
+     */
 
 }
