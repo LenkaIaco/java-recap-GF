@@ -57,5 +57,18 @@ git branch -d myBranch		locally deletes branch. Combine with:
 git push origin --delete myBranch	to delete branch in remote repo
 git branch -a			list of local/remote branches: branch deleted locally/remotely?
 
+How to delete last remote commit from history:
+git checkout child 
+git reset --hard HEAD~1 
+git push --force
+
+How to reset to another(maybe earlier commit) historical point:
+git log --oneline		//Find the commit hash
+git reset --hard <commit-hash-before-merge> 
+git push --force
+
+For shared branches: 'revert' creates a new commit that undoes the merge without rewriting history:
+git revert -m 1 <merge-commit-hash> git push
 
 git clone https://github.com/GitAccount/GitRepo.git  /users/myProject 
+
