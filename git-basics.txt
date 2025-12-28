@@ -40,18 +40,29 @@ git remote -v					check the remote URL
 git push -u origin master			-u = --set-upstream(see below); origin = remo.repo   Git interprets it as: Local branch: mybranch; Remote branch: origin/mybranch.  If that reference already exists remotely, git pushes it, otherwise git creates+pushes
 git push --set-upstream origin master		origin = remo.repo URL; main = branch of remo.repo
 
-git pull			!ALWAYS DO BEFORE GIT PUSH! Pull changes from remote repo to local
-git push				local origin -> to remote repo(upstream already set) 
-git push origin master		exact remote/local stated: possible even if no upstream set yet
+git pull			!ALWAYS DO BEFORE GIT PUSH! Pull changes from remote repo to local - after inserting the merge message in vim layout, press ESC to exit vim, then :wq to save, or :q! for quitting without saving. 
+After the merge, you can now push the changes you wanted to push before you needed to merge the remote changes: 
+git push				// local origin -> to remote repo(upstream already set) 
+git push origin master		// exact remote/local stated: possible even if no upstream set yet
 git clone					copy a remote repo into local folder
 
 git branch mybranch // git checkout -b mybranch		create a branch
 git checkout mybranch //git checkout master		switch between branches	
 git add, git commit, git push -u origin dataStructures	push local branch into origin(remote)
+
+
+How to merge changes from a branch -> to master:
+1. git checkout master
+2. git pull 			// any changes happened in the meantime?
+3. git merge mybranch 		(when in master) merge dialog opens in bash: enter merge message, press escape, then type :wq , press Enter
+
+Creating and approving pull request 
+	this makes the same effect as the merge command above - it merges branch - but remotely
+Pull requests are meaningful for group work on remote repos, where e.g. an admin has the rights to merge branches into master.
+
 Open a pull request on GitHub ->review -> merge into master ->(delete (local/on GitHub) branch if desired). The local branch is now out of date compared to the merge happened remotely, but it still exists locally.
 
 
-git merge mybranch 		(when in master) merge dialog opens in bash: enter merge message, press escape, then type :wq , press Enter
 git branch --merged		lists already merged branches
 git branch -d myBranch		locally deletes branch. Combine with:
 git push origin --delete myBranch	to delete branch in remote repo
