@@ -59,7 +59,8 @@ Arrays.stream(new Integer[5]).mapToInt(Integer::intValue)
 
 Arrays.stream(new int[5]).sum() /min() / max() / ... // primitive array skips the mapping Integer -> int
 
-Arrays.sort(Comparator.naturalOrder()) | Arrays.sort(Comparator.reverseOrder())  // what you can do in Arrays without stream()
+Arrays.sort(int[] arr) 			//sorts by ascending num. order
+Arrays.sort(T[] arr, Comparator.naturalOrder()) | Arrays.sort(T[] arr, Comparator.reverseOrder())  // what you can do in Arrays without stream()
 
 
 Collections.sort(l)   //only for Lists, natural order
@@ -67,14 +68,23 @@ Collections.sort(l, Comparator.reverseOrder())
 
 
 l.sort(Comparator.naturalOrder())   |   l.sort(Comparator.reverseOrder())  
-l.add(369); || l.remove(index); /l.remove(object) || l.addAll(anotherList); --vs-- l.removeAll(anotherList);
+l.add(369); || 
+l.add(Obj o, index i)  // adds at index, shifts remaining to the right 
+l.set(Obj o, index i)  // replaces obj at index i with new o.
+l.remove(index); /l.remove(object) 
+
+l.addAll(anotherList); --vs-- 
+l.removeAll(anotherList);
+
 l.set(index, object);
 boolean removed = l.contains(356) ? l.remove(356) : false;
 l.addAll(List.of(1,2,356));
+l.addAll(2, List l)  -> add a collection at the index, shift subsequent elements to the right
 l.replaceAll(x -> x*2);
 
-s1.add('A'); s2.add('A'); || s.remove('A'); || s.addAll(Collection); --vs-- s.removeAll(Collection); //set.addAll() use to remove duplicates from a different collection
-
+s1.add('A'); s2.add('A'); || s.remove('A'); 
+s.addAll(Collection);  //set.addAll() use to remove duplicates from a different collection
+s.removeAll(Collection);  // ignores elements that are not found in the original; returns true if original collection has been changed
 
 hm1.put(1,'A'); hm2.put(1,'A');
 hm.putAll(Map);

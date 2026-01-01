@@ -1,0 +1,103 @@
+All methods(Files.readAllLines, Path.of, Paths.get) are part of the newer java.nio package. 
+java.io   → Old, stream‑based, blocking I/O (Java 1.0)
+java.nio  → Newer, buffer‑based, non‑blocking I/O (Java 1.4+), plus modern file APIs (Java 7+)
+------------------------------------
+
+List<String> l;  //  files are read into a list, because at the point of reading the file, the size of the resulting list is not known
+
+try{
+   l = Files.readAllLines(Path p);     // the list will not be reachable outside the try-catch block, unless it is declared outside of it + initialize it, or:
+} catch (IOException e) {
+   System.err.println("Unable to read source file");
+	return;						// if List is not initialized outside try-catch, return if error; otherwise it is not possible to work with the list after try-catch finalizes
+}
+Paths.get() and Path.of() have the same effect:
+Path p = Paths.get("subfolder1/subfolder2/file.txt");	
+	
+Path p = Path.of("subfolder1/subfolder2/file.txt");
+	Path.of("subfolder1","subfolder2","file.txt");
+	
+
+// java does not know the exact path to this class. However it is being launched within a java application (e.g. a jar). 
+So java knows the directory of this application (JVM's current working directory). Therefore, starting from this directory, all the subfolders need to be named that lead to the class you are looking for, that is located within the folder structure that this application has. If the path is not part of the application folder, but located elsewhere, absolute path to the file needs to be provided,e.g.:
+
+Path p = Paths.get("C:/data/config/file.txt");
+	Paths.get("C:/","data","config","file.txt")   //the C:/ is a name of the directory, therefore actual slash needs to be inserted to reproduce the absolute path above
+
+
+------------------------------------
+When working with methods that potentially throw an exception, you are working with them within another method(main, or your own other method). The current method would either have to declare the throwing possibility (e.g. you modify main to "public static void main(String[] args) throws IOException {}"), or the throwing method needs to be wrapped in a try-catch block to replace throwing with some other action:
+
+COPYING
+
+        try {
+            System.out.println(Files.copy(p1,p2);				//without copy option, default is StandardCopyOption.COPY_ATTRIBUTES (a pre-existing file needed)
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try{
+            Files.copy(p1,p2,StandardCopyOption.COPY_ATTRIBUTES ); 		// CREATES a file + copies contents into it. THROWS ERROR for already existing target files!!
+				StandardCopyOption.REPLACE_EXISTING		// if a file exists, replaces its contents
+        } catch(IOException e){
+            System.err.println("target file already exists"); 			// prints error message, but still returns (opposed to throwing error, where program flow stops)
+            return false;
+        }
+
+
+
+WRITING
+
+	 try {
+            Files.writeString(Path p, String s); // If  StandardOpenOption is omitted at the end, like here, it behaves as StandardOpenOption.CREATE 
+        } catch (IOException e){
+            System.out.println("Unable to write file: "+ p);
+        }
+
+
+	 try {
+            Files.write(Path p, List l, StandardOpenOption.APPEND); // List extends iterable, array does not. 
+        } catch (IOException e){
+            System.out.println("Unable to write file: "+ p);
+        }
+
+
+        try {
+            Files.write(pathToFile, List l);			// if no standard open option is chosen, the method will automatically behave as if CREATE was chosen
+        } catch (Exception e ) {
+            System.err.println("Unable to write file: my-file.txt");
+        }
+
+
+
+// There are compile-time and runtime exceptions. Compile-time exceptions need to be handled, in-code (try-catch) or declared at the method level (method signature + throws ExceptionX {} ), otherwise the code won't compile. These exceptions are usually connected to external failures, therefore they are designed to be handled(anticipated) as possible scenarios in the code.
+Compile-time exceptions: IOException, ClassNotFoundException, SQLException
+
+Runtime exceptions - code logic errors, not needed to be handled because they are originating from code errors which (java expects) need to be fixed for the program to work correctly: 
+- These all extend RuntimeException:
+- NullPointerException, UnsupportedOperationException, ArithmeticException, IndexOutOfBoundsException, OutOfMemoryException, IllegalArgumentException
+
+Throwable
+ ├── Exception
+ │     └── RuntimeException			//Both RuntimeException and Error are considered unchecked
+	└── other CHECKED exceptions
+ └── Error
+
+------------------------------------
+StandardCopyOption.COPY_ATTRIBUTES  - Throws FileAlreadyExists (subclass of IOException) ! For non-existing target files(to be created). Copy contents incl. timestamps, permissions
+StandardCopyOption.REPLACE_EXISTING - CREATES FILE IF NOT EXISTING. And replaces contents if already existing
+
+StandardOpenOption CREATE</th>
+* new file is created or
+* existing file content is overwritten
+StandardOpenOption APPEND
+* File MUST EXIST ahead otherwise IOException!
+* Write to the end of the file instead of overwriting from the beginning
+StandardOpenOption WRITE
+* File MUST EXIST ahead otherwise IOException!
+* overwrites content unless combined with APPEND.
+
+StandardOpenOption CREATE_NEW
+Create a new file, but fail if it already exists. This prevents accidental overwrites.
+StandardOpenOption READ
+Open the file for reading.
