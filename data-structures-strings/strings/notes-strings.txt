@@ -24,7 +24,7 @@ int i = s.indexOf("ab")  | .indexOf('c')  | .lastIndexOf("ab")  |  .lastIndexOf(
 int i = s.indexOf("a", 3) | .lastIndexOf('c')   // starting from a certain point in text
 
 String[] strArr = s.split(" ")
-String bigFix = quote.replace("It", "That"); | replace('a', 'b') //replaces each occurence in text!
+String bigFix = quote.replace("It", "That");    ||   replace('a', 'b') //replaces each occurence in text!
 String regexFix = quote.replaceAll("\\d+", "")   "Time: 10:00" -> "Time: :" // regex: 1 or more digits 
 String smallFix = quote.replaceFirst("It you", "It always takes longer than you");
 
@@ -39,12 +39,14 @@ String result =  s.stripLeading();  // s.stripTrailing();
 boolean b = s.startsWith("beginning")  // s.endsWith("end") 
 boolean b = s.contains("abc")
 
-StringBuilder sb = new StringBuilder(s2)'
+StringBuilder sb = new StringBuilder(s2)
 sb.append('a')  | append("AB")
+sb.append(Object o)  //appends the string representation of the object
+
 sb.deleteCharAt(2);
+sb.delete(int begin, int end)  // end is index+1
 
 String s3 = sb.reverse().toString();
-sb.append(Object o)  //appends the string representation of the object
+
 sb.insert(0, "XY") "AB" -> "AXYB" // inserts string at beginnning
 sb.replace(int begin, int end, "ABC")  // replaces a substring with another end is index+1
-sb.delete(int begin, int end)  // end is index+1

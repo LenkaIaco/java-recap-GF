@@ -20,6 +20,7 @@ String.valueOf(char c)	  --> String result
 String.valueOf(char[] c)  --> String result
 new String(char[] c)      --> String result
 Integer.valueOf(int i)    --> Integer result
+Integer.valueOf(String s)  --> string number to integer
 Integer.intValue(Integer i) --> int result
 -------------------------------------
 String s2 = myString.substring(begin, end+1);
@@ -60,7 +61,6 @@ Collections.copy(List dest, List source);	// the destination must be >= in size 
 sorting non-manually:
 
 Arrays.sort(arr[])
-List.sort() 
 List.sort(Comparator.reverseOrder()) 
 Collections.sort(myList)  --> Collections.reverse(myList)
 List.stream().sorted() // sorted(Comparator.reverseOrder()) 
@@ -89,9 +89,9 @@ public int compare (int a, int b){
 }
 
 -----------------
-List.toArray() 							returns Object[] !
-List.toArray(new String[0]) 					returns String[] 
-integerList.toArray(new Integer[0]) 				returns Integer[] (no primitive parameters)
+List<Integer> l = new ArrayList<>();
+Object[] arr = l.toArray() 	-> returns Object[] !
+Integer[] arr = l.toArray(new Integer[0])				returns Integer[] (no primitive parameters)
 
 integerList.stream().mapToInt(Integer::intValue).toArray() 	returns int[] 	 intStream.toArray() != List.toArray()
 
