@@ -1,6 +1,8 @@
-package src.Practice;
+package Practice;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,7 +16,8 @@ public class CountLines {
 // and should not raise any error.
     public static void main(String[] args) {
 
-        System.out.println(countLines("src/Practice/sourceFile.txt"));
+        System.out.println(countLines("inputs/practice/sourceFile.txt"));
+        System.out.println(countLinesByClassPath("sourceFile.txt"));
     }
 
     public static int countLines(String filenameAndPath){
@@ -28,5 +31,17 @@ public class CountLines {
         return l.size();
     }
 
+public static int countLinesByClassPath (String filename){
+        java.io.InputStream isSource = CountLines.class.getResourceAsStream(filename);
 
+        List<String> l;
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(isSource))) {
+            l = br.lines().toList();
+        } catch (IOException e){
+            System.err.println("Reading file not successful");
+            return 0;
+        }
+
+        return l.size();
+}
 }

@@ -2,6 +2,11 @@ All methods(Files.readAllLines, Path.of, Paths.get) are part of the newer java.n
 java.io   → Old, stream‑based, blocking I/O (Java 1.0)
 java.nio  → Newer, buffer‑based, non‑blocking I/O (Java 1.4+), plus modern file APIs (Java 7+)
 ------------------------------------
+//With input and output files using FileIO operations(copy, write), NEVER put the files inside the src! The reason is, that, depending on whether you launch the app from a jar(java starts inside zipped out folder, which is an equivalent of src folder, only with compiled classes), or from IntelliJ(here you need to reference one level up - also src folder in the path! as the project root folder is above src), the FileIO path will work differently depending on where you launch it from.
+// java does not know the exact path to this class. However it is being launched within a java application (e.g. a jar). 
+So java knows the directory of this application (JVM's current working directory). Therefore, starting from this directory, all the subfolders need to be named that lead to the class you are looking for, that is located within the folder structure that this application has. If the path is not part of the application folder, but located elsewhere, absolute path to the file needs to be provided,e.g.:
+
+------------------------------------
 
 List<String> l;  //  files are read into a list, because at the point of reading the file, the size of the resulting list is not known
 
@@ -18,8 +23,7 @@ Path p = Path.of("subfolder1/subfolder2/file.txt");
 	Path.of("subfolder1","subfolder2","file.txt");
 	
 
-// java does not know the exact path to this class. However it is being launched within a java application (e.g. a jar). 
-So java knows the directory of this application (JVM's current working directory). Therefore, starting from this directory, all the subfolders need to be named that lead to the class you are looking for, that is located within the folder structure that this application has. If the path is not part of the application folder, but located elsewhere, absolute path to the file needs to be provided,e.g.:
+
 
 Path p = Paths.get("C:/data/config/file.txt");
 	Paths.get("C:/","data","config","file.txt")   //the C:/ is a name of the directory, therefore actual slash needs to be inserted to reproduce the absolute path above
@@ -31,8 +35,9 @@ When working with methods that potentially throw an exception, you are working w
 COPYING
 
         try {
-            System.out.println(Files.copy(p1,p2);				//without copy option, default is StandardCopyOption.COPY_ATTRIBUTES (a pre-existing file needed)
-        } catch (IOException e) {
+            System.out.println(Files.copy(Path from,Path to);				//without copy option, default is StandardCopyOption.COPY_ATTRIBUTES (a pre-existing file needed)
+       										// The paths should be written relatively to where the java application is being launched from. The destination path especially if a file is supposed to be created by the running program, should be ideally next to the src folder, not inside it, because: In case the application would be later packaged into a jar and launched from the JAR position, the destination file would not be found in the original position relative to src folder, but relative to out folder.
+ } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -49,21 +54,21 @@ COPYING
 WRITING
 
 	 try {
-            Files.writeString(Path p, String s); // If  StandardOpenOption is omitted at the end, like here, it behaves as StandardOpenOption.CREATE 
+            Files.writeString(Path targetFile, String s); // If  StandardOpenOption is omitted at the end, like here, it behaves as StandardOpenOption.CREATE 
         } catch (IOException e){
             System.out.println("Unable to write file: "+ p);
         }
 
 
 	 try {
-            Files.write(Path p, List l, StandardOpenOption.APPEND); // List extends iterable, array does not. 
+            Files.write(Path targetFile, List l, StandardOpenOption.APPEND); // List extends iterable, array does not. 
         } catch (IOException e){
             System.out.println("Unable to write file: "+ p);
         }
 
 
         try {
-            Files.write(pathToFile, List l);			// if no standard open option is chosen, the method will automatically behave as if CREATE was chosen
+            Files.write(pathToTargetFile, List l);			// if no standard open option is chosen, the method will automatically behave as if CREATE was chosen
         } catch (Exception e ) {
             System.err.println("Unable to write file: my-file.txt");
         }

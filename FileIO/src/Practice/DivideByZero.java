@@ -1,4 +1,4 @@
-package src.Practice;
+package Practice;
 
 public class DivideByZero {
     public static void main(String[] args) {

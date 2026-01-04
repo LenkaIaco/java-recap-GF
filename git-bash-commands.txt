@@ -20,7 +20,7 @@ where java 	full path to java executable: 		c/..../Oracle/Java/javapath/java.exe
 
 echo sometext			prints text to command line
 printf some\nformatted\ntext	considers format characters like \n
-javac -d ../out Arrays/Excercises/*.java	“d- compile into 'out' folder(pre-existing!), incl. folder structure leading to java files" Works w  both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
+javac -d ../out Arrays/Excercises/*.java	“d- directory flag: compile into 'out' folder(pre-existing!), incl. directory structure, leading to java files" Works with both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
 
 javac Arrays/Exercises/*.java			compile files(.class) into same folder as *.java. While the compiler still checks the package statement for correct placement, it does not consider it while deciding where to put the .class files. Simply puts them into same folder as the .java files.
 
@@ -29,6 +29,7 @@ java package.statement.folders.Classname	run compiled class file from 1. folder 
 java -cp out fully.qualified.classname	run class file + add the out folder to classpath - where java should look for packages from the fully-qualified-class-name (=package statement packages + classname)
 
 Creating JAR file:
+The JAR file is being traditionally placed next to out and src folders (as out is for class files and src is for source code)
 
 Before creating a jar file, consider whether you need a manually created manifest file first, or not. Once a jar is created, java automatically looks inside for manifest file, so any consequent modification requires creating a separate manifest file and re-creating the jar anew with the manual manifest reference:
 
@@ -40,7 +41,8 @@ A JAR is just a ZIP file with:
 The manifest we specify:
 	Manifest-Version: 1.0   	//there exists only 1.0 version 
 	Main-Class: StudentCounter	//fully qualified class name (same as package statement; for folders between source root and class, use dots: com.example.StudentCounter
-	Class-Path: lib/gson.jar lib/commons-lang3.jar	// (list only EXTERNAL dependencies - not java standard libraries(starting java.* and javax.*), they are already part of JDK/JRE). This does not affect compiler's classpath (javac ..), but runtime classpath (by JRE, but not the general one, just to run this JAR).
+	Class-Path: lib/gson.jar lib/commons-lang3.jar	// This line is optional because: lists only EXTERNAL dependencies - not java standard libraries(starting java.* and javax.*), they are already part of JDK/JRE. This does not affect compiler's classpath (javac ..), but runtime classpath (by JRE, but not the general one, just to run this JAR).
+!!!AFTER THE ABOVE, MANIFEST NEEDS TO END WITH AN EMPTY LINE!!!
 							// the default, but Java’s built‑in jar DOES NOT contain external dependencies within! Therefore, the Class-Path variable is needed (lib/gson.jar mentioned above is a path relative to the position of the JAR file itself(next to it)). 
 However, you can build own zip file manually(which a jar essentialy is), I can create a "fat jar" ("uber JAR") which usually includes the external dependencies in it. When double-clicking a fat jar, JVM  opens the Jar - reads the Manifest - scans the JAR content for whichever classes it finds referenced. When your code references a class (e.g., com.google.gson.Gson), the class loader looks for that entry inside the JAR.
 
@@ -53,7 +55,7 @@ jar cf JarExample.jar out/*.class	// 'c' create a file  'f' file name (look in o
 
 - Alternatively, only for this gitbash window session, add the jar location to gitbash's PATH:
 export PATH="/c/Program Files/Java/jdk-17/bin:$PATH" adds the JDK’s bin directory in front of your existing PATH. If you would run the command without $PATH, it would replace the ENTIRE existing git path with just this folder location and the git commands like ls, git, bash, grep,... would not work anymore until the gitbash window gets closed. 
-- If the JAR should be runnable per double-click, it needs to contain one main class reference per jar. So a project folder of indipendent classes with each a main method would work only if one separate main method class is used to launch all small classes mains. Otherwise, each file with main class needs its separate jar. If the jar does not need to be double-clickable, then it does not matter. 
+- If the JAR should be runnable per double-click, it needs to contain one main class reference per jar. So a project folder of independent classes with each a main method would work only if one separate main method class is used to launch all small classes mains. Otherwise, each file with main class needs its separate jar. If the jar does not need to be double-clickable, then it does not matter. 
 
 After jar created, run it by double-click on the file, or by bash command: java -jar MyJar.jar
 
@@ -82,8 +84,9 @@ cd + full path: /c/Users/Lenka
 
 mkdir 		create folder
 rmdir 		remove EMPTY dir.
-rm -rf folder\with\content 	remove recursively forcefully - BYPASS TRASH, delete PERMANENTLY (alternatively use mv to move to trash, if you have the specific path to trash bin)
+rm -rf folder\with\content 	remove folder recursively forcefully - BYPASS TRASH, delete PERMANENTLY (alternatively use mv to move to trash, if you have the specific path to trash bin)
 rm 1.txt 2.txt	remove file(s)
+rm -f */*.java */*/*.java	as rm -r does not work with matching search patterns, the subfolder level needs to be specified (= del. any java file in 1st and 2nd level subfolders)		
 printf "1\n2\n3" > file.txt	writes formatted(\n) text into existing/new file
 touch file.txt 		creates file
 nano newfile.txt 	creates/modifies file + reading/writing line-by-line in terminal (ctrl+s save changes, ctrl+x close /ctl+c cancel a file modif. command / ctrl+q quit writing mode)
@@ -92,8 +95,9 @@ less Myfile.txt 	also read file in terminal, but incl scrolling: arrowkeys scrol
 mv MyFile.txt MyFolder Destination		move file(s)/ directory(s)
 mv old-folder-name new-folder-name		//rename folder / file
 cp FileToCopy C:\Absolute\Or\Relative\Path.txt	
-cp -avr MyFolder  Into\Address		-r incl. sub-folder content; -a archive(preserve permissions, timestamps); -v verbose (write out what has been copied-for verification)
-
+cp -avr MyFolder  Into\Address		-r incl. sub-folder content; -a archive(preserve permissions, timestamps); -v verbose (write out what has been copied-for verification)7
+cp -avr . ../out 			copying everything from current(src) into out folder (creates out if not exists)
+ja
 man		manual w commands (?windows?)
 
 history		commands used previously

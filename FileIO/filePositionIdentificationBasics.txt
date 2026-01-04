@@ -1,0 +1,121 @@
+There are 2 ways how to refer to a position of a file:
+- Related to a directory structure (1. relative to a folder on PC 2. absolute full path to a file on this concrete PC)
+- Position of a file related to the classpath 1. starting from classpath root or 2. related to the calling class - relative to its folder's classpath position
+
+The directory positioning(1) is easier to write in code, but the relative position changes based on where you start the application from. For relative positions, it changes in IDE vs JAR vs command line launch of application. And the absolute positions work only on one specific computer.
+
+The position relative to classpath works both for IDE and JAR the same(unlike it is with directory structure references). 
+With the JAR, the application is portable between computers. So it is a recommended solution to use in a program, as it does not create unintended side effects or limit the application to one environment.
+
+getUniqueIpAddresses(Path filePath) below works with relative/absolute file paths based on local directory structure. Relative - in IntelliJ, the project folder above the src folder(
+project parent folder = source root) for IntelliJ ).
+However, the directory root position would not be the same, if the app is started from a JAR (which zips everything within 'out' folder for JAR(out=app root)).
+So the application would start either in IntelliJ only, or in JAR only, if this referencing is used.
+
+The second method getIPsFromClasspath is working with classpath position instead of the folder structure position.
+IntelliJ puts on classpath both java files in src + src/resources folders.
+So the source files, in order to be found via classpath, need to be either:
+     - in the same folder as this java class(because you are calling its classpath position)
+     - or in the classpath root under resources, which can also be referred as a starting classpath point(root)
+
+The classpath method will work both with JAR app and IntelliJ startup the same, so it helps portability of the app.
+    
+/home/username/myapp/logs_copy.txt        (Linux, macOS)
+C:\Users\Username\myapp\logs_copy.txt     (Windows)
+
+Path specification using CLASSPATH:
+    1. Absolute reference: starting from source root
+    If the file is located separately from current java class, e.g. under resources folder(a.k.a classpath's root),
+    then under logs/myfile.txt, use absolute reference starting with slash(/):
+    Logs.class.getResourceAsStream("/logs/myfile.txt")      // first is '/' == classpath root reference(a.k.a. resources);
+
+    2. Relative reference: folder of current java class
+    Logs.class.getResourcesAsStream("myfile.txt")          // looks in same folder as current java class for the "..."
+    The JVM looks at the class loader of Logs.class(every loaded class has a class loader).
+    That class loader knows the classpath: JVM delegates to this class loader, to search the classpath entries for "myfile.txt"
+    This method operates with try-with-resources BufferedReader built on InputStreamReader consuming an InputStream
+
+    BufferedReader.close() automatically calls close() on the underlying InputStreamReader, which then closes the underlying InputStream.
+    So you only need to close the outermost resource.
+
+----------------------------------------------------------------------------
+Example 1: getUniqueIpAddresses() works with directory references via Paths:
+----------------------------------------------------------------------------
+public static List<String> getUniqueIpAddresses(Path filePath) {
+        List<String> l = new ArrayList<>();
+        try {
+            l = Files.readAllLines(filePath);
+        } catch (IOException e) {
+            return new String[0];
+        }
+	return l;
+}
+
+----------------------------------------------------------------------------
+Example 2: getIPsFromClasspath() uses classpath via .class().getResourceAsStream() 
+(there are other getResource() methods, but they do not work with JARs properly)
+----------------------------------------------------------------------------
+ public static List<String> getIPsFromClasspath(String filename) {
+        InputStream is = Logs.class.getResourceAsStream(filename);	// the java 'classname.class' needs to be used if used within a static context(method); otherwise, this().class() works too
+        List<String> l;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            l = br.lines().toList();
+        } catch (IOException e) {
+            System.err.println("Source file not found");
+            return new String[0];
+        }
+	return l;
+}
+
+----------------------------------------------------------------------------
+Example 3: Write from file to file
+Target file should be positioned independently from how the application is launched(IDE, JAR),
+always appear on the same spot -  a relative path to a System.getProperty("user.home"):
+C:\Users\Username\myapp\logs_copy.txt     (Windows)
+/home/username/myapp/logs_copy.txt        (Linux, macOS)
+----------------------------------------------------------------------------
+
+   public static void decryptDoubledByClassPath(String filename){
+
+// Step1: reading from source
+
+    List<String> list;
+
+        InputStream inputStream = Doubled.class.getResourceAsStream(filename);
+
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))){
+            l = br.lines().toList();
+        } catch (IOException e){
+            System.err.println("File not found");
+            return;
+        }
+
+//Step 2: writing to target
+
+            Path targetPath = Path.of(System.getProperty("user.home"),"doubled-output.txt");
+
+        try{
+            Files.write(targetPath, list);
+        } catch (IOException e){
+            System.err.println("Writing not successful");
+            return;
+        }
+
+        System.out.println("Writing succesful");
+    }
+
+----------------------------------------------------------------------------
+Example 4: Copy by classpath accepts InputStream instead of source path:
+----------------------------------------------------------------------------
+ public static boolean copyByClasspath (String sourceFile, String targetFile){
+        InputStream sourceIS = CopyFile.class.getResourceAsStream("sourceFile.txt");
+
+        Path targetPath = Paths.get(System.getProperty("user.home"),targetFile);
+        try{
+        Files.copy(sourceIS,targetPath);//without specifying, the method behaves as if StandardCopyOption.COPY_ATTRIBUTES
+        } catch (IOException e){
+            System.err.println("Writing not successful");
+            return false;
+        }
+        return true;
+    }
