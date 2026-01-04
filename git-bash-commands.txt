@@ -23,6 +23,7 @@ printf some\nformatted\ntext	considers format characters like \n
 javac -d ../out Arrays/Excercises/*.java	“d- directory flag: compile into 'out' folder(pre-existing!), incl. directory structure, leading to java files" Works with both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
 
 javac Arrays/Exercises/*.java			compile files(.class) into same folder as *.java. While the compiler still checks the package statement for correct placement, it does not consider it while deciding where to put the .class files. Simply puts them into same folder as the .java files.
+javac */*.java */*/*.java 			while in out folder, compile every subfolder's java file + every sub-subfolder's java file
 
 java package.statement.folders.Classname	run compiled class file from 1. folder where the subfolders mentioned in the 'package' statement are placed (a.k.a. fully qualified class name) 	2. or, add another location on the classpath: a location from where java should start searching for packages from 'package' statement: java -cp 
 
@@ -48,12 +49,21 @@ However, you can build own zip file manually(which a jar essentialy is), I can c
 
 1. manual manifest:
 jar cfm MyApp.jar MANIFEST.MF -C out . // 'c' create a jar  'f' specify jar file name (command executed in this folder) 'm' use given manifest file '-C out' Change directory into out. Then, include everything inside it ('.') ( content ++subfolders&subcontent! )
+Following WILL result in ClassNotFoundException!!! jar cfm MyApp.jar MANIFEST.MF out/.   !!! because the JAR will be built including the path as actual directories out/./subfolderX   Therefore, use the flag -C to change into the directory where you want the JAR root to start(see above). To verify what is the JAR's folder structure, use the command:
+jar -tf MyJar.jar 	// = list of files/folders:    -f means file  -t means list(table of contents)
 
 2. automatic manifest:
-jar cf JarExample.jar out/*.class	// 'c' create a file  'f' file name (look in out folder(no subpackages!)). If message "jar:command not found", bash cannot find the jar tool (Java isn't installed // JDK's bin folder isn't on your PATH inside Git Bash. Alternatively use full path to jar tool instead of just jar reference:
+jar cf JarExample.jar out/*.class	// 'c' create a file  'f' file name (look in out folder(no subpackages!)).
+
+
+
+Error message: jar: command not found		// getting this error means that Java isn't installed // JDK's bin folder(containing jar tool) isn't on the PATH inside Git Bash. 
+Reference the absolute path to the jar tool instead, or add jar's folder to gitbash PATH temporarily:
+
+1. Use full path to jar tool instead of just jar reference:
 "/c/Program Files/Java/jdk-17/bin/jar" cf MyJar.jar out/*.class 
 
-- Alternatively, only for this gitbash window session, add the jar location to gitbash's PATH:
+2. Alternatively, only for this gitbash window session, add the jar location to gitbash's PATH:
 export PATH="/c/Program Files/Java/jdk-17/bin:$PATH" adds the JDK’s bin directory in front of your existing PATH. If you would run the command without $PATH, it would replace the ENTIRE existing git path with just this folder location and the git commands like ls, git, bash, grep,... would not work anymore until the gitbash window gets closed. 
 - If the JAR should be runnable per double-click, it needs to contain one main class reference per jar. So a project folder of independent classes with each a main method would work only if one separate main method class is used to launch all small classes mains. Otherwise, each file with main class needs its separate jar. If the jar does not need to be double-clickable, then it does not matter. 
 
