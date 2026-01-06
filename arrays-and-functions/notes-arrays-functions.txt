@@ -15,6 +15,13 @@ String[] arr = new String[] {"One", "Two"};
 String s = "ab";
 String s = new String("ab");
 
+List<T> l = new ArrayList<>();				// List<String>, HashMap<Integer, String>, Class<T>  examples of generics - these ensure type safety (avoid possible casting errors at runtime by shifting the check to compile time = "type erasure" = compiler resolves the generics into raw types using casting where needed, so there are no generics at runtime:
+	List<String> list = new ArrayList<>();	---->
+					List list = new ArrayList(); // generics erased 
+					String s = (String) list.get(0); // compiler inserts cast
+
+System.out.println(l.get(0) + " " + l.get(1) ) 		// ! toString() mechanism is activated if the get(Object) is called in connection with a String (thus the string literal "") 
+
 -----------------------------------
 String.valueOf(char c)	  --> String result
 String.valueOf(char[] c)  --> String result
@@ -22,6 +29,16 @@ new String(char[] c)      --> String result
 Integer.valueOf(int i)    --> Integer result
 Integer.valueOf(String s)  --> string number to integer
 Integer.intValue(Integer i) --> int result
+Integer.max(int i, int y)
+
+Collections.max(Collection C) -> Integer result
+
+doube d = Math.random();	 --> generates a value between 0 incl. and 1 excl. Used for generating values between 0 and a number: e.g. Math.random() * 256 = generates between 0 and 255
+Usage: e.g. print a random element from an array, 10 times: 
+for (int i=0; i<10; i++){
+int randomIndex = Math.random() * array.length;
+System.out.println(array[randomIndex]);
+}
 -------------------------------------
 String s2 = myString.substring(begin, end+1);
 String s3 = s2.concat(s1)		 same as:   s1 + s2
@@ -37,8 +54,11 @@ Scanner scan = new Scanner(System.in);   // ctrl + click on Scanner variable typ
 
 
 
-Print 1D array: 			System.out.println(Arrays.toString(myArray)) 
-Print 2D array of primitives/objects	System.out.println(Arrays.deepToString(array2D))
+Print 1D array: 			
+System.out.println(Arrays.toString(myArray)) 
+
+Print 2D array of primitives/objects	
+System.out.println(Arrays.deepToString(array2D))
 
 Print line manually: 			System.out.print ("Hello\nWorld")   where "\n" stands for escape sign \ + new line shortcut
 					System.out.print ("Hello" + "\n" + "World") 
@@ -50,6 +70,7 @@ Print line manually: 			System.out.print ("Hello\nWorld")   where "\n" stands fo
 x appendAFunc, x Doubling xSum
 
 copying arrays:
+T[] copy = arr.clone()		// returns a shallow copy - new array but elements inside are the same than the original array. If elements are Objects, then by modifying the clone array elements, you would modify the original array too !
 
 T[] arr2 = Arrays.copyOf(T[] arr1, length2)  //if length2 < length1, remaining elements are cut off. If length2 > lenght1, additional elements are assigned value equivalent 0 (primitives) or null (reference types(objects))
 
@@ -63,16 +84,17 @@ sorting non-manually:
 Arrays.sort(arr[])
 List.sort(Comparator.reverseOrder()) 
 Collections.sort(myList)  --> Collections.reverse(myList)
+Collections.shuffle(myList) 		// mixes the elements' order !!
 List.stream().sorted() // sorted(Comparator.reverseOrder()) 
 
 + sort using lambdas: to fill in an anonymous function (parameters, body), by which we implement a functional interface(i. with exactly one abstract method). This is more lightweight on memory than implementing functional interfaces as JVM uses a lambda metafactory which produces fewer objects, lighter on memory. Lambdas(since Java 9) also bring functional programming (passing behavior as function argument)
 
 .sorted( (a, b) -> {
-if (a>b){
-return 1;
-}else if (a==b){
-return 0;
-}else {return -1;}
+	if (a>b){
+	return 1;
+	}else if (a==b){
+	return 0;
+	}else {return -1;}
 }
 )
 

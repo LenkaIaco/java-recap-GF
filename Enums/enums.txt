@@ -1,0 +1,144 @@
+Operations on enums:
+Enum[] valArr = MyEnum.values(); //this enables to iterate enum values based on its index
+
+Variations of enums:
+---------------------
+1.
+---------------------
+public enum Color {		//enum is an implicitly final class - cannot be extended
+BLUE, GREEN
+}
+
+---------------------
+2.
+---------------------
+public enum Card{
+TWO(2), THREE(3), Q(10), K(10), A(1); 	
+private final value;
+
+private Card(int val){		// private is redundant - constructors are implicitly private
+value = val;
+}
+
+public int getValue(){		// here, writing final would be redundant as the class cannot be extended, so no overwrite risk
+return value;}
+}
+
+---------------------
+3.
+---------------------
+public enum Operation{
+PLUS =  {					// although  enums cannot be extended, there is an exception for enum constants: they may have their own class body. If they do, the compiler creates an 						anonymous subclass( NOT a nested class, but actually extending enum) of the enum type for that constant. This is the only legal way to subclass an enum.
+	  @Override
+	  public int apply(int a, int b){
+	  return a+b;
+	  }	
+	}
+
+MINUS = {
+	  @Override
+	  public int apply(int a, int b){
+	  return a+b;
+	}
+
+
+public abstract int apply(int a, int b);
+}
+
+---------------------
+each Enum class looks something like this when created by Java:
+
+public final class Color extends Enum<Color>{
+
+	public static final Color GREEN = new Color(Green, 0); 	// private static final = constant, written in CAPITALS by convention
+	public static final Color BLUE = new Color (Blue,1);
+
+	private static final Color[] VALUES = {GREEN, BLUE};
+
+	private Color(String color, int index){	 // inherits 2 fields from Enum parent
+	   super(color, index);		//Java requires: each subclass constructor must call a superclass constructor. If none inserted, java inserts automatically the no-arg constructor 					of the superclass. However, if the superclass does not have a no-args constructor(Enum does NOT), the compilation fails. For enums however, compilation never fails because the compiler re-writes your constructor to insert java.lang.Enum's args(!) constructor.
+
+	}
+
+	public static Color[] values(){
+	  return VALUES.clone();// the array object might be final but the values could be rewritten: Color.values()[0] = null;  thus clone() - returns a copy, original is untouched. 
+			 	 //"Shallow copy" returned (clone array) = another array object, but containing the same values(object instances) as the original:
+						VALUES[0] ----→ GREEN ←---- clone[0]
+						VALUES[1] ----→ BLUE  ←---- clone[1]
+
+	}
+}
+
+
+---------------------
+Enum parent:
+---------------------
+public abstract class Enum<E extends Enum<E>> 	// generics Enum<E>, List<String>, etc. ensure type safety - resolution to raw types by compiler = no runtime surprise problems. 
+implements Comparable<E>, Serializable {	//Serializable = marker interface: no abstract methods, serialization mechanisms check for its presence. Comparable - compared to is 
+
+
+private final String value;
+private final int value;
+
+protected Enum(String v, int o){		//if there is no constructor written in a class, java inserts automatically a no-args constructor. However, if a constructor with arguments is 						present in a class, the no-args constructor will not be inserted
+this.value=v;
+this.ordinal = o;
+}
+
+public final String name() { return name; }	 //getters are final so that no subclass can override to return anything different than the actual enum value
+public final int ordinal() { return ordinal; }
+}
+
+
+---------------------
+Enum constants are converted to subclasses by compiler: e.g.
+
+---------------------
+ public enum Operation { PLUS, MINUS } --> Even though the enum class is final(cannot be extended), each constant can be backed by an anonymous subclass.
+		static final Operation PLUS = new Operation() { 
+						@Override 
+						public int apply(int a, int b) { return a + b; } 
+						};
+Methods in an enum are not implicitly final - because Java allows enum constants to override methods using anonymous subclasses.
+Even though the enum class itself is final, and cannot be extended, its constants can still provide their own method implementations.
+
+public enum Operation { 
+PLUS {								
+ @Override 
+public int apply(int a, int b) { return a + b; } 
+},
+ MINUS { 
+@Override 
+public int apply(int a, int b) { return a - b; } 
+}; 
+
+public abstract int apply(int a, int b); 
+}
+
+---------------------
+Example of an Enum incl. fields
+---------------------
+
+public enum CardRank {
+
+TWO(2), THREE(3), Q(10), K(10), A(1);		// these are all public static final CardRank (=constants), they need to be the FIRST entry in the enum class
+private final int value;			// private + final fields are AFTER CardRank fields, could have other access modifiers, as they are not constants
+						//they are NOT STATIC, because every instance of CardRank a different value
+
+
+
+CardRank(int v){				// every enum constructor is implicitly private, java enforces this, so that no one can instantiate new enum constants
+						// every enum constructor gets REWRITTEN by compiler with a super() reference inserted
+this.value = v;
+}
+
+/*
+Java is rewriting the above constructor into:
+private CardRank(String name, int ordinal, int value) { super(name, ordinal); this.value = value; }  // e.g. CardRank(TWO, 0, 2)
+*/
+
+
+public int getValue(){
+return value; 					//if value was array, we would return arr.clone(); otherwise, with 
+}
+}
