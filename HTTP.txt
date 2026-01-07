@@ -1,0 +1,25 @@
+
+
+
+HTTP+TLS = HTTPS  (TLS= encryption layer protecting a socket communication by encrypting the communication flowing through socket(plaintext bytes("Hello") -> encrypted bytes(8F A2 3C 91 7B ...)
+	One of the ways how microservices can communicate is REST (HTTP/HTTPS); but there are other ways(GraphQL(HTTP), gRPC(HTTP/2+photobuf(instead of JSON in rest)+TLS)
+	TLS is used also for wrapping:
+			- communication in plain TCP (legacy systems, or simple custom binary protocols built on top of TCP, or using frameworks(like Netty - Java framework for 					building servers and clients for network communication. High‑level framework built on top of NIO to make it easier to develop networked applications)
+			- communication between java driver and database(MySQL, PostgreSQL, OracleDB) over TCP w TLS + each db has its own protocol which the jdbc driver(relational dbs, sql) or other java drivers(no SQL dbs like MongoDB) implements
+			- for message queues(Kafka, RabbitMQ), often asychnronously using a message broker(messaging protocol) 
+				custom protocols on top of TCP (custom binary formats, game servers, financial trading systems)
+
+		A Java driver(a library that drives communication between) could also mean:
+				a driver for a message queue (Kafka client, RabbitMQ client)
+				a driver for a NoSQL database (MongoDB Java driver, Redis Java client)
+				a driver for a cloud service (AWS Java SDK)(java driver implements whatever protocol the cloud service exposes — usually HTTPS‑based APIs)
+				a driver for a hardware device (rare, but possible) (various protocols; essentially a driver in this context is a Java wrapper around a native(C/C++)  					library that speaks the device’s protocol)
+
+Your Application Protocol (HTTP, gRPC, custom binary, etc.)
+                ↓
+              TLS
+                ↓
+              TCP
+                ↓
+             Network
+	

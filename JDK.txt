@@ -1,0 +1,323 @@
+JRE vs JDK:
+
+JRE - only running already complied java classes 
+	- Contains JVM*, standard java libraries, security config files (properties, security, permissions etc). 
+	- contains runtime tools
+		JRE’s bin folder contains only runtime tools like:
+		java → java tool (starting with git bash 'java' command) starts the JVM -> the JVM runs your Java program
+		keytool → create and manage (keystores) files that store certificates and cryptographic keys(for SSL/TLS, HTTPS, code signing, and secure communication.)
+		policytool -> The configuration files define what Java code is allowed to do — file access, network access, system operations — but they only matter when Java is running in 		a restricted sandbox, which is uncommon today(old sandboxed apps, being phased out); nowadays java runs on full permissions just like any other normal program.
+		other tools
+	- Contains all java standard libraries (packaged in a module(Java 9+) or as rt.jar)
+
+
+JDK = JRE + development tools.
+	- Contains everything mentioned above, with JRE
+	- Additionally, development and debugging tools:
+		Inside the JDK’s bin folder, you’ll additionally find:
+			javac → compiles .java → .class
+			javadoc → generates documentation
+			jar → builds JAR files
+			jdb → debugger
+
+
+----------------------------------------------------------------------------------
+  -- How a Java program actually starts --
+----------------------------------------------------------------------------------
+When you run: java MyProgram
+
+you are not directly running your program.
+You are running the java launcher tool, which is part of the JRE (and the JDK).
+This is a native executable (java.exe on Windows, java on Linux/macOS).
+     Its job is to:
+
+	locate the JVM implementation(step 1)
+	load it into memory(step 1)
+	initialize it(start running, step 2)
+	pass your program’s arguments to it(step2)
+
+
+Here’s the sequence:
+  1. You run the java tool (the launcher) 
+Launcher loads the native JVM library into the running process using OS mechanisms. 
+This step is loading the native code into the process, but not running it yet(like loading a plugin into an application).
+
+     So the launcher is basically the “bootloader” for the JVM.
+
+
+     1.2. The launcher starts the JVM
+     	  The JVM is a software virtual machine implemented in native code (C/C++).
+
+	  The launcher:
+
+		loads the JVM shared library (jvm.dll, libjvm.so, etc.)
+		initializes the runtime
+		sets up classpaths, modules, system properties
+		prepares the execution environment
+
+     	  Now the JVM is alive.
+
+  2. The JVM:
+Unlike other virtual machines, it is actually a program running not on top of hardwarde(virtualizing CPU, memory, OS), but sits on top of an existing OS just like any other PC's program(for this reason there must be different versions of JVM - for Windows, another for Linux, Mac etc.).
+It is alike to a virtual machine in the sense, that creates a complete, self‑contained execution environment that behaves like a computer inside your computer — but only for Java bytecode - even though JVM implementations areOS-specific the bytecode doesn’t change.
+JVM provides:
+
+its own instruction set
+
+its own memory layout
+
+its own call stack
+
+its own threading model
+
+its own security model
+
+its own class loader hierarchy
+
+its own garbage collector
+
+its own runtime type system
+
+None of these come from the host OS. The JVM simulates a computer architecture that Java programs run on.
+
+
+JVM responsibilities - provides runtime services(always active for the entire lifetime of the JVM program):
+	Class loading(loading bytecode), verification(bytecode safe?), preparation(allocating static fields), resolution(resolving symbolic references), initialization(running static intitializers)
+	executes code (Interpreter and JIT compiler)
+	manages memory(Heap, stack, Metaspace, PC registers, native method stacks) 
+	Garbage collection: autodetect unused objects, free memory, compact heap space
+	schedules threads, provides synchronization primitives(locks,monitors), thread lifecycle management; Java threads mapped to OS threads(each j thread corresponds to an OS thread) but Java abstracts OS threading for its own format and differences
+	handles exceptions internally(throws, handles, runs finally blocks), propagating exc.through call stack("unwinding" c s), propagating stack traces(seen after an exception is thrown in debugging process - JVM is walking the call stack, collecting method frames(when unwinding begins, before a method frame is discarded, jvm collects its information for stack trace), and producing the stack trace you see when an exception is thrown)
+	enforces security(classloader (type safety checks) + bytecode verification( before execution by bytecode verifier), permissions(nowadays programs have full access to system resources), sandboxing(legacy programs))
+	native interface support - allows calling native code(native libraries and system level operations), via JNI (java native interface) and JVM TI (tool interface)
+	
+
+
+	-------JVM internal setup part ------------------------------
+	Loading Phase
+		
+	(!!! both class loading and class resolution happen DYNAMICALLY - only for classes that are actually used in the code!!! )
+	Example:
+		if (debug) { Logger.log("debug mode"); }
+	If debug is false, Logger never gets loaded and resolved.
+
+		finds your main class(class loader)
+		loads the .class files(class loader) into PermGen/ Metaspace(Java 8+) (metadata on classes (w. subparts methods,fields)). Class bytecode instructions don’t contain direct memory addresses. Instead, they refer to constant pool entries, by index, e.g.: "invokevirtual #12" call method whose symb.reference is at index 12.
+Constant pool contains symbolic references to methods, fields, string literal s. references, numeric literals.
+	Example of connstant pool entry:
+		#8 = Utf8 X 
+		#9 = Integer 42
+	Would correspond to int X = 42;
+
+		#2 = Fieldref #6.#16 // Demo.name:Ljava/lang/String; 
+		#16 = NameAndType #10:#11 // name:Ljava/lang/String;
+	These field names(//and descriptors) correspond to public String name;
+
+	verifies the bytecode(linking-verification phase; bytecode verifier - checks 
+			format of class file, type safety, stack treatment(overflow, instructions), control flow of instructions(no jumps in the middle of instructions))
+	prepares the class(linking- preparation phase:
+			allocate memory for static fields, 
+			static fields get default, not actual values here: int 0, boolean false, Object null, double 0.0
+			create method tables, essential for fast method invocation. This process resolves questions:
+					which methods override which (inheritance method resolution)
+					how to dispatch calls efficiently(virtual method calls)
+					how to lay out the class in memory(inheritance relationships)
+	linking-resolution phase: 
+		Every .class file contains a 'constant pool' table (like a lookup dictionary of references needed at runtime). It does not contain field references, but symbolic references — basically names(strings) of methods, classes, fields, numeric literals, e.g. string literals symbolic references -  not actual memory addresses. JVM will later turn these symbolic references into real, concrete memory references(=resolution).
+		
+		Resolution happens lazily - first time a reference is used in code. (otherwise too many classes at once would have to be loaded and the startup would slow down)
+		Example:
+			if (debug) { Logger.log("debug mode"); }
+		If debug is false, Logger never gets resolved.
+
+	-------JVM starts running the program ------------------------------
+	Initialization phase: load values into static variables and execute static block
+  . 	The JVM executes your code
+    	 Execution happens through:
+
+		the interpreter
+		the JIT compiler(frequently used bytecode-->machine code for perform.opt.)
+		garbage collector
+		thread scheduler
+		runtime libraries(java.lang, .util, .io, .nio, java.net, java.security(security apis like keystore, cipher(en-/decryption, MessageDigest (for hashing)); and cryptography implementations(algorithms doing) like SHA-256 		hashing, RSA key generation, ECDSA signatures, AES encryption TLS handshake operations) 
+
+
+
+     This is the actual “running Java code” part.
+
+-----------JVM and memory------------------------------------------
+Stored on disk, running on RAM.
+
+
+Information on JVM are stored on disk - EXE files, DLLs(native libraries cont.compiled machinecode from native langs like C,C++, Rust), JARs, class files, images, documents 
+
+	.c, .cpp, .rs files  --> C/C++/Rust compiler --> machine code(= native libraries: .dll) - runs directly on CPU(which only understands machine code)
+	Disk: 	
+		HDD(Hard Disk Drive)spinning magnetic disks and moving read/write head) - cheaper, slower and more fragile(moving parts(
+		SDD(Solid State Drive) flash memory chips (built from tiny semiconductors not moving(less fragile), more expensive) Charged represents 0(ironically); not charged - repr. 1)
+	
+			Semiconductor (material,usually silicone, whose conductivity can be controlled by adding impurities (doping) or applying voltage)
+  	 			↓
+			Transistor (switch built from semiconductor)
+    				↓
+			Flash memory cell (special transistor that stores charge)
+ 				↓
+			SSD (millions or billions of flash cells)
+
+All programs while running on a PC are on RAM(while executed)
+CPU executes only what is in RAM (disk is far too slow, RAM provides the speed needed for instruction execution)
+RAM
+│
+├── JVM Process
+│   │
+│   ├── Heap (Java objects, arrays(they also inherit from java.lang.Object) and String Pool(Previously Perm gen but moved bec.of OutOfMemory errors))
+│   ├── Stacks (one per thread, contains chained method calls with each method having its stack frame)
+│   ├── Metaspace (class metadata + bytecode)
+│   └── Code Cache (JIT-compiled native code)
+
+
+Metaspace(Previously PermGen):
+	 class info(substructures: 
+	* fields list, 
+	* constant pool, 
+	* other class info: superclass, interfaces, annotations , access flags, static fields(at preparation phase) ), Stack(each thread has its own), Heap (objects stored here)
+	* methods list actual bytecode w method bodies, signatures, access modifiers; all methods incl.constructors and private methods) 
+	* method tables: Just by looking at class bytecode and method list, JVM does not know which method to call 
+	Method tables contain pointers to implementations, for optimized lookup performance.
+	2 tables exist: 
+		vtable for overridden instance methods, 
+		itable for interface implementation methods; 
+
+
+	1. The compiler ensures correctness(type safety), but NOT runtime dispatch
+	The compiler only ensures: “This method can override that method.”
+		Animal a = new Dog(); 
+		a.speak();
+
+	But the JVM must answer a different question at runtime:
+	Regarding the speak() method, which implementation to call, based on the runtime type
+ 	the JVM needs:
+		a vtable slot for speak()
+		a mapping from that slot to the Dog implementation
+
+	Without override information, the JVM would have to:
+		search the class hierarchy
+		compare method names
+		compare signatures
+		check access modifiers
+
+	…for every virtual call. 
+	That would be catastrophically slow.
+
+--------garbage collection--------------------------------------
+GC runs on HEAP.
+OBJECTS eligible for gc are no longer reachable from any GC root.
+The exact time when they get collected depends on the GC run which is entirely up to the GC.”
+
+GC roots:
+
+Reference type		Where it lives		GC root?	Keeps object alive independently?
+Local variable		Stack frame		✔ Yes		✔ Yes
+Method parameter	Stack frame		✔ Yes		✔ Yes 
+Static field		Class metadata		✔ Yes		✔ Yes(once class info loaded(when obj becomes first used in code), remains in memory as long as its classloader lives(most cl lives = JVM life)
+Instance field		Inside heap object	✘ No		✘ Only if the object itself is reachable
+
+JNI references
+JVM internal references
+
+
+The JVM decides:
+
+when to run GC
+which generation to scan (Young gen and Old Gen are being scanned separately)
+	Young‑generation GC : Eden+Survivor gets scanned frequently, long-lived objects stay or get promoted to Old Gen, rest gets discarded
+	Scan is fast(contains mostly simple objects, plus scan method is faster copy survivors and discard rest)	
+	Old Generation scans are less frequent, triggered by old gen pressure(size, allocation difficulty + memory fragmentation(memory exists but not large enough contiguous blocks) = threshold); the ones that do not cut it, get 	discarded too
+	Scan much slower because of 
+		bigger size  
+		more complex objects are more frequent  
+		slower method: Mark-sweep-compact. Survivors get marked, dead objects get swiped, attempts to compact memory after: 
+		1. After GC heap looks like swiss cheese: [ObjA][   ][ObjB][   ][   ][ObjC][   ][ObjD][   ]
+		2. Compaction moves objects to one end of the heap:  [ObjA][ObjB][ObjC][ObjD] [                 ]   
+		While objects get moved, their order still gets preserved as a result of the chosen algorithm, although that often means that more objects get moved in practice, rather than just using the vacancies in between the 	surviving objects. It’s about creating the largest possible contiguous free region with the simplest possible algorithm - which in effect works out to happen to be the one to preserve the order of the objects.
+
+		tracking chained references adds overhead - Scanning GC root reveals only 1st Object in chain: 
+			GC Root → Young Object X1 → Old Object Y → Old Object Z
+			GC Root → Old Object X2 → Old Object Y → Old Object Z
+		Old Gen GC additionally verifies "card tables / remembered sets" where these reference chains are stored, which adds overhead
+
+	Full GC: whole heap and metaspace scan, slowest, avoided when possible
+		If a class loader becomes unreachable, all classes it loaded become unreachable too. Full GC checks which class loaders and classes are still reachable, and CAN unload the ones that aren’t.
+	Class unloading is not automatic(because the process can be expensive - cause long GC pauses), but optional feature that can be enabled, for the class unloading to happen at full GC.
+
+how aggressively to reclaim memory
+whether to compact memory
+whether to promote objects
+
+-----------class loaders---------------------
+At least 3 for simple apps + more for each plugin/framework:
+Bootstrap (core java classes) CL: implemented in native code
+↓ 
+Platform (extension) CL ( modules: java.sql, javax.*)
+↓ 
+Application(=system) CL (my app's classpath: classes, JARs, Libs)
+↓ 
+Custom loaders: frameworks, plugins, etc. have individual CLs:
+		Tomcat / Jetty / JBoss; SpringBoot, Plugins - 1CL per web appp
+			SpringBoot contains nested JARs (BOOT-INF/lib/*.jar). The JVM cannot load nested JARs directly. Spring Boot’s class loader knows how to load classes from inside nested JARs
+		IDEs(IntelliJ, Eclipse, VSCode, SpringDevTools have 'hot reload' function - each time a change event is triggered(save, autosave, refractor that touches multiple files.
+			A hot reload is also triggered per one code generation event (Lombok, annotation processors - run at compilation and generate bytecode based adding/removing annotations like:
+			@Getter @Setter 
+			private String name;
+
+
+HotSwap vs Hot reload
+HotSwap (the JVM’s built‑in class redefinition mechanism) is very limited to certain updates within methods. It cannot handle changes like adding or removing methods, fields, changing m.signatures, changing annotations, modifying generics that change class structure.
+
+
+			A new hot reload does not instantly dump the previous loader.
+			Instead, the class loader chain becomes:
+			HotReloadCL #2 → HotReloadCL #1 → ApplicationCL
+			The hot reload CL 1 gets discarded usually when:
+
+			when you restart the app or manually trigger a rebuild 
+			or when the IDE performs a “full reload”= application restart behavior (usually at dependency changes, config or resources changes, or core framework classes changes)
+			or when the hot reload mechanism decides the chain is too deep
+
+		Why so many class loaders?
+		Because class loaders provide isolation.
+
+		For example:
+
+		Two web apps in Tomcat can load different versions of the same library
+		A plugin system can load/unload modules independently
+		A framework can reload classes without restarting the JVM
+		Class loaders are the JVM’s version of “namespaces.”
+
+----------Stack in Java----------------------------------------
+Stack = basically method call chain. Each method has its own stack frame. They are stacked on top of each other as call one another during the execution of a program.
+Each thread has its own stack. Last called method gets executed first, returns or propagates and error. Its stack frame gets removed and the underlying caller method gets to be the current stack frame.
+
+Stack frame
+Every time a method is called, the JVM creates a stack frame for that method. 
+It contains:
+Local variables: inside method + m.parameters, references to objects, primitive values. Example:
+	void foo(int x) { 
+	   String s = "hello"; 
+	   MyObject obj = new MyObject(); 
+	 }
+	Example's frame contains variable x, s, obj; references to "hello" and new MyObject()
+
+Operand stack:  intermediate values(entering an operation) with operands for arithmetic(executing that operation), intermediate operations results;
+Frame metadata: 
+	return address
+	pointer to constant pool class location
+	invoking method info reference (class metadata's method list's method bytecode (once JVM has chosen, which runtime implementation of the method to pick, the stack gets executed based on tue picked method's bytecode)
+	bookkeeping for exception handling:
+		├── pointer to exception table (part of method metadata) - which part of the method is handled(start, end), where to jump if exception occurs(handler), or whether to handle(catch type)  or propagate(pop this stack 				frame and propagate exception to the caller method's frame).
+     		├── current PC(program counter) where the exception happened
+      		└── data for stack unwinding  Stack unwinding:  remove the current method's stack frame and restore the caller method's stack frame as the current frame. The exception is propagated upward through the call chain, one 			frame at a time.
+
+
+
+

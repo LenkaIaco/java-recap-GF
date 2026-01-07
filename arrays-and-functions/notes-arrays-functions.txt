@@ -1,4 +1,22 @@
-Review for repeating: Diagonal matrix + onwards
+JRE - only running already complied java classes (git bash 'java' command). 
+	- Contains JVM, standard java libraries, security config files (properties, security, permissions etc). 
+	- contains runtime tools
+		JRE’s bin folder contains only runtime tools like:
+		java → runs programs
+		keytool → create and manage (keystores) files that store certificates and cryptographic keys(for SSL/TLS, HTTPS, code signing, and secure communication.)
+		policytool -> The configuration files define what Java code is allowed to do — file access, network access, system operations — but they only matter when Java is running in 		a restricted sandbox, which is uncommon today(old sandboxed apps, being phased out); nowadays java runs on full permissions just like any other normal program.
+		other tools
+	- Contains all java standard libraries (packaged in a module(Java 9+) or as rt.jar)
+
+
+JDK = JRE + development tools.
+	- Contains everything mentioned above, with JRE
+	- Additionally, development and debugging tools:
+		Inside the JDK’s bin folder, you’ll additionally find:
+			javac → compiles .java → .class
+			javadoc → generates documentation
+			jar → builds JAR files
+			jdb → debugger
 
 IntelliJ shortcuts:
 sout + tab                      System.out.println()
