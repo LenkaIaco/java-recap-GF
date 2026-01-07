@@ -7,8 +7,13 @@ logs
 *.jar
 
 # Training files
+# ** is a recursive wildcard for 0 or any number of directories above
+# * in directories means exactly one directory below the directory containing the .gitignore file
+
 **/data-structures/MANIFEST.mf
 **/old-exercises/MANIFEST.txt
+**/parkingLot/MANIFEST.txt
+**/twentyPlusOne/MANIFEST.txt
 **/OldExercises.jar
 **/DataStructures.jar
 
