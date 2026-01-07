@@ -56,6 +56,10 @@ How to merge changes from a branch -> to master:
 1. git checkout master
 2. git pull 			// any changes happened in the meantime?
 3. git merge mybranch 		(when in master) merge dialog opens in bash: enter merge message, press escape, then type :wq , press Enter
+This merges your local branch into your local master. In order to submit changes, push master. NOTE: merging local branch changes into master does not make the local branch stop existing unless you delete it manually afterwards. Also, the local branch changes merge everything existing on the branch, Only files that are except from tracking = gitignore files do not get merged. 
+As for not staged files(excluded from git add - they have status modified, but not staged): they remain in your working directory even after switching to branch master, because they are not added to a branch. COMMITS BELONG TO BRANCHES, NOT FILES !!! Branches show whatever is in their commits. Other files are just stuff laying around in your working directory, not related to any branch(as it has not been committed to any, belongs simply to the OS directory tree)
+4.(optional) git branch -d mybranch   deletes a branch
+
 
 Creating and approving pull request 
 	this makes the same effect as the merge command above - it merges branch - but remotely
