@@ -1,12 +1,38 @@
-1. java class / test class: pascal naming conv.:
-	 CustomerService.java / CustomerServiceTest.java
+1. java class file / test class: pascal naming conv.(camelCase):
+	 	CustomerService.java / CustomerServiceTest.java
 2. other files: lowercase, hyphen/underscore instead of space 
-	project-overview.md
-3. folders (incl.java packages): lowercase, hyphens/underscore. Java package names follows reverse domain name parts in corporate environments:
-	com.example.app		user-data/
+		project-overview.md
 
+3. Folders which are java packages! 
+Follow the same naming restriction as field variables: 
+	lowercase,hyphens or all lowercase words glued together: 
+		user_data/userdata/*
+
+	The reason is that e.g. dashes are considered an operator(minus) so they are unusable in variable names, or class names, or package names:
+
+	int myvar;
+	java.lang.String myvar;
+	package.subpackage.MyClass myvar; 
+
+	All of these - classes, field names and packages(within the fully qualified classname context) are absolutely coming up in a java class code. If we use dash or any other sign that 	has an assigned meaning in code(like - minus operation), the code would not compile.
+
+	Java package names may only contain letters, digits, underscores, and $
+
+
+	Java package names follows reverse domain name parts in corporate environments:
+		com.example.app	
+
+	
+4.other folders: 
+	dash - and hyphen — are the norm in separating words within a folder name:
+	my-folder/out
+
+--------------------------------------------------------------------------------------
+
+Standard folder/file naming practices(outside java):
 Stick to:
 a–z, 0–9, -, _, .
 
 Avoid:
 ! @ # $ % ^ & * ( ) { } [ ] ; : ' " < > ? | \ /
+
