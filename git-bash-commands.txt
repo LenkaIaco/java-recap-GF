@@ -23,7 +23,8 @@ printf some\nformatted\ntext	considers format characters like \n
 javac -d ../out Arrays/Excercises/*.java	“d- directory flag: compile into 'out' folder(pre-existing!), incl. directory structure, leading to java files" Works with both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
 
 javac Arrays/Exercises/*.java			compile files(.class) into same folder as *.java. While the compiler still checks the package statement for correct placement, it does not consider it while deciding where to put the .class files. Simply puts them into same folder as the .java files.
-javac */*.java */*/*.java 			while in out folder, compile every subfolder's java file + every sub-subfolder's java file
+javac */*.java */*/*.java 			while in out folder, compile every subfolder's java file + every sub-subfolder's java file (1 and 2 level down subfolders), vs:
+javac **/*.java					compile every java file in 0 or more subfolders starting from here
 
 java package.statement.folders.Classname	run compiled class file from 1. folder where the subfolders mentioned in the 'package' statement are placed (a.k.a. fully qualified class name) 	2. or, add another location on the classpath: a location from where java should start searching for packages from 'package' statement: java -cp 
 
