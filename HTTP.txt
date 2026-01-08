@@ -23,3 +23,40 @@ Your Application Protocol (HTTP, gRPC, custom binary, etc.)
                 ↓
              Network
 	
+
+
+------------------TCP-------------------------
+Transpor layer protocol for establishing a connection between 2 points(devices) 
+It is so widespread because it provides a reliable verified (and ordered) connection:
+Reliable Connection: before sending data, it performs a three‑way handshake - to establish a connection
+Reliable Logistics: Breaks data into packets and reassembles later in correct order
+
+Secure commection establishment + (complete reliable data transport) + proper connection closing by means of HANDSHAKES:
+Closing: four‑step handshake (FIN → ACK → FIN → ACK) - ensures closed properly at both ends + feedback
+Dispatch: DATA → ACK → DATA → ACK → …  (+numbering data packets): 
+	* acknowledgments (ACKs) after arrival, contain the number offset the expected in the next package. Ack enables Redispatch if(next is) lost. 
+	* Numbering enables correct reassembly. If any bytes in the sequence are missing, requests retransmission of that packet(part) of bytes)
+	* Retransmission timeout: 1. Timeouts (no ACK arrives in time)
+	  If the sender sends a segment with sequence number X  and does not receive an ACK ≥ 𝑋+segment length  within a certain time window, it assumes:
+	  	“This packet or its ACK was lost.”
+	  Then it retransmits that segment.
+
+Opening: Three-way handshake (SYN → SYN‑ACK → ACK) synchronisation. Both side agree on starting with same sequence numbers, prevents data corruption.
+
+Usage(built on top):
+	web browsing
+	email
+	file transfer
+	remote access
+	streaming
+
+Offsets(serial number use) are not used for encryption, but for offset: “This chunk of data starts at byte X in the stream.”
+Packet A (bytes 0–499) (offset number 0)
+Contains 500 bytes in a sequence 0-499
+
+Packet B (offset number 500 -> bytes 500–999)
+contains also 500 bytes in a sequence !
+
+
+
+	
