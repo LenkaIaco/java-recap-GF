@@ -70,7 +70,9 @@ Collections.sort(l, Comparator.reverseOrder())
 l.sort(Comparator.naturalOrder())   |   l.sort(Comparator.reverseOrder())  
 l.add(369); || 
 l.add(Obj o, index i)  // adds at index, shifts remaining to the right 
-l.set(Obj o, index i)  // replaces obj at index i with new o.
+l.get(index i)  // returns Element at given index
+l.indexOf(Object o) // obtain element's list index (e.g. to replace it in a list - below)
+l.set(index i, Element e)  // replaces element at index i with new o.
 l.remove(index); /l.remove(object) 
 
 l.addAll(anotherList); --vs-- 
@@ -116,6 +118,23 @@ e.getValue();
 System.out.println(e); 
 }
 Integer key = (Integer) e.getKey(); // example without type safety, needs manual casting
+
+
+---------------------Iterating data structures--------------------------------
+Iterating in for-each loop vs iterating an indexed loop (traditional for loop)
+It makes a difference for collections where indexed access is not possible(HashSet), or where the indexed access means sequential iteration.
+For ArrayList and Arrays, indexed access is O(1) time complexity, because Arrays and ArrayLists have a contiguous block of memory reserved for their elements. Accessing a concrete index comes down to a simple calculation of the memory location by a formula(below), each time an index is supplied to the get function:
+base memory address + i * element_size (e.g. int 4 bytes)
+
+For LinkedList and LinkedHashSet(implementing doubly linked list), they are not contiguous memory blocks but pointers within the current node object to next node object, thus each node is an object on the heap, which is randomly assigning memory addresses. 
+	-Indexed access: For linked data structures, indexed access means visiting each node from 0 to i, to obtain the i pointer(because each contains pointer only to the next node). 	- Sequential elements visit(for each loop)means: I am giving up indexed access.
+	  Suitable whenever I don't visit specific elements, but operate on each element of the collection. Iterator(basis of enhanced for loop_ visits them one after another, from first to last.
+
+Collection Type				Index Loop	For‑Each Loop	Winner
+ArrayList				O(n)		O(n)		Tie
+LinkedList				O(n²)		O(n)		For‑each
+HashSet / TreeSet / HashMap.values()	Not supported	O(n)		For‑each
+Arrays					O(n)		O(n)		Tie
 
 
 

@@ -1,0 +1,10 @@
+instructions directly in the three template classes: Fleet.java, FleetOfThings.java, Thing.java
+Fleet: list of things, method to add a specific thing +  method to display each contained thing info in a new line
+Thing: name and status field to mark completed; complete method, creating a thing with a name; another method to display the thing's basic info in the format:
+for completed: [x] Stand up     for not completed: [ ] Stand up
+Fleet of things: class with a main method: Create a fleet of things to have this output:
+             // 1. [ ] Get milk
+             // 2. [ ] Remove the obstacles
+             // 3. [x] Stand up
+             // 4. [x] Eat lunch
+

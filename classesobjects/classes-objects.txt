@@ -1,0 +1,144 @@
+X  Exclude Trees, Blog, BlogPost, DoableHomework, Sharpie,Postit,SharpieSet, Pokemon, TeachersAndStudents
+
+- A (sub-)class can be extended only by one superclass
+- A class can implement multiple interfaces
+- An abstract class has an abstract keyword and cannot be instantiated. It does not necessarily need to contain an abstract method.
+However, ONLY abstract classes and interfaces can contain abstract methods!
+But if it does, it needs to be overridden(implemented) in the extending subclass.
+Can have any kind of fields.
+
+- An interface can have abstract and not abstract methods(since java 8), and private methods.
+However, it can contain only public static final fields(compile time constants).Before java 5 enums existence, interfaces were used to store constants, but it is considered antipattern as they are not meant to be structures which stores fields, but behavior. However, they are integrated as fields of each implementing class.
+As the interfaces represent abstracted behavior template, they cannot have state(fields).
+
+
+Although extending can happen only for 1 superclass at once which avoids the diamond problem, for interfaces it can happen that a class implementing 2 interfaces overrides a method, however both interfaces have this method (with identical method signature). If that method is NOT static or private, it gets inherited into the implementing class:
+
+Interface cannot have standard public methods(instance), only default methods, or private methods, or static methods, or abstract methods
+
+interface A { void run(System.out.println("Running A"); } 
+	interface B { void run(System.out.println("Running B"); } //Interface's do not need to have public and abstract keywords, if that access modified, it will be automatically assumed public. If method has no body, even though the keyword is omitted, it will be considered abstract.
+
+
+so while I override I can do this? class MyClass implements A, B {
+	class C implements A, B {
+	  @Override public void run() { 
+		A.super.run(); } 
+	  }
+}
+
+
+------------CONSTRUCTORS----------------------
+If a class does NOT contain ANY constructor, java will assign a default no-args constructor automatically.
+If however an arg constructor is present, you must explicitly write a no-args constructor to have its availability:
+
+public class C {
+    int counter;
+    
+    C(int i){
+        counter = i;
+    }
+    
+    C(){}		// even if the body is empty, upon calling the default constructor will initialize fields to default values: 0 for int
+
+} 
+
+---------DEFAULT VALUES-------------------------
+Java guarantees default initialization for all instance fields(+static fields): 0.0 (double), false(boolean), null(reference types)
+HOWEVER local variables inside methods are NOT defaultly initialized - they must be explicitly assigned before use:
+WRONG - CANNOT BE USED WITHIN A METHOD UNLESS ASSIGNED A VALUE FIRST:
+int x; 
+
+for (int i =0; i<10; i++){
+x++;				  //WON'T compile!
+}
+
+
+-----------METHOD SIGNATURES, OVERRIDE/OVERLOAD -------------
+Parts:
+ Method name
+ Parameter list(type,number,order) //even subtype used in place of original type counts as a method overload
+
+1. method overloading(same class)
+	-Different method signatures
+2. method overriding
+	- implementing class/subclass (interfaces, superclasses)
+	- BOTH MUST MATCH!!! same signatures + same return type(!) 
+	  Having identical method signatures is NOT ENOUGH for an override - to not break type safety!
+	- However, type safety is maintained with return type being a COVARIANT (subtype of original REFERENCE TYPE) - even that counts as override:
+		class Parent { 
+		  Number getValue() { ... } 
+		} 
+		
+		class Child extends Parent { 
+		  @Override 
+		  Integer getValue() { ... } 	// works only with reference types, not with primitives
+		}
+		
+
+
+---------------OVERRIDES---------------------
+@Override annotation ensures compiler override check, to protect you from human errors.
+Comes from Java standard library (Java.lang.Override) - already built into java core language - no need for import
+	- Does parent/interface have this method
+	- is it a valid override?(spelling mistake, overload mixup, parameters) 
+	- if not: compilation error 
+
+class Parent{
+
+void fullName(){
+System.out.println("Parent's name, surname");
+}
+}
+
+class Child extends Parent{
+@Override
+String fullName(){
+return "Child's name, surname";
+}
+}
+
+---------------FIELD ACCESSS CONTROL---------------
+
+It is a standard practice to use private access modifier for the designed class fields, combined with public getters and setters which additionally add some logic.
+
+For primitive fields, this is a good practice in all cases, as it does not modify the original field.
+For reference type fields, it should be considered, whether the original list can be returned or whether to return a 'defensive copy' (below) to protect the state of the original field. If e.g. a list field is simply a data holder and can be modified by users(e.g. class is used internally), original can be returned
+IF the class is part of a library or API (application programming interface, meant to be interacted with externally), or has to be immutable, or threadsafe, defensive copy is the standard. 
+
+public class Armada {
+private List<PrShip> armada = new ArrayList<>();
+
+public List<PrShip> getArmada() { 
+   return new ArrayList<>(armada); 
+}
+
+}
+
+Then, obtaining modifying the copied list would not affect the original field:
+	armd.getArmada().clear(); // does NOT affect internal list
+
+-----------------INITIALIZATION ORDER----------------
+
+Field initializers are running before the constructor. Therefore, if one field references another field, which however gets populated only during constructor, the reference will result in 'null'(or other default value). Example below: field 'name' will be referenced in array 'parrot' as 'null'. (Solution: populate both fields at construction time.)
+public class Pr {
+    private int intoxication;
+    private boolean dead;
+    private String name;
+    String[] parrot = { 		// THIS WILL RESULT IN POPULATING NAME = 'NULL'
+            "Pour me anudder!",
+            "Arghh, I'ma Pirate. How d'ya d'ink its goin?",
+            name + "'s dead",
+            name + " passing out"
+    };
+
+    public Pr() {
+        String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "CH", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+        Integer[] digits = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+         int letterIndex = (int)(Math.random()*alphabet.length);
+         int digitIndex = (int)(Math.random()*digits.length);
+
+         String name = "";
+         this.name = name.concat(alphabet[letterIndex]).concat(String.valueOf(digits[digitIndex]));
+    }

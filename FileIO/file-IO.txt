@@ -80,7 +80,11 @@ Compile-time exceptions: IOException, ClassNotFoundException, SQLException
 
 Runtime exceptions - code logic errors, not needed to be handled because they are originating from code errors which (java expects) need to be fixed for the program to work correctly: 
 - These all extend RuntimeException:
-- NullPointerException, UnsupportedOperationException, ArithmeticException, IndexOutOfBoundsException, OutOfMemoryException, IllegalArgumentException
+- NullPointerException (variable operation invoked at null object), UnsupportedOperationException (modify immutable list), ArithmeticException (divide by 0), IndexOutOfBoundsException (access array at invalid index), IllegalArgumentException, 
+OutOfMemoryException: allocating a contiguous block of memory not availabe: int[] arr = new int[Integer.MAX_VALUE];
+		      infinite element addition: while (true) { list.add(new byte[1024 * 1024]); // add 1 MB blocks forever 
+		
+
 
 Throwable
  ├── Exception

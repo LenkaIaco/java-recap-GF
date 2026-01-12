@@ -24,7 +24,11 @@ l.add(element) |  l.addAll(Collection)		// adds element(s) to the end of list
 list.contains(Obj o)  \vs\  list.containsAll(Collection c)    
 list.remove(Obj o)  // list.remove(int index)		//CANNOT be called while iterating: ConcurrentModificationException !
 
-If removal is needed while iterating, Iterator is used:
+----------ConcurrentModificationException----------------------
+While iterating an enhanced for loop(based on Iterator), or an Iterator, you CANNOT STRUCTURALLY modify(change SIZE) the underlying iterated Collection.
+	- With for-each loops, this means you cannot use them for adding or removing!
+	- While Iterator class can be used with remove() function, because java's Iterator is designed to be used to modify the properties of the underlying collection while removing(At the same time than removing elements, also modifying at the same time the 'expectedModCount' property, whose mismatch against 'modcount' is the cause of ConcurrentModificationException), so that the collection does not report a mismatch between the elements and not throw ConcurrentModificationException:
+
 Iterator<Integer> itr = list.iterator();
 
 while (itr.hasNext()){
@@ -33,6 +37,7 @@ itr.remove();		// you NEED to FIRST call next() and AFTER you can call remove() 
 
 }
 
+------------------------------------------------------
 
 
 switch() statement with Strings checks for content equality. No operations(unlike if) (will NOT WORK: switch(1) {case 1%2 > 0   ... }  )

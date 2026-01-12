@@ -9,12 +9,20 @@ char[] arr = new char[5];
 int[] consumes less (4 bytes) memory than Integer[] (24–32 bytes: reference, object, int inside,padding-The JVM tries to place objects at memory addresses divisible by 8. If the object’s size is not a multiple of 8, the JVM adds padding bytes at the end to round it up.)
 String s = new String(); 
 
-char[] arr = {'a', 'b'};
+char[] arr = {'a', 'b'};  // initializer block is only possible while declaration + initialization in one statement.
+				NOT POSSIBLE: char[] arr; --> arr = {'c'} 
+
+If declaration separate from initialization, use new():
+char[] arr;
+arr = new char[]{'A'};
+
 String[] arr = new String[] {"One", "Two"};
 String s = "ab";
 String s = new String("ab");
 
-List<T> l = new ArrayList<>();				// List<String>, HashMap<Integer, String>, Class<T>  examples of generics - these ensure type safety (avoid possible casting errors at runtime by shifting the check to compile time = "type erasure" = compiler resolves the generics into raw types using casting where needed, so there are no generics at runtime:
+List<T> list1 = new ArrayList<>();	
+List<T> copy = new ArrayList<>(list1);	// creates a shallow copy - original List is not returned, but the elements inside the copy are the same references as inside the original list	
+// List<String>, HashMap<Integer, String>, Class<T>  examples of generics - these ensure type safety (avoid possible casting errors at runtime by shifting the check to compile time = "type erasure" = compiler resolves the generics into raw types using casting where needed, so there are no generics at runtime:
 	List<String> list = new ArrayList<>();	---->
 					List list = new ArrayList(); // generics erased 
 					String s = (String) list.get(0); // compiler inserts cast
@@ -76,8 +84,15 @@ T[] arr2 = Arrays.copyOf(T[] arr1, length2)  //if length2 < length1, remaining e
 T[] arr2 = Arrays.copyOfRange(T[] arr1, indexFrom, indexTo+1)  //possible to copy starting from any arr element
 
 Collections has only an overwrite-copy for List-type classes:
-Collections.copy(List dest, List source);	// the destination must be >= in size and the elements of the dest. will be overwritten by the source elements at the respective indices
+-----Collections.copy()-----------
+1. Copying from list to an empty list needs to be done manually:
+for (int i=0; i<sourceL.size(); i++){
+targetL.add(sourceLget());
+}
+2. Copying as a me
+Collections.copy(List dest, List source);	// INDEXOUTOFBOUNDS for EMPTY DEST. LIST!! replaces the existing elements in the destination list at the corresponding indexes. destination size must be >= size of the dest
 
+------------- -------
 sorting non-manually:
 
 Arrays.sort(arr[])

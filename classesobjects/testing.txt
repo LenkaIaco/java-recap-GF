@@ -1,0 +1,37 @@
+JUnit 5 introduced the new Jupiter API, and @Test has been part of it from the beginning
+Thus, when working with imports of junit.jupiter, choose to download the external library version 5.0
+
+Testing targets business logic, not boilerplate code. Therefore, unless getter and setter method contain additional logic, they are conventionally not subject of testing
+
+- Choose initialization of the test subject (class X) 
+	will either be initialized separately in each method, or be initialized as a field of the test class.
+	If the test methods refer to a commonly shared class field(example below), junit 5 logic is(different from junit 4), that the field is being instantiated anew with every method.
+	Thus, field state is not being maintained between methods, even if the field is not marked as static.
+
+- mark a method as a test: @Test(with import) or @org.junit.jupiter.api.Test
+- return type void, no parameters(unless @ParameterizedTest is used as a field of the test class)
+- the test method's name should descript test behavior (recommended best practice)
+
+
+
+import org.junit.jupiter.api.Test 
+import static org.junit.jupiter.api.Assertions 		// contains static methods - thus static import needed: assertEquals(x,y);
+
+class CTest {
+   C c = new C();
+
+
+    @org.junit.jupiter.api.Test			//same as @Test
+    void addWithoutParameterIncreasesCounterBy1() {
+        c.add();
+        c2.add();
+        assertEquals(1, c.getCounter());
+    }
+
+
+   @Test
+   void addWithParameterIncreasesCounterByParamValue(){
+	c.add(5);
+	assertEquals(5,c.getCounter());
+   }
+}
