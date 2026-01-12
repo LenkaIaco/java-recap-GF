@@ -1,1 +1,0 @@
-instructions directly in the two class templates: Main.java, Pokemon.java
