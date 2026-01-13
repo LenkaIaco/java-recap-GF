@@ -41,6 +41,7 @@ git push -u origin mybranch			-u = --set-upstream(see below); origin = remo.repo
 git push --set-upstream origin master		origin = remo.repo URL; main = branch of remo.repo
 
 git pull			!ALWAYS DO BEFORE GIT PUSH! Pull changes from remote repo to local - after inserting the merge message in vim layout, press ESC to exit vim, then :wq to save, or :q! for quitting without saving. 
+Git pull updates local with changes from remote. If you pull while uncommitted changes are present, will result in merge conflicts which need to be resolved. 
 After the merge, you can now push the changes you wanted to push before you needed to merge the remote changes: 
 git push				// local origin -> to remote repo(upstream already set) 
 git push origin master		// exact remote/local stated: possible even if no upstream set yet
