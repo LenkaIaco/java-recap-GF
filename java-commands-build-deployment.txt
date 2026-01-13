@@ -1,26 +1,15 @@
-shell 			 	program that interprets your commands
-terminal			window/app that displays command
-command line interface(CLI)	interaction point where you type commands(sits inside a terminal and is powered by a shell)
-
-Git Bash Terminal	The window you open when you click “Git Bash” (Git Bash window, Windows Terminal, IntelliJ’s built‑in terminal)
-Git Bash Shell		Inside that window, the shell running is bash (a Unix-like shell; other programs: PowerShell, zsh, fish) 
-Git Bash Command Line	The prompt where you type commands inside that shell
-
-cd ~	navigate to home (user home folder of user Lenka in Windows, not C:, while C also has access to it, via its folder 'Users'-> 'lenka' )
-up arrow / down arrow				scroll previously used commands one by one
-
-!!	repeat previous command
-! git	repeat last command which started with git
-cd !$	use last argument of the last command in combo with current argument (e.g. las argument here was mkdir myfolder)
-
-pwd		cur. dir. absolute address
-
-echo sometext			prints text to command line
-printf some\nformatted\ntext	considers format characters like \n
+------------------------------------------------------------------
+------------JAVA GENERAL------------------
+------------------------------------------------------------------
 
 which java	shows absol.path to a program (path to binary in Linux)
 		c/..../Oracle/Java/javapath/java
 where java 	full path to java executable: 		c/..../Oracle/Java/javapath/java.exe
+
+------------------------------------------------------------------
+------------JAVA BUILD ------------------
+------------------------------------------------------------------
+Build = producing something runnable
 
 javac -d ../out Arrays/Excercises/*.java	“d- directory flag: compile into 'out' folder(pre-existing!), incl. directory structure, leading to java files" Works with both, abs/relat. paths. Compiler looks into the .java files -> package statement, and recreates the folders mentioned in the package statement If package statement is not first in the file, process will not compile. If package statement is missing, the file simply belongs to the default (src) package.
 
@@ -32,7 +21,11 @@ java package.statement.folders.Classname	run compiled class file from 1. folder 
 
 java -cp out fully.qualified.classname	run class file + add the out folder to classpath - where java should look for packages from the fully-qualified-class-name (=package statement packages + classname)
 
----------javac + cp and build tools-------------
+Editing java class of an already compiled file:
+If an error in the application is detected: 1. Correct java class 2. Re-compile correct classes
+
+
+ 	--------javac + cp and build tools-------------
 javac -cp   => compiler, here you can look for already compiled classes(ext.dependencies) while compiling the rest.
 Compiler uses classpath references for his standard activities - typechecking, verification methods and classes exist etc. The dependencies are not included in the compiled result in the out folder. During runtime, JVM has its own classpath for runtime purposes.
 
@@ -53,6 +46,7 @@ groupId:artifactId:version; for gradle vs maven:
 // maven uses xml  
 Mvn repo - search libraries and download them as jar:
 https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api/5.8.1
+
 ----------------------
 
 Creating JAR file:
@@ -71,9 +65,21 @@ The manifest we specify:
 	Class-Path: lib/gson.jar lib/commons-lang3.jar	// This line is optional because: it lists EXTERNAL dependencies:
 								- not java standard libraries(starting java.* and javax.*), they are already part of JDK/JRE. 
 								- anything packaged within the jar will automatically be loaded by JVM at runtime, even if it is not in same folder than main class. 
-----------FAT jars vs. STANDARD jars----------
-- Packaging external dependencies(libraries, like junit for testing) within the jar makes it a FAT JAR. For fat jars, everything needed for running is inside the jar, so Class-Path property is not being used. 
-- For standard jars, ext. dep. are not part of the jar itself. You have 2 options:
+
+----------Fat jars vs. standard jars----------
+
+Every time we want to run an app, JVM needs to know the classpath to the app + classpath where related external dependencies are saved on the disk. 
+During compilation, the compiler needs to know the classpath too, for its own typesafety and verification processes. 
+These two classpath specifications happen independently from each other, individually in each stage:
+	- during compilation stage(javac cp command or javac + manifest classpath) stage / or 
+	- during running stage (java cp command or running the jar containing classpath info, or
+	  running a fat jar without classpath but containing dependencies within) 
+and regard only the classpath for this app(not local computer's environment classpath variables)
+
+Packaging external dependencies(libraries, like junit for testing) within the jar makes it a FAT JAR. 
+For fat jars, everything needed for running is inside the jar, so Class-Path property is not being used. 
+
+For standard jars, ext. dep. are not part of the jar itself. You have 2 options:
 1. Specify classpath at runtime: 
 	For non-jars:  java cp lib/*;foldr/*.jar;. my.package.Main  //=run main while considering the classpath. Java does NOT automatically load Main on the classpath.
 		       You need to add the current folder(where the main is) with '.' into the classpath, along with the external dependencies(jars in lib and foldr)
@@ -88,6 +94,12 @@ The manifest we specify:
    You have to keep the ext. libraries always at same location relative to the jar.
    Or you can use full path, not relative, but that is in praxis preventing the JAR from being used in another computer(=purpose of jars), so in praxis it is not used.
 
+
+Editing JAR file:
+If an error in the application is detected: 1. Correct java class 2. Re-compile correct classes 3. Re-create JAR with correct classes
+
+*
+
 ----------JAR tradeoffs----------
 - Standard Jars vs. reusable external libraries 
 	Relative paths of ext.lib
@@ -100,10 +112,16 @@ The manifest we specify:
 
 - FAT jars: you might have multiple apps in fat jars, each with possibly the same libraries, copied individually into each fat jar, a redundancy 
 
+------------------------------------------------------------------
+-----------JAVA DEPLOYMENT ------------------------------------
+------------------------------------------------------------------
+Deployment = run the built app somewhere (local, server, cloud, Docker, Kubernetes)
+
 -----------Most common alternatives to JARs-------------------
-Application Servers / WAR files
+
+Application Servers / WAR files  (deployment tool)
 	Old‑school enterprise approach:
-	Package your app as a WAR(compiled classes + resources + web.xml deployment file: configures servlets, filters, listeners etc.)
+	1. Package your app as a WAR(compiled classes + resources + web.xml deployment file: configures servlets, filters, listeners etc.).
 	Deploy into a server like Tomcat, Jetty, or WildFly (server runtimes)
 	Server manages dependencies
 	Strengths: Portable, no need for classpath/dependencies/JVM locally (not included while uploading, on app level)
@@ -133,9 +151,19 @@ Application Servers / WAR files
 
 	The old model: one heavy host, many lightweight apps. Disadvantage: high risk host breaks(updating server risk dependency version,
 	something goes wrong, scaling requires setting up another server manually), then all apps don't function - no isolation.
---------------------------------------
+
 	
-Docker(OS‑level packaging)
+	2. Docker(packaging and runtime tool, rather than a deployment tool)
+	Docker is a containerized runtime tool. Docker(docker container with the app+co.) can be deployed on a server or a cloud later:
+		a) Install docker on a server(.e.g. on a physical machine)
+		b) Run docker inside a virtual machine
+		c) Cloud providers provide the option to run your docker container for you:
+			- Azure Container Apps, Google Cloud Run ...
+			- Cloud providers that run Kubernetes for you(no need to configure any kubernetes): Azure Kubernetes Service, AWS EKS (Kubernetes), Google Kubernetes engine 
+
+		d) Kubernetes can be both used for cloud deployment(c), or a standalone orchestration layer(d) - depending how you use it.
+		   Kubernetes = the orchestration layer that schedules, scales, and manages containers. Kubernetes technology can run on server, cloud, VMs, laptops. 
+
 	Package your app + dependencies + JVM into a container image.
 	Strengths: No need for classpath
 	Weaknesses: Requires Docker runtime, Larger images - JVM+dependencies needed as well
@@ -183,49 +211,3 @@ The reason is that while running a Jar file, JVM automatically looks inside the 
 5. Run the JAR: java -jar MyAppFat.jar
 
 --------------------------------------------------------
-Editing JAR file:
-If an error in the application is detected: 1. Correct java class 2. Re-compile correct classes 3. Re-create JAR with correct classes
-
-ls -l		list of folders/files in cur.dir. With -l, details on files are shown
-ls path/to/dir	list content in another dir.
-ls -a 	(incl hidden folders)
-ls -la	 long file info
-ls -c 	(sorts: changed first)
-cd + type first letters of folder + tab -> access folder
-cd .. 	level up folder
-cd + full path: /c/Users/Lenka
-
-mkdir 		create folder
-rmdir 		remove EMPTY dir.
-rm -rf folder\with\content 	remove folder recursively forcefully - BYPASS TRASH, delete PERMANENTLY (alternatively use mv to move to trash, if you have the specific path to trash bin)
-rm 1.txt 2.txt	remove file(s)
-rm -f */*.java */*/*.java	as rm -r does not work with matching search patterns, the subfolder level needs to be specified (= del. any java file in 1st and 2nd level subfolders)		
-printf "1\n2\n3" > file.txt	writes formatted(\n) text into existing/new file
-touch file.txt 		creates file
-nano newfile.txt 	creates/modifies file + reading/writing line-by-line in terminal (ctrl+s save changes, ctrl+x close /ctl+c cancel a file modif. command / ctrl+q quit writing mode)
-less Myfile.txt 	also read file in terminal, but incl scrolling: arrowkeys scroll, q exit 
-
-mv MyFile.txt MyFolder Destination		move file(s)/ directory(s) incl.subdirectories and files within
-mv old-folder-name new-folder-name		//rename folder / file
-cp FileToCopy C:\Absolute\Or\Relative\Path.txt	
-cp -avr MyFolder  Into\Address		-r incl. sub-folder content; -a archive(preserve permissions, timestamps); -v verbose (write out what has been copied-for verification)7
-cp -avr . ../out 			copying everything from current(src) into out folder (creates out if not exists)
-ja
-man		manual w commands (?windows?)
-
-history		commands used previously
-history -c	 clear history
-
-grep searchterm
-sed "s/OLD/NEW/g"	search and replace in text for multiple use [] -> [aeiou]/y
-cat Myfile.txt 		open file in terminal	
-piping commands together:
-cat list.txt | sort	
-cat list.txt | head -8			only first 8 lines
-cat list.txt | head -8 | tail -4	8 lines fed to tail cmd, displays last 4 of these 8
-cat list.txt | wc			word count
-cat list.txt | wc > another.txt		redirect word count into another file(pastes there)	
-ls -l | sort | grep Local |sed "s/[oa]/i/g"		sorted files containing 'Local'-> 'Licil'
-
-
-
