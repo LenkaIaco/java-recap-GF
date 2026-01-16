@@ -41,10 +41,11 @@ itr.remove();		// you NEED to FIRST call next() and AFTER you can call remove() 
 
 
 switch() statement with Strings checks for content equality. No operations(unlike if) (will NOT WORK: switch(1) {case 1%2 > 0   ... }  )
+IMPORTANT: before default, insert BREAK at each option, otherwise the value gets OVERWRITTEN BY DEFAULT!!!
 - Before Java 14: must insert 'break' or 'return' for no fall-through:
 	switch(String s){
 	case "Saturday": System.out.println("Weekend starts");  | case "Saturday": return "Weekend starts";
-	break; 
+	break; 			// even if it was Saturday, it gets overwritten by default -> break before reaching default:
 	default: System.out.println("Working week");
 	}
 

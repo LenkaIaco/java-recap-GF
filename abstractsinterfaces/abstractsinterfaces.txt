@@ -1,0 +1,208 @@
+x Exclude intefaces-flyable, reservations
+
+----------access level modifiers ----------
+(class level, field/method level):
+   public - accessible from anywhere
+   package-private(default) - only this package
+   protected - in whole current package + its subclasses within other packages
+   private - current class: incl.each other's fields of inner->outer and outer->inner classes. 
+   Java treats inner classes and outer classes as part of the same class body for access‑control purposes.
+
+Example:
+
+public class Outer { 
+   class Inner { 
+	private String hidden = "hello"; 
+   } 
+
+   void test() { 
+	Inner i = new Inner(); 
+	System.out.println(i.hidden); // allowed 
+   } 
+ }
+
+-----------------------------------------------------
+Abstract classes
+-----------------------------------------------------
+Only abstract classes can have abstract method. However, abstract class does NOT have to have any abstract method necessarily.
+You cannot call new() on abstract class because you cannot instantiate an abstract class.
+However, you can call it by instantiating a subclass (including an anonymous one) that provides an implementation.
+
+public abstract class Cl {
+protected int playRounds;
+
+    abstract String play();		//CANNOT have private modifier; default is package-private
+}
+
+--------Option A ----------
+
+public abstract class A extends Cl{
+
+protected String name;
+
+public A(int plR){
+super.playRounds = plR;
+}
+
+abstract String play(); 		// we use same method signature than A, it is OVERRIDE
+}
+
+-------Option B ------------------
+
+public abstract class B extends Cl{
+
+protected String name;
+
+   abstract String sound();
+
+   @Override			// java.lang annotation, for implementing abstract methods and for overrides
+   String play(){		//legal: unless an abstract method is called, it can be referenced in another method's body (also non-abstract)
+	return sound();
+   }
+}
+
+
+-----------------------------------------------------
+Extending abstract class
+-----------------------------------------------------
+
+The class implementing second-level abstract class B inherits:
+  - class can extend only 1 class
+  - all abstract methods from both abstract super classes in the inheritance chain above
+  - it NEEDS to implement all abstract methods, as it is the 1st implementing concrete class: sound()
+  - all non-private fields and other methods contained in classes above: int playRounds, String name, play()
+
+public class Impl extends B{
+  int limit;
+   @Override
+   String sound(){
+	return "sound";
+   }
+
+  public Impl(){
+    super.name = "play impl";	//super refers to DIRECT superclass(1 level above) - however, as the field gets inherited, you can equally call this.name (readability prefers super?)
+    super.playRounds = 4;	//this also refers to direct superclass - although it is a field of the superclass that was inherited from its superclass 
+    this. limit = 10;		// referring to field of this class
+  }
+}
+
+
+
+-----------------------------------------------------
+Constructor chaining
+-----------------------------------------------------
+If the class has a parameterized constructor, java won't insert a parameterless constructor automatically!
+If the class does NOT have a parameterless constructor, each of its subclasses CANNOT be WITHOUT constructor!
+Because to initialize a subclass, all superclasses are initialized first.
+ So the subclass:
+  - must either call a parameterized constructor(which cannot be called automatically), inside the subclass constructor
+  - can have NO constructor(and java inserts automatic) ONLY if the superclass has a PARAMETERLESS constructor, which can be auto-called by java!
+
+abstract class Animal {
+   protected String name; 
+
+   public Animal(String name) {
+       this.name = name;
+   } 
+} 
+
+
+class Dog extends Animal {
+
+  public Dog(String name) { 	
+// always 1st statement in constructor:
+     super(name);	     		// call either super() / this(), not both within 1 constructor
+     System.out.println(
+	"Dog created");	
+  } 
+
+   public Dog (){	
+      this("Name");	// this() in constructor2 calls super() indirectly - enables calling both this() and super()
+   } 
+}
+
+-----------------------------------------------------
+Implementing interfaces
+-----------------------------------------------------
+A class can implement multiple interfaces
+Interface can contain:
+- public, abstract methods (Java 7 + earlier)
+- default methods, static methods (Java 8)
+- private methods, private static methods
+
+Default methods and abstract methods are meant to be inherited, so they cannot be private!
+
+Some interfaces contain generics(=generic interface), which affect the methods it holds e.g.Comparable<T> below.
+While implementing these interfaces, specify the generic type in the 'implements' statement. 
+If leaving only raw interface type without generics, the methods referring to this generic type will have to be implemented by Object and only then cast to the desirable type:
+
+interface Comparable<T>{
+  int compareTo(T t);	//methods in interfaces are implicitly public abstract
+}
+
+public class Domino implements Comparable<Domino>, Printable {	//list all the interfaces after one another
+    private final int left;
+    private final int right;
+
+    @Override
+    public int compareTo1(Domino other) { ...}
+
+}
+
+
+public class Another implements Comparable{ // if you list a generic interface without generics(raw), implement its generic parameter method with Object:
+
+  @Override
+  public int compareTo(Object o){
+    Another oCast = (Another) o;	//casting is not recommended because compiler does not check type so we risk ClassCastException at runtime(type safety!)
+}
+}
+
+-----------------------------------------------------
+Most common interfaces
+-----------------------------------------------------
+Comparable<T> - see section "Implementing interfaces"
+
+Cloneable: empty interface. 
+Required to be implemented by a class which wants to use Object's clone() method, to indicate that it is allowed for this class to be cloned
+Otherwise, attempts to clone() that class would result in CloneNotSupportedException.
+-> This rule is valid for runtime, but for compile time, while overriding, the clone() still needs to handle or throw CloneNotSupportedException of the original clone() method
+
+By convention, classes that implement this interface should override Object.clone() (which is protected) with a public method:
+  - Convention: override body contains super.clone()
+  - Clone method performs a "shallow copy" of this object, not a "deep copy" operation.
+  - For fields of mutable objects, whose fields contain deeper structures - e.g. arrays, that means the copied object returns a reference to exactly the same array than the original. 
+    Therefore, after calling super.clone() it is advised to modify references of such objects (e.g. arrays have the clone method implemented: myArr.clone() returns shallow copy).
+    Otherwise, modifying the cloned object can result in unintended indirect modification of the original object.
+  - Object's clone method returns Object. However, unlike with parameter types, which have to be an exact match, the return type can be Covariant (subtype of the original return type)
+    This is still considered a valid override. This way we do not have to use casting while returning clones in subclasses' clone() methods
+  - 
+
+by super.clone() the usually desirable basic conditions are fulfilled automatically:
+-  x != x.clone()  // clone is a different instance
+- x.getClass() == x.clone().getClass()  // clone is of the same class than original
+
+public MyClass implements Cloneable{
+
+@Override
+public MyClass clone(){		
+return super.clone();
+}
+
+ @Override
+    public Apprentice clone() {		// original Object return type -> covariant Apprentice: VALID subtype of Object
+        Object clone = new Object();
+        try {
+            clone = super.clone();
+        } catch (CloneNotSupportedException e) {  // overriding compile time rules: need to acknowledge the original methods thrown exception
+            System.err.println("Cloning failed");
+        }
+        
+        return (Apprentice) clone;
+    }
+
+}
+
+
+
+
