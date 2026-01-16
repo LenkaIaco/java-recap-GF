@@ -9,6 +9,9 @@ public class ShiftedCharSequence implements CharSequence{
         this.value = value;
         this.shiftBy = shiftBy;
     }
+     /* although CharSequence has 4 abstract methods, toString() is implemented by all classes already,
+    because it is inherited from Object class. Therefore, no need for @Override here.
+     */
 
     public String getValue(){
         return value;
