@@ -1,0 +1,30 @@
+----- Exclude  foodshop, gardenapplication, greenfoxinheritanceexercise, material review, wardrobe  -----
+
+
+Aircraft carrier: final field cannot be in abstract class unless assigned; fields hiding for same-named fields in subclasses; protected fields in abstract classes, values which are not changing after construction do not need a setter method just population in constructor(e.g. referring to superclass' protected field)
+
+
+-----------------------------------------------------
+Overriding vs hiding
+-----------------------------------------------------
+
+---------
+If I have String type in both superclass and the subclass, will this be an override of the superclass field?
+---------
+public abstract class Aircraft {
+  protected String type;
+}
+
+
+public class F35 extends Aircraft {
+  public final String type;
+
+  public F35(){
+    type ="F35;
+  }
+}
+---------
+No, fields in java are never overridden, just hidden.
+---------
+
+-----------------------------------------------------
