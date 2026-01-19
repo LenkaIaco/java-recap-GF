@@ -1,0 +1,21 @@
+-----------------------------------
+BigDecimal is an immutable class. Operating on existing field, therefore works similarly as Strings:
+String s = s +"a";
+BigDecimal b = b.add(new BigDecimal(10));
+
+System.out.println(String.valueOf(
+new BigDecimal(30.12))) 	// prints 30.1199999999998908606357872486114501953125
+
+System.out.println(String.valueOf(
+new BigDecimal(30.00))) 	// prints 30
+
+-----------------------------------
+LocalDate now = LocalDate.now();
+System.out.println(now.getYear());		//2026
+System.out.println(now.getMonth()); 		//01
+System.out.println(now.getDayOfMonth()); 	//19
+
+LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
+
+int daysPassed = Period.between(yesterday, now);
+-----------------------------------

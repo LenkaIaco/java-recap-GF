@@ -1,0 +1,67 @@
+--------------------------
+POLYMORPHISM 
+--------------------------
+Polymorphism is about calling overridden methods in subclasses. It happens at RUNTIME using dynamic dispatch to resolve the invoken methods that:
+- Are invoked on subtype object
+- This object has been declared by supertype reference, 
+- but method has ben overridden by subtype
+
+ 	Block b = new MagicBlock();	//UPCASTING: NOT polymorphism, but it enables polymorphism(calling overridden subclass method by superclass)
+	b.blockAll();			// if blockAll() is an overridden method in subclass, this is POLYMORPHISM
+
+
+So polymorphism in Java = dynamic dispatch on an overridden method (a subtype is used(at runtime) where supertype is declared(compile time))
+
+
+COMPILER only cares about the DECLARED type of b, which is Block.
+So at compile time it checks:
+  - Does Block have a method named blockAll()?
+  - If yes → compile successfully
+
+Instead, the compiled .class file contains something like:
+	invokevirtual Block.blockAll()
+
+When the JVM executes Block.blockAll(), it performs a dynamic dispatch:
+	Look at the actual object stored in b  
+		→ it’s a MagicBlock
+	Check whether MagicBlock overrides blockAll()
+		If yes → call MagicBlock.blockAll()  
+		If no → call Block.blockAll()
+
+
+--------------------------
+UPCASTING AND DOWNCASTING 
+--------------------------
+are compile‑time type operations based on the declared type of the variable ('reference')
+- Upcasting reference - Widening conversion: Assigning a supertype without any manual cast necessary: 
+	
+	Block b = new MagicBlock();  //Safe, automatic, no cast needed.
+
+- Downcasting - Narrowing conversion: NOT automatic - CAST NECESSARY (= also not compile-safe):
+
+	Transformative t = (Transformative) b; // Block(b) is not related to Transformative - CANNOT COMPILE WITHOUT CAST
+
+
+--------------------------
+EXAMPLES
+--------------------------
+
+class MagicBlock extends Block implements Transformative{}
+
+	------------------------
+
+  List<Block> blocks = new ArrayList<>();
+
+    Block b = new MagicBlock();		//Upcasting this is NOT polymorphism, but it enables polymorphism
+					//Declared type of object: Block; compiler(compile time) treats it as block.
+    Block b2 = new OtherBlock();
+
+	b.blockAll();			// YES - if blockAll() is an overridden method in Magic block, being called by block is an example of polymorphism - runtime: the JVM looks into the object and resolves which object type calls the method and if it has an override in the object type. 
+
+    if (b.isTransformative()){		//NO polymorphism - MagicBlock has no overridden method isTransformative
+					// double-check before manually casting (below), otherwise java.lang.ClassCastException!
+      Transformative t = (Transformative) b;   // NO polym, but casting (downcasting) - “Treat this object as a Transformative.” As t does not involve dynamic dispatch(method of Transformative being called on Transformative object)
+      Block b = t.transform(b2);
+      blocks.add(t);				//  NO polym - normal method call: resolved into MagicBlock(passing subtype arguments ok, however method overriding with signature parameters as subtypes not ok(although ok for return types(subtypes returned =covariants))
+
+}
