@@ -11,9 +11,11 @@ new BigDecimal(30.00))) 	// prints 30
 
 -----------------------------------
 LocalDate now = LocalDate.now();
-System.out.println(now.getYear());		//2026
-System.out.println(now.getMonth()); 		//01
-System.out.println(now.getDayOfMonth()); 	//19
+System.out.println(now.getYear());	   //2026
+System.out.println(now.getMonth()); 	   //01
+System.out.println(now.getDayOfMonth());   //19
+System.out.println(now.getDayOfWeek());	  //returns MONDAY (toString() of Enum DayOfWeek.MONDAY)
+System.out.println(now.getDayOfWeek().getValue());	//returns 1 (for Monday)
 
 LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
 

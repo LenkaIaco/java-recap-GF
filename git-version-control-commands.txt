@@ -22,7 +22,8 @@ git rm --cached file.txt			remove file from staging area (back to untracked)
 git reset 					remove all files from staging area
 git add *.java					add all java files to staging
 git add .			CURRENT FOLDER: add new/modified files/folders from cur.dir.
-git add --all		CURRENT AND SUBFOLDERS changes ++ deletions(prev.present file deleted in folder) and renames
+git add --all		Compares changes between working directory vs staging area(index) and adds to staging:
+			 - CURRENT AND SUBFOLDERS changes ++ deletions(prev.present file deleted in folder) and renames. 
 git status					what is in staging area?
 git diff					literal changes in files, not yet added
 git log						details on last commit incl commit hash
@@ -31,7 +32,7 @@ git config --global user.name "MyRepoUsername"	see comment below
 if remote repo not defined yet, before committing to LOCAL git repo, git asks to define the corresponding local repo credentials. They don't have to match your remote git repo details, but git will then display the remote commits not as 'verified'linked to the remote repo profile + the inserted email must match one of the emails registered in your GitHub (remote) account
 git config user.email "xmail.com"		without --global, counts only for this local repo
 git config user.name "MyRepoUsername"
-git commit -m "Fix bug"				from index(staging) -> into LOCAL git repository !
+git commit -m "Fix bug"			 Compares changes between staging area(index) and local repo and records the differences in local repo
 
 ---afterwards go to GitHub to create a REMOTE repo, or install git CLI locally to create it ---
 

@@ -82,6 +82,7 @@ public abstract class Account {
 
 
     public int daysSinceLastUsage(){
+        if (lastUsage==null){lastUsage = LocalDate.now();}
         Period period = Period.between(lastUsage, LocalDate.now());
         return period.getDays();
     }
