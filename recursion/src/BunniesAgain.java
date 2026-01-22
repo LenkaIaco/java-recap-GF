@@ -8,21 +8,25 @@ public class BunniesAgain {
 // and returns the total number of "ears" in the bunny line. The method should be
 // able to handle invalid input (e.g. negative numbers).
          */
-        System.out.println(bunnyEars(1));  //3
-        System.out.println(bunnyEars(3));  //8
+        System.out.println(bunnyEars(1));  //2
+        System.out.println(bunnyEars(3));  //7
         System.out.println(bunnyEars(4));  //10
-        System.out.println(bunnyEars(5));  //13
+        System.out.println(bunnyEars(5));  //12
         System.out.println(bunnyEars(6));  //15
-        System.out.println(bunnyEars(7));  //18
+        System.out.println(bunnyEars(7));  //17
     }
 
     public static int bunnyEars(int numberOfBunnies) {
         if (numberOfBunnies <= 0) {
             return 0;}
+
+ //        return (numberOfBunnies%2 ==0) ? 3 + bunnyEars(numberOfBunnies-1) : 2 + bunnyEars(numberOfBunnies -1);
+
         if (numberOfBunnies % 2 == 0) {
-            return (2 + bunnyEars(numberOfBunnies - 1));
+            return (3 + bunnyEars(numberOfBunnies - 1));
         }
 
-        return (3 + bunnyEars(numberOfBunnies - 1));
+        return (2 + bunnyEars(numberOfBunnies - 1));
+
     }
 }

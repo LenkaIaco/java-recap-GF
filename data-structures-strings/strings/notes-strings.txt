@@ -1,4 +1,8 @@
-equals() by default checks object equality(same reference + same type(instanceOf)+ same content), however in String, it is overwritten to check the content equality.
+String is immutable, thus operations on Strings produce a new String
+String contains an underlying array of char(up to java 7) or byte(J 9+) and the lookup of a certain character is O(1)(read bytes from index i-> construct char), because reading from arrays is O(1):  array has contiguous memory, accessing value at index is result of operation arrayStart + index*primitive size
+
+equals() by default (Object's version) checks object memory reference (same reference + same type(instanceOf)+ same content), however in String(and wrapper classes and BigInteger/BigDecimal), it is overwritten to check the content equality.
+
 Equals() does NOT check for hashcode anywhere. It is only a contract that is recommended to be enforced while overwriting equals method to also overwrite hashCode(): 
  o1.equals(o2) -> o1.hashCode()==o2.hashCode()  
 (while vice-versa works differently: hashCode== does not guarantee equals()=true)
@@ -24,9 +28,10 @@ int i = s.indexOf("ab")  | .indexOf('c')  | .lastIndexOf("ab")  |  .lastIndexOf(
 int i = s.indexOf("a", 3) | .lastIndexOf('c')   // starting from a certain point in text
 
 String[] strArr = s.split(" ")
-String bigFix = quote.replace("It", "That");    ||   replace('a', 'b') //replaces each occurence in text!
+String bigFix = quote.replace("It", "");    ||   replace('a', (char) 0 ) 	//replaces ALL OCCURENCES in the string!
+String smallFix = quote.replaceFirst("It you", "It always takes longer than you");   // works ONLY WITH STRING ARGUMENTS
+
 String regexFix = quote.replaceAll("\\d+", "")   "Time: 10:00" -> "Time: :" // regex: 1 or more digits 
-String smallFix = quote.replaceFirst("It you", "It always takes longer than you");
 
 String lowerUpper = s.toLowerCase() // s.toUpperCase();
 String together = "to".concat("get").concat("her");  // "to"+"get"+"her"

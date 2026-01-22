@@ -13,7 +13,7 @@ public class Bunnies {
     public static int bunnyEars(int numberOfBunnies){
         if (numberOfBunnies<=0){return 0;}
 
-        return (2 + bunnyEars(numberOfBunnies-1));
+        return 2 + bunnyEars(numberOfBunnies-1);
     }
 
 

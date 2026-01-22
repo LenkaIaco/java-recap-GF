@@ -14,7 +14,7 @@ public class Strings {
     }
 
     public static String xToY(String s){
-        if (s.length()==0) {return "";}
+        if (s==null || s.length()==0) {return "";}
         if (s.charAt(0)=='x') {
             return "y".concat(xToY(s.substring(1)));
         }

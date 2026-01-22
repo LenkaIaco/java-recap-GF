@@ -11,7 +11,7 @@ public class StringsAgain {
     }
 
     public static String xCharsRemoved(String s){
-        if (s.length()==0){return "";}
+        if (s == null || s.length()==0){return "";}
         if (s.charAt(0)=='x'){
             return xCharsRemoved(s.substring(1));
         }

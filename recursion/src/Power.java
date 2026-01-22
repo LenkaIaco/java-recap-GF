@@ -9,6 +9,7 @@ public class Power {
     }
 
     public static int baseN(int base, int nPower){
+        if (nPower<=0){return 1;}
         if (nPower==1){return base;}
         return base * baseN(base, nPower-1);
     }

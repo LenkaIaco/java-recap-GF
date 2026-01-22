@@ -11,6 +11,7 @@ public class StringsAgainAndAgain {
     }
 
     public static String addAsterisk(String s){
+        if (s==null || s.length()==0){return "";}
         if (s.length()==1){return s;}
 
         return String.valueOf(s.charAt(0))

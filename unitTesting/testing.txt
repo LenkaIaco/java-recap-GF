@@ -1,0 +1,66 @@
+Exclude Animal, Apples, Sharpie, Sum
+---------------------------------------------------------------------
+include import jar libraries on junit + Mockito: 
+junit 5.8.1 (available in IntelliJ)
+Mockito core 5.12 (maven repo jar download -> Project Structure -> Libraries -> select downloaded jar from directory)
+Mockito junit Jupiter 5.12(maven repo jar download )
+
+
+
+class MyClassTest{
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;		// for mocking parts of system which enter into the test method but are not subject of the test
+import static org.junit.jupiter.api.Assertions;  // import static, as static methods are being used (e.g. assertEquals)
+
+MyClass myclass = new MyClass();
+
+@Test
+void testFunctionAWithEmptyInputReturnsEmptyString(){
+   List<String, Integer> list = new ArrayList<>();
+   assertEquals("", myclass.processList(list));
+ }
+}
+
+
+---------------------methods with input parameter scanner-----------------------
+
+String multiInput = "1234\n" +  // first scanner.nextLine() call
+			    "hello\n" + // second nextLine() call
+			    "42\n";     // third nextLine() call
+
+Inputstream inputStream = new ByteArrayInputStream(multiInput.getBytes());
+
+Scanner myScanner = new Scanner(inputStream);
+
+//...test with scanner:
+
+newGame.run(scanner);
+
+----------- methods which do not have a scanner parameter, instead directly work with System.in inside-------------
+
+//When you replace System.in with a test input stream, you’re modifying a global JVM resource. 
+//If your test throws an exception before you restore it, 
+// the JVM will keep the fake input stream for the rest of the test run.
+
+//try-finally block: no matter what happens, System input will be restored back to normal
+// the inputstream below does not hold any external resources, only a byte[] ->
+// thus, it does not need to be closed
+
+
+ Inputstream sysInOriginal = System.in;
+
+ InputStream byteInReplacement = new ByteArrayInputStream(
+		new String(
+		"y\n"+
+		"1234\n"+
+		"n\n"
+		 ).getBytes());
+
+        try{
+            System.setIn(byteInReplacement);
+            System.out.println(newGame.guessTheNumber("123"));
+
+        } finally{
+        System.setIn(sysInOriginal);}
+
+---------------------------------------------------------------------------------------------------------------------

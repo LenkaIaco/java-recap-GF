@@ -65,3 +65,46 @@ class MagicBlock extends Block implements Transformative{}
       blocks.add(t);				//  NO polym - normal method call: resolved into MagicBlock(passing subtype arguments ok, however method overriding with signature parameters as subtypes not ok(although ok for return types(subtypes returned =covariants))
 
 }
+
+--------------------------
+INHERITANCE
+--------------------------
+
+Fields and methods of a superclass become fields and methods of the subclass it extends(exluding constructor + static/private fields)
+
+In order to inherit superclass fields and method, the initialization process and then construction process needs to happen:
+- Initialization is JVM loads .class info into memory(and verifies it) first time a class is used in code(only once per application lifecycle) - runs static fields and static initializers as well. Initialization of static blocks and static fields happens from top down in order.
+As Initialization of static fields/methods happens separately from instance fields and methods(and before them), static members can refer only to other static methods/fields. However, instance fields/methods are being initialized only at later stage, when an object is being created. Therefore they can access both static and instance fields/methods. 
+
+class Stats {
+   static int x = 10;
+
+   static
+   {
+      System.out.println("x = " + x);
+      temp = (temp - 32) * 5.0/9.0; // convert to Celsius
+      System.out.println("temp = " + temp);
+   }
+}
+
+- Construction: happens by constructor chaining = calling a class constructor requires each time calling its superclasses constructors (from Object and downward) in a sequence from top level down, and this process runs every time for each constructor call during runtime:
+
+
+Class B{
+  boolean foundOne;
+
+  public B(List<Integer> l){
+    foundOne = l.contains("1");
+  }
+}
+
+
+class C extends B{
+  int a;
+  List<Integer> l = new ArrayList<>(List.of(1,2,3));
+
+  public C (){
+    super(l, 1);  // WON'T WORK UNLESS List l was STATIC, because superclass at construction is not seeing subclass constructed yet!
+  }
+}
+
