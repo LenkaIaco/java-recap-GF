@@ -2,6 +2,42 @@ All methods(Files.readAllLines, Path.of, Paths.get) are part of the newer java.n
 java.io   → Old, stream‑based, blocking I/O (Java 1.0)
 java.nio  → Newer, buffer‑based, non‑blocking I/O (Java 1.4+), plus modern file APIs (Java 7+)
 ------------------------------------
+1. src = 'source root' - directory where Main class with main method is located, meant for source code
+2. e.g. MyProject = 'project root' (whichever I indicate at project opening in intellij), which may contain both source code folder and resource folder and config files, and 
+3. 'module root': directory where IntelliJ is running the program from, default is 'module root'(top‑level directory of that module(content root). 
+	IntelliJ 
+	 1. uses:
+		A) Imported projects: the directory containing build.gradle
+		B) Project you create via IntelliJ: will be the folder you select for creating your project
+	2. places:
+		.iml file into that directory to indicate this is the module root; either inside the directory directly or within .idea folder
+4. Working directory:  directory where JVM launches the program from. IT IS THE BASE FOLDER FOR RELATIVE FILESYSTEM ACCESS:
+	Paths.get("data/input.txt");  ---> workingdirectory/data/input
+
+Working directory Can be:
+
+- current directory(.) - JVM will automatically look for main class to launch here
+		Java MyProgram  //this command is run from the current directory
+- classpath-indicated file. Classpath can be one of 3 options:
+				A/  not specified -> JVM takes current directory (.) and looks for main class here
+				B/  via MANIFEST file + combined with running the jar:   java -jar MyApp.jar
+				C/  via java -cp command:   
+					java -cp out/production/myapp com.example.Main   
+				 	//top-level directory where the package structure begins:
+						out/
+ 						 production/
+  						  MyApp/        ← this directory
+     						   com/
+      						    example/
+       						     Main.class
+ Here, JVM will look into subfolders for:
+	- com/example/Main.class
+	- any .class files under that root
+	- any resources inside that same root (e.g., config.properties)
+
+
+
+--------------------------------
 //With input and output files using FileIO operations(copy, write), NEVER put the files inside the src! The reason is, that, depending on whether you launch the app from a jar(java starts inside zipped out folder, which is an equivalent of src folder, only with compiled classes), or from IntelliJ(here you need to reference one level up - also src folder in the path! as the project root folder is above src), the FileIO path will work differently depending on where you launch it from.
 // java does not know the exact path to this class. However it is being launched within a java application (e.g. a jar). 
 So java knows the directory of this application (JVM's current working directory). Therefore, starting from this directory, all the subfolders need to be named that lead to the class you are looking for, that is located within the folder structure that this application has. If the path is not part of the application folder, but located elsewhere, absolute path to the file needs to be provided,e.g.:
@@ -21,7 +57,6 @@ Path p = Paths.get("subfolder1/subfolder2/file.txt");
 	
 Path p = Path.of("subfolder1/subfolder2/file.txt");
 	Path.of("subfolder1","subfolder2","file.txt");
-	
 
 
 
@@ -102,7 +137,8 @@ StandardOpenOption CREATE</th>
 StandardOpenOption APPEND
 * File MUST EXIST ahead otherwise IOException!
 * Write to the end of the file instead of overwriting from the beginning
-StandardOpenOption WRITE
+StandardOpenOption WRITE		
+* starts writing at 0 but does NOT TRUNCATE THE FILE!
 * File MUST EXIST ahead otherwise IOException!
 * overwrites content unless combined with APPEND.
 

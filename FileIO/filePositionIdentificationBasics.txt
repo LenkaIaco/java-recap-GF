@@ -1,12 +1,36 @@
 There are 2 ways how to refer to a position of a file:
-- Related to a directory structure (1. relative to a folder on PC 2. absolute full path to a file on this concrete PC)
-- Position of a file related to the classpath 1. starting from classpath root or 2. related to the calling class - relative to its folder's classpath position
+- Relative to a directory structure (1. relative to a folder on PC 2. absolute full path to a file on this concrete PC)
+- Position of a file related to the directory 1. starting from classpath root or 2. directory of invoking class - relative to its folder's position, within the classpath:
 
-The directory positioning(1) is easier to write in code, but the relative position changes based on where you start the application from. For relative positions, it changes in IDE vs JAR vs command line launch of application. And the absolute positions work only on one specific computer.
+ATTENTION while working in IntelliJ - classpath root is NOT the parent folder (e.g. MyProject), so the reference starting '/' will NOT work as in example below! 
+Therefore, please work with the version without starting '/'
+Instead, IntelliJ has multiple roots: src, resources, test, compiled into an output - this compiled output is the classpath:
+src/main/java
+src/main/resources
+src/test/java
+src/test/resources
+	- ENSURE YOUR PROJECT FOLLOWS THIS STRUCTURE, 
+	- FILES UNDER PARENT PROJECT FOLDER BE AUTOMATICALLY ADDED FOR COMPILATION
 
-The position relative to classpath works both for IDE and JAR the same(unlike it is with directory structure references). 
-With the JAR, the application is portable between computers. So it is a recommended solution to use in a program, as it does not create unintended side effects or limit the application to one environment.
+- If your project DOES NOT follow the structure, IntelliJ usually marks ONE folder as the source root - either parent folder, or src - depending how you name them.
+Visually, the project tree section in IntelliJ marks ONE folder in BLUE which is the SOURCE ROOT. 
+ANYTHING OUT OF THIS FOLDER WILL NOT BE CONSIDERED into compilation, unless you modify source root settings manually!
 
+
+    Calling resource without '/' at the start:  
+    Inputstream is  Logs.class.getResourceAsStream("config.txt");     //  classpathroot/../logsdirectory/config.txt
+    Calling resource starting with '/' :
+      Logs.class.getResourceAsStream("/config.txt")	// classpathroot/config.txt
+      
+
+The relative directory positioning(1) is easier to write in code, but the relative position changes based on where you start the application from. For relative positions, it changes in IDE vs JAR vs command line launch of application. And the absolute positions work only on one specific computer. 
+ 
+The position relative to classpath(2) works both for IDE and JAR the same(unlike it is with directory structure references) - but it WORKS ONLY for READING PROJECT FILES
+With the JAR, the application is portable among any type of computer with java runtime installed. So it is a recommended solution to use in a program, as it does not create unintended side effects or limit the application to one environment.
+
+------------------------------------------------
+Examples
+------------------------------------------------
 getUniqueIpAddresses(Path filePath) below works with relative/absolute file paths based on local directory structure. Relative - in IntelliJ, the project folder above the src folder(
 project parent folder = source root) for IntelliJ ).
 However, the directory root position would not be the same, if the app is started from a JAR (which zips everything within 'out' folder for JAR(out=app root)).
@@ -33,10 +57,26 @@ Path specification using CLASSPATH:
     Logs.class.getResourcesAsStream("myfile.txt")          // looks in same folder as current java class for the "..."
     The JVM looks at the class loader of Logs.class(every loaded class has a class loader).
     That class loader knows the classpath: JVM delegates to this class loader, to search the classpath entries for "myfile.txt"
-    This method operates with try-with-resources BufferedReader built on InputStreamReader consuming an InputStream
-
+    This method operates with try-with-resources BufferedReader built on InputStreamReader consuming an InputStream.
     BufferedReader.close() automatically calls close() on the underlying InputStreamReader, which then closes the underlying InputStream.
     So you only need to close the outermost resource.
+
+	---Why close file resources?---
+	A program running on OS has a limited number of files it can ask OS to hold open. 
+	As each open file costs OS resources, if program exceeds its limit, 
+	OS refuses opening and Java throws 'FileIOException: too many open files'
+	OS has a table with open files, each assigned an integer (file descriptor) that marks it.
+	So file descriptor is a pointer to an open file resource - on the OS table of open files.
+	When java asks OS to open a file, OS responds with the file descriptor number.
+	Java creates a stream and stores the file descriptor in it.
+	When the stream is closed, java asks OS to release the resource under the file descriptor number.
+
+	FileReader is a character stream (text files)
+	InputStreamReader is a byte stream (binary resources like images, PDFs, DOCX, audio, video, ZIP, EXE, Serialized Java objects (.ser)*)
+	BufferedReader is a buffered character stream (text resources)
+
+* serialization is the process of transforming java file into bytes. It can be used to send files via network, stored in db, transferred between JVMs, or cached
+Deserialization = transforming back to java object
 
 ----------------------------------------------------------------------------
 Example 1: getUniqueIpAddresses() works with directory references via Paths:
@@ -57,20 +97,22 @@ Example 2: getIPsFromClasspath() uses classpath via .class().getResourceAsStream
 ----------------------------------------------------------------------------
  public static List<String> getIPsFromClasspath(String filename) {
         InputStream is = Logs.class.getResourceAsStream(filename);	// the java 'classname.class' needs to be used if used within a static context(method); otherwise, this().class() works too
-        List<String> l;
+        List<String> list1;
+	List<String> list2 = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-            l = br.lines().toList();
+            list1 = br.lines().toList(); // UNMODIFIABLE LIST !!!
+	    list2 = new ArrayList<>(list1);  // MODIFIABLE
         } catch (IOException e) {
             System.err.println("Source file not found");
             return new String[0];
         }
-	return l;
+	return list 2;
 }
 
 ----------------------------------------------------------------------------
 Example 3: Write from file to file
 Target file should be positioned independently from how the application is launched(IDE, JAR),
-always appear on the same spot -  a relative path to a System.getProperty("user.home"):
+always appear on the same spot -  a relative path to a System.getProperty("user.home"), in windows: C:\Users\<YourUsername>
 C:\Users\Username\myapp\logs_copy.txt     (Windows)
 /home/username/myapp/logs_copy.txt        (Linux, macOS)
 ----------------------------------------------------------------------------
@@ -90,10 +132,28 @@ C:\Users\Username\myapp\logs_copy.txt     (Windows)
             return;
         }
 
-//Step 2: writing to target
+//Step 2:WRITING using System property(below) CANNOT happen using ANY location within the running app!
+This design decision comes from the fact that the system property is resolved dynamically, based on CURRENT RUNNING PROCESS DIRECTORY
+	which Windows silently redirects Documents → OneDrive/Documents !
+and the working directory ends up being a virtualized OneDrive path, instead of the actual physical Documents folder
 
-            Path targetPath = Path.of(System.getProperty("user.home"),"doubled-output.txt");
+Such a location within the OneDrive cannot be modified while the application is running because of system security checks.
+Windows OneDrive locks files as read only during application runtime and any Write attempt will result in SecurityException!
 
+	However, if manual java class File with a hardcoded path is used, you bypass OneDrive’s virtualization and hit the real file system:
+	File file = new File("myFile.txt");
+	try{
+            Files.write(file.toPath(), list); 
+	} catch ....
+
+
+// For writing using system property file position relative to the dynamically resolved(= later redirected) System.getProperty("user.home") which is \C:\Users\lenka
+	- Use BACKSLASH '\' instead of normal slash, to mirror the system property logic and prevent format errors:
+	- ADD EXTRA ESCAPE BACKSLASH so that backslash is considered an actual character:
+
+String myRelativePath =  "\\Documents\\JavaProjects\\java_recap_gf\\TodoApp\\todoList.txt"
+
+            Path targetPath = Path.of(System.getProperty("user.home"),myRelativePath);  
         try{
             Files.write(targetPath, list);
         } catch (IOException e){
