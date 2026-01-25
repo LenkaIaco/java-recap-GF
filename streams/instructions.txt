@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------------------
+SW CHARACTERS
+-------------------------------------------------------------------------------------
+// based on the csv file, create a Creature class with the relevant data; 
+// put these creatures in a List 
+// make methods that produce the following output:
+    // Return the name of the heaviest character (ignore characters whose mass/weight is unknown)
+    // Return the average height of male characters
+    /* Return a map with the age distribution(counts by groups) of the characters by gender (where the gender can be "male", "female" and "other").  The age groups are: "below 21", "between 21 and 40", "above 40" and "unknown" */
+
+unknown
+
+
+//        Exercise 12
+//        The swcharacters.csv file contains the list of characters from the Star Wars universe.
+//        "BBY" stands for Before the Battle of Yavin, it's the "year zero" in the Galactic Standard Calendar. For the age calculation assume that the date today is 0BBY and (for simplicity) every character is alive.
+//        Using Stream API write methods to perform the following exercises:
+//        Return the name of the heaviest character (ignore characters whose mass/weight is unknown)
+//        Grievous
+//        Return the average height of male characters
+//        179.237
+//        Return the average height of female characters
+//        165.471
+//Return a map with the age distribution of the characters by gender (where the gender can be "male", "female" and "other")
+//        The age groups are: "below 21", "between 21 and 40", "above 40" and "unknown" //note: there migt be a wrong amount in some of the total group counts count below
+//        The result should be a Map<String, Map<String, Long>>
+//                or, if you wish to be more precise Map<AgeGroup, Map<GenderGroup, Long>>
+//        {
+//            ABOVE_40 = {FEMALE=6, MALE=20, OTHER=2},
+//                    BETWEEN_21_AND_40 = {FEMALE=1, MALE=5, OTHER=1},
+//                    BELOW_21 = {FEMALE=1, MALE=3, OTHER=1},
+//                    UNKNOWN = {FEMALE=11, MALE=34, OTHER=3}
+//        }
