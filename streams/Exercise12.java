@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Recap {
+public class Exercise12 {
 
     public static void main(String[] args) {
 
@@ -21,8 +21,6 @@ public class Recap {
         String result = !max.isPresent() ? "unknown" : creatures.stream().filter(c ->Double.valueOf(c.getWeight()).equals(max.get()))
                 .map(c -> c.getName()).findFirst().get();
                 return result;
-
-
     }
 /*
     Return a map with the age distribution of the characters by gender (where the gender can be "male",
@@ -45,19 +43,18 @@ public class Recap {
 
         Map <String, Map<String, Long>> grouped = creatures.stream()
                 .collect(Collectors.groupingBy(
-
-                        c-> {
-                            if (c.getGender().equals("male")){return "male";}
-                            else if (c.getGender().equals("female")){return "female";}
-                            else {return "other";}
+                        c -> {
+                            if (c.getAge()==0.0){return "unknown";}
+                            else if (c.getAge()>0&&c.getAge()<21){return "below 21";}
+                            else if (c.getAge()>=21&&c.getAge()<=40){return "between 21 and 40";}
+                            else {return "above 40";}
                         },
 
                         Collectors.groupingBy(
-                                c -> {
-                                    if (c.getAge()==0.0){return "unknown";}
-                                    else if (c.getAge()>0&&c.getAge()<21){return "below 21";}
-                                    else if (c.getAge()>=21&&c.getAge()<=40){return "between 21 and 40";}
-                                    else {return "above 40";}
+                                c-> {
+                                    if (c.getGender().equals("male")){return "male";}
+                                    else if (c.getGender().equals("female")){return "female";}
+                                    else {return "other";}
                                 },
                                 Collectors.counting())
                 ));
@@ -85,7 +82,7 @@ public class Recap {
     }
 
     public static List<Creature> creaturesAsList(String resourceInProject){
-        InputStream inputStream = Recap.class.getResourceAsStream(resourceInProject);
+        InputStream inputStream = Exercise12.class.getResourceAsStream(resourceInProject);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         List<Creature> creatures = new ArrayList<>();
 
