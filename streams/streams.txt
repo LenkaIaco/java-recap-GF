@@ -1,0 +1,64 @@
+list.stream()
+string.chars() 			int array
+myHashmap.entrySet().stream()   stream of entries  
+bufferedReader.lines()   String stream of file lines
+
+------------------------
+The following string roundup happens as a NUMBER first, then converted back to string - thus, rounding effect! 
+  double value = 174.35802469135803;
+  String result = String.format("%.2f", value);   // regex: %  Start of a format instruction ; .2  Keep 2 digits after the decimal ; f  Format as floating‑point number(rounds)
+  result = "174.36";
+
+Arrays.stream(
+text.replaceAll("[^a-zA-Z0-9 ]", " ")   // regex: [] any of characters within ;   ^anything that is NOT this: a letter, a digit + a SPACE!!! 
+split("\\s+")				// regex: any number of spaces
+)
+------------------------
+operation map() vs mapToObj():   map produces IntStream, whereas mapToObj produces Obj <U> of the parameter type U
+				Therefore, for casting to another type, e.g. to character, do not use map(), because the cast will be converted back to int stream
+------------------------
+- Filtering files into java objects
+- comparing multiple attributes within java objects: e.g. get Creature name, based on max(Creature.weight)
+- max + Comparator.comparing:
+	 looks into the Creature, finds variable weight, 
+	finds max weight Creature, 
+	returns the whole Creature with max weight:
+
+  List<Creature> creatures = new ArrayList<>();
+
+Creature heaviestCreature = creatures.stream().max(Comparator.comparing(c -> c.getWeight())).get();
+String heavyCreatureName = heaviestCreature.getName();
+
+------------------------
+Counting returns LONG VALUE:
+.collect(Collectors.counting()), if used for simple count(not within other Collector method), can be replaced by count()
+
+	long count = 
+		list.stream().filter(o -> o.getAge()>5).count(); 	
+
+------------------------
+String s = charList.stream()
+		.mapToObj(c -> String.valueOf(c)) 
+		.collect(Collectors.joining());				// joining() into String can be performed on stream of String, not Character - conversion first, join second
+
+------------------------
+
+.collect(Collectors.groupingBy(groupingWhatFunction, groupingOperationFunction): 		returns a HashMap based on your specifications:
+
+groupingBy(				// returns object of stream type (e.g. String) with count of occurrences in stream
+c -> {return c;},
+Collectors.counting()
+)
+)
+
+
+groupingBy(
+c -> {						// stream of Creature c, grouped into 2 age groups and second parameter is count of all Creatures from stream, for that age group 
+if (c.getAge()>40) {return "ABOVE 40";}
+else {return "40 OR LESS";}
+},
+
+Collectors.counting();
+)
+
+------------------------

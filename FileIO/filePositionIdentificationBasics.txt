@@ -1,5 +1,5 @@
 There are 2 ways how to refer to a position of a file:
-- Relative to a directory structure (1. relative to a folder on PC 2. absolute full path to a file on this concrete PC)
+- Relative to a directory structure (1. relative to a folder on PC(which is runtime working directory and app is launched from) 2. absolute full path to a file on this concrete PC)
 - Position of a file related to the directory 1. starting from classpath root or 2. directory of invoking class - relative to its folder's position, within the classpath:
 
 ATTENTION while working in IntelliJ - classpath root is NOT the parent folder (e.g. MyProject), so the reference starting '/' will NOT work as in example below! 
@@ -18,7 +18,7 @@ ANYTHING OUT OF THIS FOLDER WILL NOT BE CONSIDERED into compilation, unless you 
 
 
     Calling resource without '/' at the start:  
-    Inputstream is  Logs.class.getResourceAsStream("config.txt");     //  classpathroot/../logsdirectory/config.txt
+    Inputstream is = Logs.class.getResourceAsStream("config.txt");     //  classpathroot/../logsdirectory/config.txt
     Calling resource starting with '/' :
       Logs.class.getResourceAsStream("/config.txt")	// classpathroot/config.txt
       

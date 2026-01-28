@@ -167,6 +167,8 @@ public class ShortExercises {
             lines = bufferedReader.lines().toList();
         } catch (IOException e){e.printStackTrace();}
 
+//   regex + replaceAll:  ^what is NOT   [any of]  chars,digits,SPACE ; Then, split by 1 or more spaces:
+//   replaceAll("[^A-Za-z ]"," ").split("\\s+"))
       String[] arr =  lines.stream().collect(Collectors.joining())
                 .replace("\n", " ")
                         .replace(",", "")

@@ -15,21 +15,50 @@ java.nio  → Newer, buffer‑based, non‑blocking I/O (Java 1.4+), plus modern
 	Paths.get("data/input.txt");  ---> workingdirectory/data/input
 
 Working directory Can be:
+	- Intellij-created project: root project folder
+	- running via command line: current directory(.) where the command gets run from:
+	java -cp out/production/MyApp com.example.Main			//working directory is the parent folder of out (e.g. myproject:  myproject/out/...)
+	- running jar via double-click:  Parent folder of jar
 
-- current directory(.) - JVM will automatically look for main class to launch here
-		Java MyProgram  //this command is run from the current directory
-- classpath-indicated file. Classpath can be one of 3 options:
-				A/  not specified -> JVM takes current directory (.) and looks for main class here
-				B/  via MANIFEST file + combined with running the jar:   java -jar MyApp.jar
-				C/  via java -cp command:   
-					java -cp out/production/myapp com.example.Main   
-				 	//top-level directory where the package structure begins:
-						out/
- 						 production/
-  						  MyApp/        ← this directory
-     						   com/
-      						    example/
-       						     Main.class
+Classpath root can be:
+	- Automatic: command line run without cp specified: JVM will automatically look for main class to launch in curr. folder (.):
+	  Java MyProgram  //this command is run from the current directory
+
+	- classpath-indicated:
+			A/  via java -cp command  : //parent directory where the fully-qualified classname starts:
+				java -cp out/production/myapp com.example.Main  	//parent of com.example.main is "myapp"
+
+					out/
+ 					 production/
+  					   MyApp/        ← this directory
+     					     com/
+      					       example/
+       						 Main.class
+
+			B/   via MANIFEST file + combined with running the jar:   java -jar MyApp.jar 
+				Class-Path property is relative to the JAR POSITION locally!
+				Class-Path property is classpath root - parent directory where the fully-qualified name starts.
+				Classpath root directory is used to CREATE JAR - to know which folders to include in it. 
+				After it is created:
+				 - if it is a fat jar and has all its dependencies inside the jar, it can be moved and will still work. 
+				 - Otherwise, if it depends on dependencies listed in relative classpath, which are not part of jar, it needs to stay in place.
+			
+				    myProject/
+ 					out/
+					  Myapp.jar
+					  com/
+					    example/
+					      Main.class
+			    For the above folder structure with the fully-qualified com.example.Main, the MANIFEST classpath root would be:
+				Manifest-Version: 1.0
+				Main-Class: com.example.Main
+				Class-Path: .
+			    Because the jar is located under myProject and out folder is not included in the compiled package structure
+
+
+
+
+
  Here, JVM will look into subfolders for:
 	- com/example/Main.class
 	- any .class files under that root
@@ -70,17 +99,16 @@ When working with methods that potentially throw an exception, you are working w
 COPYING
 
         try {
-            System.out.println(Files.copy(Path from,Path to);				//without copy option, default is StandardCopyOption.COPY_ATTRIBUTES (a pre-existing file needed)
-       										// The paths should be written relatively to where the java application is being launched from. The destination path especially if a file is supposed to be created by the running program, should be ideally next to the src folder, not inside it, because: In case the application would be later packaged into a jar and launched from the JAR position, the destination file would not be found in the original position relative to src folder, but relative to out folder.
+            System.out.println(Files.copy(Path from,Path to);				//without copy option, default is StandardCopyOption.COPY_ATTRIBUTES       										// The paths should be written relatively to where the java application is being launched from. The destination path especially if a file is supposed to be created by the running program, should be ideally next to the src folder, not inside it, because: In case the application would be later packaged into a jar and launched from the JAR position, the destination file would not be found in the original position relative to src folder, but relative to out folder.
  } catch (IOException e) {
             e.printStackTrace();
         }
 
         try{
             Files.copy(p1,p2,StandardCopyOption.COPY_ATTRIBUTES ); 		// CREATES a file + copies contents into it. THROWS ERROR for already existing target files!!
-				StandardCopyOption.REPLACE_EXISTING		// if a file exists, replaces its contents
+				StandardCopyOption.REPLACE_EXISTING		// if a file exists, replaces its contents, if not, creates it
         } catch(IOException e){
-            System.err.println("target file already exists"); 			// prints error message, but still returns (opposed to throwing error, where program flow stops)
+           System.err.println("target already exists"); 			// prints error message, but still returns (opposed to throwing error, where program flow stops)
             return false;
         }
 
@@ -136,9 +164,9 @@ StandardOpenOption CREATE</th>
 * existing file content is overwritten
 StandardOpenOption APPEND
 * File MUST EXIST ahead otherwise IOException!
-* Write to the end of the file instead of overwriting from the beginning
+* Writez to the end of the file instead of overwriting from the beginning
 StandardOpenOption WRITE		
-* starts writing at 0 but does NOT TRUNCATE THE FILE!
+* starts writing at 0 (beginning), but does NOT TRUNCATE THE FILE!
 * File MUST EXIST ahead otherwise IOException!
 * overwrites content unless combined with APPEND.
 

@@ -1,0 +1,78 @@
+
+
+Summary of the full DNS lookup chain
+Step	Layer	What is being checked
+1	Browser cache	Recently visited domains
+2	OS cache	System-wide DNS cache
+3	Hosts file	Manual overrides*
+4	Recursive resolver	ISP DNS server or custom DNS server you pick
+5	Root servers	Where is .com?
+6	TLD servers	Where is example.com?
+7	Authoritative server(2nd level domain, subdomain)	What is the IP?
+8–10	Caching	Resolver → OS → Browser
+
+* If a domain appears in this file, the OS will always use the IP address written there and will never ask DNS for that domain.
+
+
+
+
+
+
+so the workflow is: browser DNS cache -> OS dns cache -> OS hosts file (overrides) ->ISP provider's DNS server cache -> ISP's DNS server(=resolver)'s recursive resolution: domain parts start from bottom to top level www.myaddress.com: com is TopLevelDomain and has location of the next 2nd level domain ..then subdomain... until you get to the lowest level domain part that actually has the resource and you obtain IP (Internet Protocol address) from There. 
+Process: 1. Resolver asks Root servers where to find TLD. Reply: TLD servers for that domain. 2. Resolver contacts  servers, where to find the second-level domain(example.com). Resolver gets reply with authoritative name servers for that second level domain. 3. Usually same authoritative servers than subdomain. Resolver asks to give the location of the subdomain(www.example.com), or if within same server than 2nd level, then asks directly for IP address of the subdomain. Resolver obtains a reply with IP address (10 or 12 spaces). 4. Resolver caches the result for default period(seconds to hours) and gives it to OS. OS caches the result in DNS OS cache and gives it to browser. Browser caches result and uses the IP address to connect to an address on the internet corresponding to that IP - it opens a TCP connection to port 80 or 443(HTTPS) - IP server's listening port for incoming connection requests via HTTP or HTTPS protocol. TCP handshake to start connection. For HTTPS, then it performs a TLS handshake. After, it sends an HTTP request (GET /) The server responds with HTML, CSS, JS, images, etc. The browser renders the webpage
+
+TLS handshake:
+
+ClientHello
+
+ServerHello
+
+certificate
+
+key exchange
+
+encrypted channel established
+
+
+
+browser
+Opens a TCP connection from port 50233
+
+to port to the server port 80 for HTTP, 443 for HTTPS
+
+
+Server:
+
+Accepts the connection on port 443
+
+Responds back to your PC’s port 50233
+
+
+
+Starts the TLS handshake:
+
+ClientHello
+
+ServerHello
+
+certificate
+
+key exchange
+
+encrypted channel established
+
+
+“What is the IP for www.example.com?”
+
+This server returns the A record 
+(IPv4 93.184.216.34 32‑bit numbers, four decimal numbers, each between 0 and 255.)
+	Each part is called an octet
+	Each octet is 8 bits
+	Total size: 32 bits
+
+
+ or AAAA record (IPv6 2606:2800:220:1:248:1893:25c8:1946
+ Uses 128‑bit numbers Written in hexadecimal, separated by colons).
+	They are made of 8 groups of hexadecimal numbers.
+	Each group is 16 bits
+	Total size: 128 bits

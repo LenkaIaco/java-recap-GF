@@ -20,7 +20,14 @@ public class Exercise12 {
         Optional<Double> max = creatures.stream().map( c -> c.getWeight()).max(Double::compareTo);
         String result = !max.isPresent() ? "unknown" : creatures.stream().filter(c ->Double.valueOf(c.getWeight()).equals(max.get()))
                 .map(c -> c.getName()).findFirst().get();
+
+//      alternatively, first find heaviest creature and then return its name
+//        Creature heaviestCreature = creatures.stream()
+//        .max(Comparator.comparing(c -> c.getWeight()))
+//        .get();
+//        return heaviestCreature.getName();
                 return result;
+
     }
 /*
     Return a map with the age distribution of the characters by gender (where the gender can be "male",
@@ -78,7 +85,8 @@ public class Exercise12 {
                     .map(c -> c.getHeight()).mapToDouble(Double::valueOf).average().getAsDouble();
         } catch (NoSuchElementException e){e.printStackTrace();}
 
-        return average;
+        double roundedTwoDeci = Math.round(average*100) / 100.0;
+        return roundedTwoDeci;
     }
 
     public static List<Creature> creaturesAsList(String resourceInProject){
@@ -91,7 +99,7 @@ public class Exercise12 {
                 String[] arr = s.split(";");
                 return new Creature(
                         arr[0],
-                        arr[2].equals("unknown") ? 0.0 : Double.parseDouble(arr[2].replaceAll(",",".")),
+                        arr[2].equals("unknown") ? 0.0 : Double.parseDouble(arr[2].replaceAll(",","")),
                         arr[1].equals("unknown") ? 0 : Integer.parseInt(arr[1]),
                         arr[7],
                         arr[6].equals("unknown") ? 0.0 : Double.valueOf(arr[6].replaceAll("BBY", ""))

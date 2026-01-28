@@ -32,6 +32,7 @@ Reliable Connection: before sending data, it performs a three‑way handshake - 
 Reliable Logistics: Breaks data into packets and reassembles later in correct order
 
 Secure commection establishment + (complete reliable data transport) + proper connection closing by means of HANDSHAKES:
+Establish: SYN(my browser sends via OS(networking stack): want to start connection) -> SYN-ACK (server replies) -> ACK (browser replies)
 Closing: four‑step handshake (FIN → ACK → FIN → ACK) - ensures closed properly at both ends + feedback
 Dispatch: DATA → ACK → DATA → ACK → …  (+numbering data packets): 
 	* acknowledgments (ACKs) after arrival, contain the number offset the expected in the next package. Ack enables Redispatch if(next is) lost. 
@@ -57,6 +58,28 @@ Contains 500 bytes in a sequence 0-499
 Packet B (offset number 500 -> bytes 500–999)
 contains also 500 bytes in a sequence !
 
+-------------TLS-----------
+A TLS certificate is a digital ID card that proves the server is who it claims to be:
+the server’s domain name (e.g., www.example.com)
+the server’s public key
+the certificate authority (CA) that signed it (e.g., DigiCert, Let’s Encrypt)
+an expiration date
+a digital signature from the CA
 
 
-	
+Does the server send a key?
+only the public key, which is safe to share.
+The certificate contains:
+public key → safe to send
+private key → stays on the server
+
+TLS 1.3
+ creates a shared secret key that: the browser knows, the server knows, nobody else can compute
+Browser --ClientHello--> Server
+Server --hello+cert.w.p.key--> browser
+Brow--computesSharedSecret (future encryption key)
+Serv--computesSharedSecret(future encryption key)
+Both--haveSameSecret=  symmetric encryption key
+All data sent over TCP is now encrypted(=called encrypted tunnel although it is just the same, encrypted data)
+Using a symmetric encryption algorithm with that key(AES), data becomes ciphertext
+Once arrived, data is decrypted using the same algorithm and key
