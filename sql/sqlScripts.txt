@@ -1,0 +1,27 @@
+below: "File.sql" file uploaded to a sql server to initialize table(s) with data (e.g. for testing purposes)(see below)
+
+Where the database is located, to which your application connects, with eventual credentials(username, password) for connecting and with specification on the used SQL dialect are in the 'application.properties' file within the resources section of the app structure
+
+Some scripts start at the database level, some start at ' Use tablename ' level + insertion of values:
+----------------------------------------------------------------
+DROP DATABASE IF EXISTS MyDatabase;
+CREATE DATABASE IF NOT EXISTS MyDatabase;
+USE MyDatabase;
+
+
+CREATE TABLE IF NOT EXISTS foxes(
+id INT NOT NULL IDENTITY (1,1) PRIMARY KEY,   --IDENTITY auto-incrementing primary key (1,1) first 1: means first generated value starts at 1.  Second 1: the increment - how much to add each new key is generated (first row gets 1, second gets 2,...)
+fox_name VARCHAR(255),			-- in java model class, the Fox will have attribute name in camel case: attrName. If submitting an entry with field's length over 255 chars, server will throw an error. 						-- Historically, many databases, like MySQL and city VARCHAR(30), PostgreSQL stored VARCHAR using 1 byte, can represent between 0 to 255 characters. Nowadays, you can also use VARCHAR(MAX) for unlimited text.
+price INT
+bankingnumber BIGINT		-- BIGINT 64 bytes, corresponds to java's long type(also 64 byte signed integer). Can be used for banking numbers (java type long, BigInteger)
+latitude FLOAT			-- FLOAT by default corresponds to the limitations of double primitive type (not for banking numbers, 
+				-- as rounding is not exact - float and double use binary fractions which are not exact if the fraction can be expressed by division by 2 to some power, without remainder: x/ 2^n : 1/2, 1/4, 1/8 ...)
+my_bigint DECIMAL(38,0)		-- java's BigInteger fits only into DECIMAL sql's data type which can take up to 38 digits. Hibernate/JPA will map DECIMAL to BigInteger automatically. Anything larger than 38 digits goes only as VARCHAR
+				-- DECIMAL(p,s) p = precision → total number of digits allowed;   s = scale → number of digits after the decimal point		
+);
+
+
+INSERT INTO foxes(city, price, latitude) VALUES ('Bratislava', 150, 1234567891011, 19.060100); 	--  MySQL server also: "Bratislava", BUT ' works on all servers, incl ones that don't accept " (PostgreSQL, SQL Server)
+
+----------------------------------------------------------------
+

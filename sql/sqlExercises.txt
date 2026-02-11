@@ -1,0 +1,472 @@
+CRUD operations
+https://sqlbolt.com/lesson/introduction
+https://sqlbolt.com/lesson/select_queries_introduction
+https://sqlbolt.com/lesson/select_queries_with_constraints
+https://sqlbolt.com/lesson/select_queries_with_constraints_pt_2
+https://sqlbolt.com/lesson/filtering_sorting_query_results
+https://sqlbolt.com/lesson/inserting_rows
+https://sqlbolt.com/lesson/updating_rows
+https://sqlbolt.com/lesson/deleting_rows
+https://sqlbolt.com/lesson/creating_tables
+
+Aggregate functions
+https://sqlbolt.com/lesson/select_queries_with_aggregates
+https://sqlbolt.com/lesson/select_queries_with_aggregates_pt_2
+https://sqlzoo.net/wiki/SUM_and_COUNT
+
+Joins
+https://sqlbolt.com/lesson/select_queries_with_joins
+https://sqlbolt.com/lesson/select_queries_with_outer_joins
+https://sqlbolt.com/lesson/select_queries_with_nulls
+https://sqlbolt.com/lesson/select_queries_order_of_execution
+https://sqlzoo.net/wiki/The_JOIN_operation
+https://sqlzoo.net/wiki/More_JOIN_operations
+
+Other
+https://sqlzoo.net/wiki/Self_join
+https://sqlzoo.net/wiki/Using_Null
+
+-------------------------------------------------------------------------
+
+Given the following table named `applicants`.
+
+| id | name               | country        | age |
+|:---|:-------------------|:---------------|:----|
+| 0  | Bořivoj Souček     | Czech Republic | 24  |
+| 1  | Papp Patrícia      | Hungary        | 33  |
+| 2  | Kocsis Ivett       | Hungary        | 37  |
+| 3  | Slavomír Vykukal   | Czech Republic | 20  |
+| 4  | Bruno Malík        | Czech Republic | 31  |
+| 5  | Veronika Lukešová  | Czech Republic | 18  |
+| 6  | Székely Miklós     | Hungary        | 29  |
+| 7  | Hegedüs Benjámin   | Hungary        | 37  |
+| 8  | Nela Machová       | Czech Republic | 20  |
+| 9  | Balog Rajmund      | Hungary        | 39  |
+| 10 | Major Borbála      | Hungary        | 35  |
+| 11 | Evelína Horváthová | Czech Republic | 23  |
+| 12 | Vászoly Vivien     | Hungary        | 40  |
+| 13 | Lada Stýskalová    | Czech Republic | 27  |
+| 14 | Dagmar Benešová    | Czech Republic | 33  |
+
+- Write an SQL query to select the name of the 5 youngest applicants from the
+  Czech Republic.
+- SOLUTION:
+```mysql
+select name from applicants where country = 'Czech Republic' order by age asc limit 5; 		
+```
+
+
+- Count the number of applicants from Hungary who are aged 35 and above.
+- SOLUTION:
+```mysql
+select count(*) from applicants where country = 'Hungary' and age >= 35;		
+```
+
+- Retrieve the names of all applicants who have a name starting with the letter 'B'.
+- SOLUTION:
+```mysql
+select name from applicants where name like 'B%';					
+```
+
+- Determine the average age of applicants from each country.				
+- SOLUTION:
+```mysql
+select country, avg(age) from applicants group by country;
+```
+-------------------------------------------------------------------------
+
+## Question
+
+Given the following table named `applicants`.
+
+| id | name               | country_id | age |
+|:---|:-------------------|:-----------|:----|
+| 1  | Bořivoj Souček     | 1          | 24  |
+| 2  | Papp Patrícia      | 2          | 33  |
+| 3  | Kocsis Ivett       | 2          | 37  |
+| 4  | Slavomír Vykukal   | 1          | 20  |
+| 5  | Bruno Malík        | 1          | 31  |
+| 6  | Veronika Lukešová  | 1          | 18  |
+| 7  | Székely Miklós     | 2          | 29  |
+| 8  | Hegedüs Benjámin   | 2          | 37  |
+| 9  | Nela Machová       | 1          | 20  |
+| 10 | Balog Rajmund      | 2          | 39  |
+| 11 | Major Borbála      | 2          | 35  |
+| 12 | Evelína Horváthová | 1          | 23  |
+| 13 | Vászoly Vivien     | 2          | 40  |
+| 14 | Lada Stýskalová    | 1          | 27  |
+| 15 | Dagmar Benešová    | 1          | 33  |
+
+Given the following table named `countries`.
+
+| id | country        |
+|:---|:---------------|
+| 1  | Czech Republic |
+| 2  | Hungary        |
+
+`1.` Write SQL query to insert a new applicant
+
+  ```sql
+  INSERT INTO applicants (name, country_id, age) VALUES ('John', 1, 40);
+  ```
+ 
+`2.` Write SQL query that will return the youngest applicant's name
+
+  ```sql
+  SELECT name FROM applicants Where age = (SELECT MIN(age) FROM applicants);
+  ```
+
+`3.` Write SQL query to update the `Czech Republic` country to `Czech Republic or Slovakia`
+
+  ```sql
+  UPDATE countries Set name = 'Czech Republic or Slovakia' where name='Czech Republic';
+  ```
+
+`4.` Write SQL query to select the name and the country of applicants from
+Hungary with the age 40.
+
+The expected result should be the following.
+
+| name           | country |
+|:---------------|:--------|
+| Vászoly Vivien | Hungary |
+
+
+  ```sql
+  SELECT a.name, c.country From applicants a JOIN countries c on c.id = a.country_id WHERE n.age = 40 AND c.country = 'Hungary';
+  ```
+
+
+
+
+
+-------------------------------------------------------------------------
+
+high_earners table:
+ID	NAME	SALARY
+4	Chaitali	6500.00
+5	Hardik	8500.00
+6	Komal	4500.00
+7	Muffy	10000.00
+
+
+orders table:
+
+ORDER_ID  CUSTOMER_ID	AMOUNT	ORDER_DATE
+101	   1		250	2025-07-01
+102	   2		300	2025-07-03
+103	   1		150	2025-07-05
+
+
+//TASK: Show customers full data, along with their order_ID
+
+//SOLUTION below:
+/*
+SELECT h.id, h.name, o.order_id from high_earners h
+LEFT JOIN orders o 
+ON h.id = o.customer_id;
+*/
+
+-------------------------------------------------------------------------
+
+Customers table:
+ID	NAME	AGE	ADDRESS	SALARY
+1	Ramesh	32	Ahmedabad	2000.00
+2	Khilan	25	Delhi	1500.00
+3	Kaushik	23	Kota	2000.00
+4	Chaitali	25	Mumbai	6500.00
+5	Hardik	27	Bhopal	8500.00
+6	Komal	22	Hyderabad	4500.00
+7	Muffy	24	Indore	10000.00
+
+
+Orders table:
+ORDER_ID   CUSTOMER_ID 	AMOUNT 
+101 		1 	300.00
+102 		2 	150.00
+103 		1 	200.00
+104 		3 	400.00
+105 		5 	250.00
+106 		4 	600.00
+107 		1 	500.00
+
+//TASK:  find the total order amount per customer
+https://www.tutorialspoint.com/sql/sql-group-by.htm
+//SOLUTION below:
+
+/*						
+SELECT C.NAME, SUM(O.AMOUNT) AS TOTAL_ORDER_AMOUNT
+FROM CUSTOMERS C
+LEFT JOIN ORDERS O ON C.ID = O.CUSTOMER_ID	-- even if there are no order amounts per customer, Left Join will display the customer
+GROUP BY C.NAME;
+*/
+
+-------------------------------------------------------------------------
+First create a new database called Hierarchical. Open the SQL file 'families.sql' and execute it. This should generate a table called categories which are categories of news articles on a newspaper website.
+
+Each row in this table contains a column called parent_category_id, which tells you which parent category any category belongs to (the All categories number 25 has no parent, and so sits at the top of the hierarchy).
+
+Create a query that shows the full Category Path for each category ordered by the name of the category. 
+
+Result should look like image hierarchy.png
+
+Hint: You'll need to use 2 self-joins and a string function to solve this exercise. You'll also need to trap for nulls, for those occasions when a family doesn't have a parent.
+
+------Solution------
+
+Table looks like this:
+INSERT INTO categories (category_id, name, 		parent_category_id)  VALUES 
+			(1, 	    'Politics', 	21),
+			(4, 	    'Natural world', 	23),
+			(13,	    'Old', 	    	24),
+			(9, 	    'Entertainment', 	22),	
+			(13,        'Old', 		24),
+			(22,	    'Cultural',		25),
+			(25, 	    'All categories',   NULL);
+
+
+We need to obtain this:
+			Name		Path
+			Politics	All Categories > Socio/Political > Politics
+			Natural World	All Categories > Scientific/Technical > Natural World
+			All Categories	All Categories
+
+-------
+Solution
+--------
+The hierarchy of the 2 self joins must be built from the child -> parent -> grandparent
+the syntax will look like c3. name, ' >', c2.name ,' >' , c1.name, but only if the (grand)parents are not null
+Therefore CONCAT + COALESCE(value-if-not-null, else-value)  -- coalesce considers whether the source of the value is null or not
+
+
+SELECT c1.name AS Name, CONCAT(
+COALESCE(CONCAT(c3.name, ' > '), ''), 
+COALESCE(CONCAT(c2.name, ' > '), '' ), 
+c1.name
+) AS Path
+FROM categories c1
+LEFT JOIN categories C2
+on c2.category_id = c1.parent_category_id
+LEFT JOIN categories c3
+ON c3.category_id = c2.parent_category_id
+;
+
+-------------------------------------------------------------------------
+
+Show the total population of baltic countries.
+
+world table:
+name		continent	area	population	gdp
+Afghanistan	Asia		652230	25500100	20343000000
+Albania		Europe		28748	2831741		12960000000
+Algeria		Africa		2381741	37100000	188681000000
+Andorra		Europe		468	78115		3712000000
+Angola		Africa		1246700	20609294	100990000000
+
+-------
+Solution
+--------
+SELECT SUM(population) as Baltic_population
+FROM world w
+WHERE w.name = 'ESTONIA' OR w.name = 'Latvia' OR w.name = 'Lithuania';
+
+-------------------------------------------------------------------------
+
+Show names and roles of employees not assigned to any of the buildings
+Table Employees
+
+Role		Name		Building	Years employed
+Engineer	Becky A.	1e		4
+Engineer	Dan B.		1e		2
+Engineer	Sharon F.	1e		6
+Engineer	Dan M.		1e		4
+Engineer	Malcom S.	1e		1
+Artist		Tylar S.	2w		2
+Artist		Sherman D.	2w		8
+Artist		Jakob J.	2w		6
+Engineer	Yancy I.			0
+Artist		Oliver P.			0
+
+-------
+Solution
+--------
+SELECT name, role FROM employees		-- table/column naems in SQL are by default case‑insensitive
+WHERE building IS NULL;
+
+-------------------------------------------------------------------------
+
+In the same Employees table, select names of everybody employed for less than 2 years.
+
+-------
+Solution
+--------
+SELECT name from employees
+WHERE `Years employed` < 2;			-- for MYSQL, use syntax markers `` to quote column name with spaces in it
+
+-------------------------------------------------------------------------
+
+Considering the above Employees table, as well as the below Buildings table,
+find the names of the buildings that hold no employees,
+showing the first 3 records only(considering alphabetic building name order)
+
+
+table Buildings
+
+Building_name	Capacity
+1e		24
+1w		32
+2e		16
+2w		20
+
+-------
+Solution
+--------
+SELECT Buildings.Building_name, COUNT(Employees.Name) 
+FROM Buildings LEFT JOIN Employees
+ON Buildings.Building_name = Employees.Building
+GROUP BY Buildings.Building_name
+HAVING COUNT(Employees.Name) = 0
+ORDER BY Buildings.Building_name
+LIMIT 3;
+
+-------------------------------------------------------------------------
+
+Given the 2 tables below, 
+list the dates of matches and the name of the team in which 'Fernando Santos' was the coach.
+
+game
+id	mdate		stadium				team1	team2
+1001	8 June 2012	National Stadium, Warsaw	POL	GRE
+1002	8 June 2012	Stadion Miejski (Wroclaw)	RUS	CZE
+1003	12 June 2012	Stadion Miejski (Wroclaw)	GRE	CZE
+1004	12 June 2012	National Stadium, Warsaw	POL	RUS
+
+eteam
+id	teamname	coach
+POL	Poland		Franciszek Smuda
+RUS	Russia		Dick Advocaat
+CZE	Czech Republic	Michal Bilek
+GRE	Greece		Fernando Santos
+
+-------
+Solution
+--------
+SELECT game.mdate, eteam.teamname
+FROM eteam JOIN game
+ON (eteam.id = game.team1 OR eteam.id = game.team2)
+WHERE eteam.coach LIKE 'Fernando Santos';
+
+-------------------------------------------------------------------------
+Given the 2 tables below, 
+For every match involving 'POL', show the id, date and the number of goals scored.
+
+game
+id	mdate		stadium				team1	team2
+1001	8 June 2012	National Stadium, Warsaw	POL	GRE
+1002	8 June 2012	Stadion Miejski (Wroclaw)	RUS	CZE
+1003	12 June 2012	Stadion Miejski (Wroclaw)	GRE	CZE
+1004	12 June 2012	National Stadium, Warsaw	POL	RUS
+
+
+
+goal
+matchid	teamid	player			gtime
+1001	POL	Robert Lewandowski	17
+1001	GRE	Dimitris Salpingidis	51
+1002	RUS	Alan Dzagoev		15
+1002	RUS	Roman Pavlyuchenko	82
+
+
+-------
+Solution
+--------
+SELECT game.id, game.mdate, COUNT(goal.matchid) AS goals_scored
+FROM game JOIN goal
+ON game.id = goal.matchid
+WHERE game.team1 LIKE 'POL' OR game.team2 LIKE 'POL' 		-- also game.team1 = 'POL' is ok
+GROUP BY game.id, game.mdate;					-- SQL requires to list all non-aggregate columns in GROUP BY if an aggregate column(COUNT here) is used previously
+
+-------------------------------------------------------------------------
+
+Correct the director of A Bug's Life to John Lasseter and the issued year to 1997 in the below table:
+Table: movies
+
+Id	Title		Director	Year	Length_minutes
+1	Toy Story	John Lasseter	1995	81
+2	A Bug's Life	El Directore	1998	95
+3	Toy Story 2	John Lasseter	1899	93
+4	Monsters, Inc.	Pete Docter	2001	92
+
+-------
+Solution
+--------
+UPDATE Movies 
+SET Director = 'John Lasseter', Year = 1997	--LIKE statement does NOT work when setting rows
+WHERE Title = 'A Bug''s Life';			-- to escape an apostrophe in a string, it needs to be doubled
+
+-------------------------------------------------------------------------
+
+In the above Movies table, insert a new record with Id 5, Title 'To Be Agreed' and omit everything else
+
+-------
+Solution
+--------
+INSERT INTO Movies (Id, Title)
+VALUES (5, 'To Be Agreed');
+
+-------------------------------------------------------------------------
+
+In the above Movies table, remove all movies directed by Pete Docter
+
+-------
+Solution
+--------
+DELETE FROM Movies
+WHERE Director = 'Pete Docter';
+
+-------------------------------------------------------------------------
+
+Create a new table named Database with the following columns:
+– Name A string (text) describing the name of the database, cannot be null
+– Version A number (floating point) of the latest version of this database, by default 1.0
+– Download_count An integer count of the number of times this database was downloaded, cannot be negative
+
+-------
+Solution
+--------
+CREATE TABLE IF NOT EXISTS MDatabase(		-- Database is a reserved SQL keyword, thus cannot be used for naming a DB
+Name VARCHAR(255) NOT NULL,
+Version FLOAT DEFAULT 1.0,
+Download_count INTEGER CHECK (Download_count >=0)
+);
+
+
+-------------------------------------------------------------------------
+To the above created MDatabase table, add two new columns:
+FLOAT Aspect_ratio 
+Language, default is English.
+
+-------
+Solution
+--------
+ALTER TABLE MDatabase			--SQL database expects adding one column per command
+ADD COLUMN Aspect_ratio FLOAT;
+ALTER TABLE MDatabase
+ADD COLUMN Language VARCHAR(255) DEFAULT 'English';
+
+-------------------------------------------------------------------------
+To the above created MDatabase table, remove the column 'Aspect_ratio':
+
+-------
+Solution
+--------
+ALTER TABLE MDatabase
+DROP Aspect_ratio;
+-------------------------------------------------------------------------
+Rename the above created MDatabase to MDB
+
+-------
+Solution
+--------
+ALTER TABLE MDatabase
+RENAME TO MDB;
