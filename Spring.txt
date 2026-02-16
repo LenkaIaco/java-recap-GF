@@ -1,0 +1,111 @@
+Spring is a framework that enables constructing web applications with Java, without the need to implement the infrastructure code from scratch, as it provides ready-to-use structure eliminating the need of of boilerplate code for connecting with database, configuring servlet containers for running web application, establishing a session with server. It is ideal for developing applications: Establishing a Model View Controller structure for frontend-backend data transfer:
+Sing uses its own DispatcherServlet logic to transfer data between these layers. 
+Spring includes a library of a servlet container into your application(as the app's dependency) - it "embeds" a Tomcat servlet which is acting as the application's server,  as opposed to a separately connected provider. The embedded server establishes a HTTP connection between Spring MVC and the webpage and inside the application's MVC layers and receives HTTP requests, sends out HTTP responses.
+
+Spring integrates with all dependencies needed for: 
+	translation of java logic into JPQL and SQL, handling transactions, translating SQL/JPQL errors into stack trace errors (usually through Hibernate's implementation)
+	translation of JDBC imlementation's errors
+Spring translates JDBC and Hibernate's exception into DataAccessException.
+
+Spring's own developed security handling of web applications (enabling client secrets, tokens exchange incl. verification and hashing, access level specification for users, endpoint authentication and authorization). 
+It provides a pre-configured version based on the most commonly needed features via SpringBoot auto-configuration, which removes the need to configure its dependencies and their compatible versions manually, but chooses the most commonly used configurations based on which dependencies (which implementation providers for all the functions that your application is meant to have apart from business logic) you pick when setting up your application.
+
+Apart from the above, Spring provides:
+	- handling aspects of applications with common logic(@Aspect), and handle errors across application(dedicated classes(ControllerAdvice, ExceptionHandler)), 
+	- 2 types of messaging abstractions(integrated via implementation providers)
+	    Spring JMS - abstraction implemented via JMS providers(ActiveMQ,Artemis, 
+ 	    Spring messaging - protocol‑agnostic messaging, any system can use it, JMS or others.Spring Messaging provides a common message abstraction so Spring applications can integrate with modern messaging systems (Kafka, RabbitMQ, WebSockets, MQTT, cloud queues) that do not use JMS and are not tied to Java. 
+	- logging(integration with impl.providers)
+
+
+
+Spring integrating java's specification for establishing connections with server(Java Servlet) and integrating specification connections with databases incl DB error translation (JDBC), ORM integration (JPA, Hibernate),transactions (JTA), JMS(Java Message Service) but does not implement java specifications.
+Instead, it provides abstractions which integrate these specifications and with the implementation providers. Spring was created as an alternative to the heavy Jakarta EE model. It simplifies, replaces, wraps or extends these specifications for providing a seamless web development experience. It uses Dependency Injection and Inversion Control Container (Bean Factory extension) to control lifecycle of its beans which are by default singletons(bean scope sorted from smallest to largest: prototype>request>application>session>websocket>singleton), to be able to run effective applications.
+
+Spring uses other frameworks like Hibernate(ORM engine + JPA implementation provider) for its Object relational Mapping (ORM) tool and Maven/Gradle for build, and other functions(frameworks like Jackson (JSON), Thymeleaf(templating),Log4j logging)
+
+Hibernate core is ORM engine. On top of that, Hibernate implements JPA specification.
+Hibernate's ORM engine beyond JPA specification does: 
+	translating JPQL -> SQL 
+	Interaction with JDBC (obtains connections with DB, execute SQL and map DB records to entities)
+
+Spring also uses Hibernate's Validator (a separate java specification's implementation for Bean Validation, not part of Hibernate core)
+	
+-------------------------
+
+Parts of spring:
+
+1. Spring core:
+@Repository  (just a core function to represent a class where the operations on entities are to be performed. 
+	The CRUD operation methods have to be written manually v=caaling the Entity manager and supplying it with entities, 
+	as well as methods for JPQL parsing need to be written by calling entity's manager jpql creation method while jpql parsing logic needs to be specified manually.
+@Service
+
+2. Spring MVC - HTTP-based applications:
+web framework of Spring — the dispatcher, routing, request mapping, argument resolution, return‑value handling, exception handling, filters, interceptors, etc.
+REST controllers, although they have no model and no view, simply reuse this (historically named) existing infrastructure
+MVC's view is the template used for the resulting rendered webpage. Whatever it consists of templating engine's data( like Thymeleaf or JSP) plus HTML, CSS, JS, all together.
+MVC's model is a map of attributes to-be-added by the controller's method's logic into the to-be-rendered view. 
+Controller's method returns name of the view template and ViewResolver finds the template based on the name and returns the View object. 
+The whole MVC is orchestrated by the DispatcherServlet:
+Orchestrates calling controllers and the process of resolving views:
+	DispatcherServlet receives the HTTP request
+	It calls your controller method. Your method returns a view name (e.g., "home")
+	DispatcherServlet asks the ViewResolver to find the actual template. ViewResolver returns a View object (e.g., ThymeleafView)
+	DispatcherServlet calls view.render(model, request, response) along with the model data, HTTPServletRequest and HTTPServletResponse.
+	The templating engine (Thymeleaf) processes the template and renders it into the final HTML. Which is written into the HTTP response(HTTPServletResponse).
+	After this point, Spring MVC does NOT touch it anymore: 
+		- The server - embedded servlet container, or Tomcat/Jetty/Undertow - sends the response to the browser. The server then closes the connection.
+		- The browser receives the HTML and the references to CSS, JS and renders the page.
+
+
+
+
+@Controller(MVC controller - server-side rendered views: endpoint returns a view name(e.g. thymeleaf templates) -> using view resolvers to render html), 
+@RestController(REST APIs (JSON/XML/binary streams responses) - method returns data, not views, serializes data into JSON automatically via Jackson): REST APIs(exchanging data with other software: Mobile apps backends-mobile app, SPA backends-frontend(react, angular, vue), internal microservices, external other backends). @RestController = @Controller + @ResponseBody  (DispatcherServlet skips the ViewResolver and writes the data directly into HttpResponse (using HttpMessageConverter to convert into JSON format).
+
+	Classic MVC
+	Controller → ViewResolver → Template Engine → HTML
+
+	REST MVC
+	Controller → HttpMessageConverter → JSON    //based on client's HTTP request accept header, Spring automatically converts the data into desired format: " GET /users  Accept: application/json". If none specified, default JSON.
+
+@RequestMapping, 
+@GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping
+@PathVariable,@RequestParam, @RequestBody, @ResponseBody
+@ModelAttribute
+
+Separation between  HTML and CSS, and business backend logic. Integration with templating engines for connection between these layers.
+
+3. Spring Data JPA(repository abstraction):
+CrudRepository + PagingAndSortingRepository ->  JpaRepository  (dedicated repositories with pre-built methods that represent the database operations)
+	@Query - Spring JPA supports JPQL/SQL Queries on methods annotated with spring's @Query (not Hibernate's @Query) extracts the JPQL and passes it to Hibernate's implementation of JPA EntityManager. @Query annotation serves extracting JPQL and converting it to SQL queries by the underlying implementation provider used(parsing JQL and conversion into SQL is the implementor's job, Hibernate core concretely. Spring never redundantly "reinvents the wheel" if it can use an already well established existing implementation provider for the same purpose.
+	Criteria API support.
+
+@Transactional (Spring's, not the deprecated Hibernate's or the original JTA's - engages Hibernate's session and JPA's EntityManager; at the end, commits or rolls back. Wraps the containing class in a proxy class to intercept the method and add its logic to it. The class containing @Transaction is registered in the ApplicationContext as MyClassproxy -> MyClass, so interactions with MyClass actually happen with MyClassProxy). 
+	I. Proxies in Transactions and all AOP implementations. Proxy is a runtime-generated subclass/subinterface, constructed either: 
+	    1. Original class is implementing an interface? Proxy implements the same interface and all proxy methods have the same logic except the ones marked @Transactional or eligible for aspect behavior(Spring AOP, error handling, spring security, logging, performance monitoring). In the Application context, the class is registered as its proxy instead of the original class, thus, the generated Bean is actually the ProxyClass. 
+	    2. Original class a standalone class? Proxy uses CGLIB (code-generation library - bytecode generation dynamically at runtime to modify the behavior of the already compiled from the original code)
+	    These 2 methods allow the original code to stay untouched (separation of concerns) while at runtime, the code is being modified by the underlying spring logic.
+	II. Proxies made around application's interfaces marked @Repository:
+	     - Our app's repository interfaces are proxied. All these classes extend some of Spring's repositories, usually JpaRepository. However, Spring creates a proxy by implementing the MyOwnRepository, not the JpaRepository.
+
+- Removes the need for implementation code as it injects it automatically and enables users focus on the business logic
+
+ready-to-use methods for: CRUD Operations on entities, paging and sorting logic, transaction handling via annotation @Transactional
+generates the implementation class and injects EntityManager
+handles JPQL parsing (@Query)
+handles SQL database's exceptions translation into java exceptions
+
+4. Dependency Injection, Inversion of Control Container. Inversion of control is implemented by dependency injection, where IOC instantiates and manages centrally all dependencies as singletons and throughout their entire lifecycle.
+
+5. Spring Boot autoconfiguration - enhances development of application by providing a pre-configured version of dependencies and tools it uses, as well as providing an embedded servlet and a database simulation to enhance the development environment for web applications.
+
+6. Spring security
+
+7. Spring AOP (customised cross-cutting logic application wide)
+
+8. Spring JTA (its own abstraction to provide transactions, can integrate with implementation providers, app servers)
+
+8. Spring webflux - building reactive applications
+

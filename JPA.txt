@@ -1,0 +1,49 @@
+JPA Java persistence API
+Specification (interfaces, annotations, rules) for how to map objects to relational records. And how persistence of java Objects in relational databases should behave.
+This includes:
+
+1. Establishing a persistence context and rules for ORM (object relational mapping) -   still to be implemented by a provider (Hibernate, EclipseLink):
+	- implement entity Manager that helps manage entities during their lifecycle with its logic. 
+	- Implement persistence engine which translates entity operations on them into SQL(this is not part of JPA, but the implementer's job), or vice versa fetching records from database and mapping it to an entity and instantiating it according to the SQL record.
+	JPA defines what must happen (entities must be populated correctly)
+	Providers define how it happens (reflection, proxies, bytecode enhancement, caching strategies)
+
+2. entity lifecycle management - Entities are POJOs annotated with @Entity( there is no abstract entity superclass)
+While persisting data, for efficiency purposes, persistence context is cached and can be re-accessed or removed later(JPA's compulsory 1.level cache):
+	- Persistence context = the currently managed entities (entities with state "managed") managed by the Entity manager. With their diverse states within their lifecycle, during a certain unit of work(e.g.transaction):    Your code → EntityManager → Persistence Engine → JDBC → Database
+ 	- Entity is a programmatic object that represents a new/already existent record that is meant to be submitted to the database at some point and might have, in between that, operations performed on it, modifying the to-be-submitted data:
+	User u1 = em.find(User.class, 1); // hits DB 
+	User u2 = em.find(User.class, 1); // returns cached instance
+     or:
+	em.persist(user); 
+	em.flush(); // SQL INSERT happens here
+
+States of entity can be: 
+	new(entity created but not submitted for management by Entity manager yet, not cached), 
+	managed: = only these are accessible to Entity Manager. Changes are registered to be submitted with the next transaction to the database, find() locates the entity's instance).
+	removed: still in the persistence context(1.level cache). To be deleted('detached', see below) when the transaction is flushed(after flush/commit)
+	detached: changes are not registered into submission to the database, but re-attachable to Entity manager if needed by merge()
+Entity lifecycle: create() -> 'new' -> find()/persist() -> 'managed' -> delete() -> 'removed' -> flush() -> 'detached'+ deleted from DB -> merge() -> new  'managed' instance created
+
+3. Caching rules - JPA defines only how caching is configured. The mechanism is implemented concretely by an ORM provider:
+JPA defines 1st level caching(mandatory by JPA)- by means of entity persistence and transactions. 2nd level caching is not defined by JPA, it is provider‑specific. JPA only defines shared cache modes as configuration hints: an option to enable/disable shared cache for this purpose, is for the provider to implement.
+
+4. Transaction integration - defines how JPA integrates with JTA(java transaction api). Transaction: an unit of data meant to be submitted together to the database. Transactions can be controlled by the JTA implementation (trans. container e.g., application server, or Spring with JTA enabled) and programming logic, and in case of any errors in the process, rolled back and handled by the desired programmatic logic, without the risk of submitting incomplete or incorrect data to the database. In environments, where is no JTA (JAVA SE, as opposed to Java EE or Spring JTA, where the JTA container of these frameworks starts a transaction), JPA will not allign with any existing JTA structure, but by API definition of JPA, it aligns with whatever structure controls the transactions. And there is a possibility to use the provider's implementation of Entity Manager (Hibernate's or EclipseLink's), only in resource local mode, as an subject for transactions.
+
+5. Entity manager - interface that defines operations on entities: persist(), remove(), flush()(synchronises persistence context with DB), clear()(detaches all managed entities), merge(). find() - these are abstract and need to be implemented by the ORM provider
+
+6. JPQL (Java persistence query language) object oriented query language -  Java invents JPQL syntax, semantics. Providers implement how to parse JPQL and convert it to SQL, as well as map sql from fetched DB records to entity objects.
+queries entities and relationships of application's entitites ( much like sql commands manage database entries), via entity manager's methods (SELECT u FROM User u WHERE u.email = :email). In Spring data JPA (JPA implementation by Spring), the entity manager gets called automatically, whereas you define only an Entity, its method, and the JPQL:
+
+	public interface UserRepository extends JpaRepository<User, Long> { 
+		@Query("SELECT u FROM User u WHERE u.email = :email") 
+		User findByEmail(String email); 
+ 	}
+
+7. Criteria API - Criteria API builds JPQL queries using Java objects instead of strings. By this, it enables entities and operations performed to them to be programmatic without an explicit JPQL mention in the code. 
+This allows type-safe queries. Example:
+	query.select(user) .where(cb.equal(user.get("email"), "lenka@example.com"));
+   Java defines Criteria API interfaces and rules on how Criteria should represent JPQL.
+   Providers implement interfaces, translation of criteria query -> JPQL.
+
+8. Metadata annotations @Entity, @Id, @Table, @Column, @OneToMany, @ManyToOne - define mapping, to be implemented by ORM provider

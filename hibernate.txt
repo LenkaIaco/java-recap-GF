@@ -1,0 +1,66 @@
+JPA's annotations @Entity, @Id, @Table, @Column, @OneToMany, @ManyToOne - define mapping, are to be implemented by ORM provider (like Hibernate)
+
+@Entity    // all entity marked classes will have their fields persisted into database record's columns, unless marked @Transient
+@Table(name="student_information)
+class Student{
+    @Id 	// for primary key as part of business logic(e.g. social security number), insert manually, otherwise add @GeneratedValue: 
+    @GeneratedValue (strategy = GenerationType.IDENTITY)    // IDENTITY(supported by MYSQL, SQL Server apart from .AUTO) if not specified, will be .AUTO; 		
+							//other .SEQUENCE(supported by Oracle DB), .TABLE
+    private int rollNo;			
+    
+    @Column(name="full_name", nullable = false)
+    private String name;
+
+    @Transient
+    private int myFlagNotForDatabases;
+
+
+private Date created; // all java Dates will be automatically translated into SQL's DATETIME format, unless TemporalType specified:
+
+@Temporal(TemporalType.DATE)   // other: .TIME, TIMESTAMP
+private Date birthdate;    
+
+ //getters and settters:
+
+    public int getRollNo(){
+	return rollNo;
+	}
+ 
+// ...
+ 
+}
+
+
+----------------------------
+
+Hibernate components:
+
+Hibernate core is JPA + ORM. Hibernate's ORM engine beyond JPA specification does: 
+	translating JPQL -> SQL 
+implementing entity graphs and executing loading strategies (default or customized) based on the relationships between entities: @ManyToOne, @OneToMany, @OneToOne - adjusting SQL joins to apply the appropriate fetch strategy
+	Criteria API implementation
+	Interaction with JDBC (obtains connections with DB, execute SQL and map DB records to entities)
+	Map DB records(SQL query fetched results) to custom Java classes (mostly into DTOs, via "Projections"). Allows exposing only certain fields from the original Entity class, separating Entity from the fetched result.
+Often used for REST JSON DTOs.
+
+Hibernate's Validator (a separate java specification's implementation for Bean Validation, not part of Hibernate core)
+
+
+Hibernate does not implement JDBC - it only interacts with JDBC while it acquires connection, releases connection, run SQL thorugh the connection and coordinate this with the persistence context and transactions (JPA and JTA)
+----------------------------
+
+
+Who actually implements JDBC?
+✔ JDBC drivers: Database vendors implement DB drivers:
+	PostgreSQL JDBC driver, MySQL Connector/J, Oracle JDBC driver, SQL Server JDBC driver
+	Implement:
+		java.sql.Connection
+		java.sql.PreparedStatement
+		java.sql.ResultSet
+
+✔ JDBC connection pools: Implementors (connection factory for connection lifecycle, connection pooling logic):
+	HikariCP (default in Spring Boot), C3P0, DBCP
+	They implement:
+		javax.sql.DataSource
+
+Hibernate uses these classes — it does not create them.
