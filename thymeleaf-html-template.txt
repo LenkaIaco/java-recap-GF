@@ -1,0 +1,155 @@
+/* 
+MVC workflow with Thymeleaf:
+1. Spring MVC: arrived HTTP request, parses it: URL parameters, form fields, JSON... converting into java objects(via @ModelAttribute, converters, data binding) and routing it to the appropriate controller + endpoint method. Controller method returns a Model(Spring-constructed) and a view name. ViewResolver finds the view html template.
+2. Thymeleaf is a templating engine responsible for 
+	translating from Java Objects into html data in html templates and vice versa from HTML templates into Java Objects (based on which object references are stored in model attributes, and which htmltemplate the ViewResolver points out)
+	constructing the final html page including parameters from java objects, css styling, javascript, images 
+
+
+3. Spring MVC: passing the result to the HTTPResponse objects(Jakarta Servlet implementation like Tomcat, Jetty, ...)
+
+saved in spring applications under src/main/resources/templates:
+
+ Spring boot templates(thymeleaf, freemarker etc) have a default template location, they expect classpath:/templates/ . Spring boot standardizes this into src/main/resources/templates, which the ViewResolver scans to locate the html templates
+
+There are other folders automatically searched inside the classpath, apart from templates: 
+Spring boot looks into classpath, for folders: 
+classpath:/static/
+classpath:/public/
+classpath:/resources/
+classpath:/META-INF/resources/
+classpath:/templates/
+ --------------------------------------------
+Classpath is a RUNTIME reference, not a source-folder-type structure:
+- runtime root(if app runs via IntelliJ, 'classpath' is decided by IntelliJ who gives java -cp or -classpath command),
+   If I run a java command manually, classpath becomes the folder specified in the command, 
+   e.g. for running MyApp.class from 'parent' folder + including all dependencies from myfolder/resources:
+	java -cp .;myfolder/resources MyApp
+- When app is run via IntelliJ, 'classpath' is decided by IntelliJ who issues java -cp or -classpath command.
+   Classes from src/main/java are compiled + resources from src/main/resources are copied. 
+   These files are then automatically included into the classpath folder: out/production/<module>. 
+   This becomes the classpath root because IntelliJ launches the JVM with:  -classpath out/production/<module> + dependencies 
+   Example (Windows):
+	java -cp out\production\MyModule;all-dependencies; lib\* com.example.MyApplication
+--------------------------------------------
+So, the classpath ends up containing:
+out/production/<module>/
+    com/example/...        ← compiled Java classes
+    static/                ← copied from src/main/resources/static
+    templates/             ← copied from src/main/resources/templates
+    application.properties ← copied from src/main/resources
+
+Apart from out/production/<module>, classpath contains dependencies, resolved at runtime based on what dependencies are in maven/gradle cache for this projects + locations that store these locations:
+
+-classpath out/production/<module>;
+  C:\Users\<you>\.m2\repository\spring-boot\spring-boot-3.2.0.jar;
+  C:\Users\<you>\.m2\repository\spring-core\spring-core-6.1.0.jar;
+  C:\Users\<you>\.m2\repository\thymeleaf\thymeleaf-3.1.0.jar;
+  ... many more ... 
+
+Copying dozens or hundreds of JARs into your project would be wasteful. So IntelliJ just builds a long -cp argument with references to the jar location, which enables jars to be shared accross multiple projects.
+*/
+
+
+/* html pre-generated template header and body structure in intellij - click on templates - new - html template
+pre-header xmlns disclaimer tells to HTML parser to use thymeleaf namespace (every abbreviation th:* in this document refers to using thymeleaf's internal syntax rules. http://www.thymeleaf.org is just an unique ID, it does not fetch any content from the url connected to the th: references). Thymeleaf attributes: 
+	th:object for translating @ModelAttribute, or model.addAttribute("attr", myobject): 
+	  It has to be sourced from MVC bound to an endpoint that contains that object and sends it to the html template containing th:object. 
+	  So either from automatically-translated @ModelAttribute from the URI, or manually adding it in method body: model.addAttribute("attr", myObject)
+	th:text, 
+	th:each for processing collections, 
+	th:if, th:unless, th:switch + th:case for conditions, 
+	th:href, th:src for formatting chosen text as a chosen html link (dynamic URLs), 
+	th:replace, th:insert for template fragments and layouting
+
+head change - link css related + thymeleaf
+
+*/
+
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http:/www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/style.css}"/>	//if there would be another link rel tag with only href instead of th:href, the th:href tag would get preferred
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+
+<!-- the ${text} can correspond to endpoint code, but does not have to(it can just dispay the placeholder text between tags. -->
+<!-- If defined in controller: model.addAttribute("text", "<b>Hello!</b>"); -->
+<h1 th:text="${text}">Any html tags inside my text body DO NOT get recognised!</h1>
+<h2 th:utext="${text}"> <b>I will be displayed bold, if no ModelAttribute is defined in controller!</b> </h1> 
+
+<p class="is-king">CSS formatted text here</p>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Balance</th>
+  </tr>
+  <tr th:object="${bankAccount}">		//linked @ModelAttribute or model.addAttribute("bankAccount"; myAccount)
+    <td th:text="*{name}"></td>			// bankAccount's object has field String name 
+    <td th:inline="text">[[${#numbers.formatDecimal(bankAccount.balance,1,2,'POINT')}]] Eur </td>   //formats int balance field to a decimal
+  </tr>
+</table>
+
+
+<table>
+<tr>
+  <th>Animal Type</th>
+</tr>
+
+<tr th:each="account: ${accountList}" th:style="${account.isKing()} ? 'color:red; font-size:20px; background-color:yellow'">	//@ModelAttribute accountList is a collection
+<!--        ALTERNATIVE - refer to a formatting class within style.css called .is-king   -->
+<!--    <tr th:each="account: ${accountList}" th:class="${account.isKing()} ? 'is-king'" >-->
+
+  <td th:text="${account.animalType}"></td>	//alternative to "*{animalType}" in the above table, for-each requires references with the variable name (account)
+  <td th:switch="${#strings.toLowerCase(account.name)}">
+    <text th:case="'scar'">Bad Guy</text>
+    <text th:case="*">Good Guy</text>
+  </td>
+</tr>
+</table>
+
+<!-- <span> is for inline text format insertion (certain part of text formatted) -->
+<div>
+<span th:if="${error}" th:text="${error}"></span>
+<div th:unless="${error}" th:object=${book}>
+    <h1 th:text="${book.title}" + ', by ' + "${book.author}"></h1>
+</div>
+</div>
+
+
+<form-action="/accountList/raiseBallance" method="post"> //leads to endpoint method which replaces a concrete field by a concrete value, thus no parameters
+  <button type="submit">Save</button>
+</form>
+
+
+<form-action="/accountList/createAccount" method="post" th:object=${newAccount}>  // @ModelAttribute BankAccount newAccount: parameter, endpoint method: @PostMapping
+  <p>Add account details here:</p>
+
+  <!-- Label points to the id element - when label text clicked on website, associated element id gets selected. Screen readers read labels when input field is focused, improves accessibility for visually impaired -->
+  <label for="accountName">New Account Name</label>
+  <input id="accountName" type="text", name="name"> // 'name' must match the Model Attribute's field (BankAccount newAccount.name), or property th:field must be present + matching (below)
+
+  <label for="animalType">New Account Animal Type</label>
+<!-- 'name' property is redundant with th:field, as the field matches the Model attribute's field name(or specified in brackets): @ModelAttribute(name="newAccount") BankAccount newAccount -->
+  <input id="animalType" type="text", th:field="*{animalType}">  // BankAccount newAccount.animalType field
+  <button type="submit">Save</button>
+</form>
+
+
+<!-- the # indicates to stay on the same endpoint, suffixing simply a #, performing the form action -->
+<!-- the below form posts to POST mapping endpoint with @ModelAttribute Book book filled by the form inputs:  -->
+<form action="#" th:action="@{#}" method="post" th:object="${book}">
+<label for="title">Book title</label>
+<input id="title" type="text" required th:object="*{title}"/>
+<label for="releaseYear">Release Year</label>
+<input id="releaseYear" type="text" th:object="*{releaseYear}" required/>
+<button type="submit">Register book</button>
+</form>
+
+</body>
+</html>

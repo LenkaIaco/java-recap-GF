@@ -1,0 +1,133 @@
+Create our first Spring Boot Application
+•	Create a new project with Spring Initializr
+•	Use following settings:
+o	Name: springstart
+o	Language: java
+o	Type: Gradle-Groovy
+o	Group: com.greenfoxacademy
+o	Artifact: springstart
+o	Package Name: com.greenfoxacademy.springstart
+o	JDK: 11 (or the version you use)
+o	Java: 11 - it should match your JDK version
+o	Packaging: Jar
+ see image spring-start-05.jpg in the same folder as this file
+o	Spring Boot version: 2.7.x (because I used JDK 11 earlier)
+	Spring Boot above version 3.0 requires JDK 17
+o	Selected Dependencies:
+	Developer tools -> Spring Boot DevTools
+	Web -> Spring Web
+	Template Engines -> Thymeleaf
+  see image spring-start-06.jpg in the same folder as this file
+•	Create Project
+•	Open build.gradle file and if for any reason you are missing the dependencies, you can enter them in:
+•	dependencies {
+•	  implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+•	  implementation 'org.springframework.boot:spring-boot-starter-web'
+•	  developmentOnly 'org.springframework.boot:spring-boot-devtools'
+•	  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+} see image spring-start-06.jpg in the same folder as this file
+Open terminal and start Spring boot app with ./gradlew bootRun or gradlew bootRun command   
+see image spring-start-07.jpg in the same folder as this file
+Open localhost:8080 in your browser. You should get the "Whitelabel Error Page". This means your application is running.     
+see image spring-start-08.jpg in the same folder as this file
+•	
+Note, to stop your webserver, in the Terminal, press Control-C.
+HelloWorld
+•	Go find your generated Application Java file (where your main method is)
+•	Add @Controller to the class
+•	Add a new method called hello
+o	make it public
+o	return a String like Hello World!
+o	add @RequestMapping(value="/hello") and @ResponseBody to your method
+•	Restart the server (Ctrl+C and bootRun again)
+•	Checkout your new fancy HelloWorld web application at http://localhost:8080/hello
+Hello World REST App
+•	Add controllers package to your Spring project.
+•	Create Greeting class with long id and String content fields.
+o	Create getters for the fields
+o	Create a constructor using all fields
+•	Add HelloRESTController class to controllers package and add @RestController annotation to this class.
+•	Add greeting method and use @RequestMapping annotation.
+•	Create and return a Greeting object when it is called.
+•	Recompile app (use the "Make Project (Ctrl-F9" at the top of your project if you've edited the existing project and are restarting)
+•	Open http://localhost:8080/greeting in your web browser
+•	Your output should look like:
+•	{
+•	  "id": 1,
+•	  "content": "Hello, World!"
+}
+Hello User REST App
+•	Please improve your previous app to greet you and get the name from url query parameter.
+•	You should use @RequestParam annotation
+•	Recompile app
+•	Open http://localhost:8080/greeting?name=Your%20name in your web browser
+•	Your output should look like:
+•	{
+•	  "id": 1,
+•	  "content": "Hello, Your name!"
+}
+REST Greet counter app
+•	Lets improve your previous app with the greet number which is counting how many times this endpoint was called
+•	You should use AtomicLong class
+•	Recompile app
+•	Open http://localhost:8080/greeting?name=Your%20name in your web browser
+•	Your output should looks like:
+•	{
+•	  "greetCount": 1,
+•	  "content": "Hello, Your name!"
+}
+•	Then at next call your output should look like:
+•	{
+•	  "greetCount": 2,
+•	  "content": "Hello, Your name!"
+}
+and so on...
+Note: The order of keys in a JSON Object is irrelevant, what is relevant to have all the correct keys and values and only them.
+Hello World Web App
+•	Lets create another controller "HelloWebController" to controllers package.
+•	Add greeting method like:
+•	@RequestMapping("/web/greeting")
+•	public String greeting(Model model) {
+•	    model.addAttribute("name", " World");
+•	    return "greeting";
+}
+•	Add following HTML template file to "resources/templates/greeting.html"
+•	<!DOCTYPE html>
+•	<html xmlns:th="http://www.thymeleaf.org">
+•	  <head>
+•	    <title>Getting Started: Serving Web Content</title>
+•	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+•	  </head>
+•	  <body>
+•	    <p th:text="'Hello, ' + ${name} + '!'" />
+•	  </body>
+</html>
+•	Recompile app
+•	Open http://localhost:8080/web/greeting in your web browser
+•	Your output should look like:
+•	Hello, World! (It is a web page.)
+Web Greet counter app
+•	Lets do a web app which can count the website load and greet the user as the previous counter task.
+•	Open http://localhost:8080/web/greeting?name=Your%20name in your web browser
+•	Your output should look like:
+•	Hello, Your name! This site was loaded 3 times since last server start.
+Say Hello to all the world (Web App)
+You are very happy and would say hello in different languages.
+According to previous tasks you should create a web app which says hello in different languages. Use the @RequestParam annotation to have different font sizes and colors.
+•	Use one of the following greetings randomly:
+•	String[] hellos = {"Mirëdita", "Ahalan", "Parev", "Zdravei", "Nei Ho", "Dobrý den", "Ahoj", "Goddag", "Goede dag, Hallo", "Hello", "Saluton", "Hei", "Bonjour",
+•	                "Guten Tag", "Gia'sou", "Aloha", "Shalom", "Namaste", "Namaste", "Jó napot", "Halló", "Helló", "Góðan daginn", "Halo", "Aksunai", "Qanuipit", "Dia dhuit",
+•	                "Salve", "Ciao", "Kon-nichiwa", "An-nyong Ha-se-yo", "Salvëte", "Ni hao", "Dzien' dobry", "Olá", "Bunã ziua", "Zdravstvuyte", "Hola", "Jambo", "Hujambo", "Hej",
+                "Sa-wat-dee", "Merhaba", "Selam", "Vitayu", "Xin chào", "Hylo", "Sut Mae", "Sholem Aleychem", "Sawubona"};
+•	To know more about @RequestParam please read : RequestParam annotation
+Optional exercise (FizzBuzzWoof)
+This exercise is a variation of the classic FizzBuzz.
+•	For this exercise you could use your previous counter task.
+•	Rules of the FizzBuzzWoof :
+Write a program that prints out numbers. But for multiples of three print “Fizz” instead of the number, for multiples of five print “Buzz” and for the multiples of seven print “Woof”. For numbers which are multiples of both numbers use two keywords and for numbers which are multiples of the three numbers use three keywords.
+•	If one keyword is printed out, use 24px sized font.
+•	If two keyword is printed out, use 48px sized font.
+•	If three keyword is printed out, use 72px sized font.
+•	Example when the site was loaded 3 times, your output should look like:
+Hello! This site was loaded Fizz times since last server start.
+

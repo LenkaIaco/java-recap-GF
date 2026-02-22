@@ -1,0 +1,31 @@
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@RestController
+@RequestMapping("/someRootURL")
+public class MyController{
+
+UserService userService;
+
+public MyController(UserService userService){
+this.userService = userService;
+}
+
+@GetMapping
+public String showHello(){
+return "Hello, this is the start page";
+}
+
+@GetMapping("/profile")
+public String userSummary(@RequestParam Long id, required=false){
+if(id==null){
+return "User page";
+}
+
+UserDTO userDetails = userService.makeUserSummary(id);
+
+return userDetails;
+}
+
+}

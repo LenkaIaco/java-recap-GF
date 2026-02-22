@@ -1,0 +1,6 @@
+.is-king{	// (.) selects all html elements with class="is-king"
+color: red;
+font-size: 20px;
+background-color: yellow;
+}
+

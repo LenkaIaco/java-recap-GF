@@ -1,0 +1,84 @@
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+ @Controller   // will have a default URI ("/")
+public class MyClass{
+
+
+    BankAccount ba;
+    AccountsList aL;
+
+    public BankAccountController(){
+        ba = new BankAccount("Simba", 2000, "lion", true);
+       aL = new AccountsList();
+	aL.add(ba);
+    }
+
+
+
+	@GetMapping("home/underReconstruction")   //if method is not specified(only @RequestMapping("/endpoint")), endpoint will accept any method - also PUT, PATCH, DELETE
+	public String returnAnotherView(){
+	  return "home";		//server performs a forward to the home.html template
+	}
+
+//forward request: server processes one request from browser, internally, server forwards to a new resource but browser does not change URL.
+Also, request attributes are retained in the forwarded resource
+
+	@GetMapping("home/accountList")   
+	public String returnAnotherView(Model model){
+	  model.addAttribute("accountList", aL.getList))
+	  return "forward:/home";		//server forwards to "/home" endpoint
+	}
+
+//opposed to forward, redirects URL changes
+redirects perform 2 requests: original endpoint + redirect address opening: after obtaining a redirect response from server, browser navigates to new address
+As the browser performs 2 separate requests to server, request attributes are LOST
+Good for POST/REDIRECT/GET pattern (usually browser obtains 302(old ambiguous redirect, no info about 2nd request method, depended on browser, most do POST-GET, nowadays used for legacy and GET-GET redirects) or 303(new unambiguous, always do GET with 2nd redirect request) as response and then gets the new address)
+
+	@PostMapping("/accountList/createAccount")
+  	public String createAccount(@ModelAttribute(name="newAccount") BankAccount newAccount, 	Model model){
+    	  aL.add(newAccount);
+          return "redirect:/accountList";
+	}
+
+
+@GetMapping("/books")
+public String booksByAuthor(@RequestParam(required=false)String author, Model model){
+  List<Book> result = new ArrayList<>();
+  if (author!=null){
+    result = myService.listByAuthor(author);
+  } else{
+    result = myService.getFullList();
+	}
+  model.addAttribute("books", result);
+  return "index";
+}
+
+@GetMapping("/books/{id}")
+public String summaryByBook(@PathVariable Integer id, Model model){
+Book bookById = null;
+
+if (id!=null){
+bookById = myService.getBookById(id);
+model.addAttribute("book", bookById);
+}else{
+model.addAttribute("error", "Book not found.");
+}
+return "bookDetails";
+}
+
+//request parameter in URI looks like: /hello?name=X
+@GetMapping("/hello") 
+@ResponseBody //the return value is not a html template name but the content of the html page displayed
+public String greet(@RequestParam(required=false) String name){
+if (name==null){name = "visitor";}
+return "Hello, " + name + "!";
+}
+}
+

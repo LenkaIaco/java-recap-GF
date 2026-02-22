@@ -18,7 +18,6 @@ Apart from the above, Spring provides:
 	- logging(integration with impl.providers)
 
 
-
 Spring integrating java's specification for establishing connections with server(Java Servlet) and integrating specification connections with databases incl DB error translation (JDBC), ORM integration (JPA, Hibernate),transactions (JTA), JMS(Java Message Service) but does not implement java specifications.
 Instead, it provides abstractions which integrate these specifications and with the implementation providers. Spring was created as an alternative to the heavy Jakarta EE model. It simplifies, replaces, wraps or extends these specifications for providing a seamless web development experience. It uses Dependency Injection and Inversion Control Container (Bean Factory extension) to control lifecycle of its beans which are by default singletons(bean scope sorted from smallest to largest: prototype>request>application>session>websocket>singleton), to be able to run effective applications.
 
@@ -71,7 +70,7 @@ Orchestrates calling controllers and the process of resolving views:
 	Controller → HttpMessageConverter → JSON    //based on client's HTTP request accept header, Spring automatically converts the data into desired format: " GET /users  Accept: application/json". If none specified, default JSON.
 
 @RequestMapping, 
-@GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping
+@GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping //PUT and PATCH are idempotent because every time they run they produce the same result: PUT replaces or creates a resource and PATCH modifies a part of a resource. POST is NOT idempotent - every time run, it produces a distinct result
 @PathVariable,@RequestParam, @RequestBody, @ResponseBody
 @ModelAttribute
 
@@ -100,6 +99,22 @@ handles SQL database's exceptions translation into java exceptions
 4. Dependency Injection, Inversion of Control Container. Inversion of control is implemented by dependency injection, where IOC instantiates and manages centrally all dependencies as singletons and throughout their entire lifecycle.
 
 5. Spring Boot autoconfiguration - enhances development of application by providing a pre-configured version of dependencies and tools it uses, as well as providing an embedded servlet and a database simulation to enhance the development environment for web applications.
+If you add springboot devtools(not auto-included), you get: 
+	- application auto-restart(triggered on file save) using classLoaders(base classloader for unchanged classes+ restart classloader - at restart only changed classes reload
+	- reload browsers(LiveReload, when html/css changes)
+	- development defaults: detailed error pages, debug logging for components
+	- remote debugging(optional)- enables auto-restart of app on another machine
+@SpringBootTest will create a test environment *- mock beans based on real application's beans, configurations based on app configurations, context, to the extent:
+   - @WebMvcTest:(unit) tests for controller layer only:
+	HTTP request → controller → HTTP response
+     Controllers + related MVC parts:
+	DispatcherServlet: URL-controller-method mapping, request/response objects handling, validation, message converters(object->JSON/HTML / vice-versa), 
+	Jackson
+     If the controller depends on a Service, it is mocked as a dependency: @MockBean private MyService myService;
+
+- @SpringBootTest(used for integration tests - how multiple app layers work together) loads full application context - everything the app uses is created within a test application context, copying 1-1 the real app: controllers, services, repository, components, configurations, security filters, scheduling tasks, external integrations
+
+- @DataJpaTest part integration test - repositories are just interfaces, they need JPA implementation to work(Hibernate+SpringDataJPA logic), therefore cannot function as isolated unit tests. It tests Entity mappings, repository-defined methods
 
 6. Spring security
 
