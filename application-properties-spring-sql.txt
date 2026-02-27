@@ -1,0 +1,41 @@
+This is a spring file - when SpringApplication starts via main(), loads app..properties or app...yml
+Contains settings on database used + connection details + dialect, schema handling on app start/shut down, sql logging
+
+	spring.datasource.url=jdbc:mysql://localhost/todo?serverTimezone=UTC		// localhost = this machine; MySQL - which database on this machine; todo - db name
+// usually we use environment variables to hide login data: ${DB_USERNAME} -> windows powershell: setx DB_USERNAME lenkadan
+	spring.datasource.username=lenkadan						
+	spring.datasource.password=helloWorld
+//what hibernate does with database schema(entities with their columns/settings, relationships between ent.):
+	spring.jpa.hibernate.ddl-auto=create-drop  //create: at startup, hib.drops previous. create-drop: at shutdown h.drops, update(to match entities state), validate(if schema does not match entity classes startup fails, none - hibernate does no changes(safest for production)
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+	spring.logging.level.org.hibernate.SQL=debug	//uses login framework (Log4J, Logback) - decides upon which events SQL gets logged (error
+	spring.jpa.show-sql=true	// print executed sql statements into the console while running app (other values: off, fatal, error/ warn (no sql), info(high-level hibernate without SQL), trace(more detailed than debug+sql))
+
+------------------------------------
+3) Server configuration
+These settings control the embedded server (Tomcat/Jetty/Netty):
+
+server.port=8081  // configuring the port for the application
+server.servlet.context-path=/api
+------------------------------------
+spring.profiles.active=dev  // prod / dev / test
+		run app with certain settings (java -jar app.jar --spring.profiles.active=prod
+
+Separate files: application.properties(always), application-dev.properties, application-prod.properties, application-test.properties)
+	@Profile("dev") 
+	@Service 
+	public class MyDevService { // dev-specific implementation }
+
+	@Configuration 
+	public class DataSourceConfig { 
+	@Bean 
+	@Profile("dev") 
+	public DataSource devDataSource() { ... }
+
+
+	@Profile("dev", "prod")
+	@Configuration
+	public class DataSourceConfig{
+	//...beans
+	}
+------------------------------------

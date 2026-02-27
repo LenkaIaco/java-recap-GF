@@ -2,11 +2,12 @@
 MVC workflow with Thymeleaf:
 1. Spring MVC: arrived HTTP request, parses it: URL parameters, form fields, JSON... converting into java objects(via @ModelAttribute, converters, data binding) and routing it to the appropriate controller + endpoint method. Controller method returns a Model(Spring-constructed) and a view name. ViewResolver finds the view html template.
 2. Thymeleaf is a templating engine responsible for 
-	translating from Java Objects into html data in html templates and vice versa from HTML templates into Java Objects (based on which object references are stored in model attributes, and which htmltemplate the ViewResolver points out)
+	translating from Java Objects into html data in html templates (based on which object references are stored in model attributes, and which htmltemplate the ViewResolver points out)
+	and vice versa from HTML templates into Java Objects 
 	constructing the final html page including parameters from java objects, css styling, javascript, images 
 
 
-3. Spring MVC: passing the result to the HTTPResponse objects(Jakarta Servlet implementation like Tomcat, Jetty, ...)
+3. Spring MVC: passing the HTML result to the HTTPResponse objects(Jakarta Servlet implementation like Tomcat, Jetty, ...)
 
 saved in spring applications under src/main/resources/templates:
 
@@ -62,9 +63,49 @@ pre-header xmlns disclaimer tells to HTML parser to use thymeleaf namespace (eve
 	th:href, th:src for formatting chosen text as a chosen html link (dynamic URLs), 
 	th:replace, th:insert for template fragments and layouting
 
-head change - link css related + thymeleaf
+<p th:if="${validationResult != null && #strings.contains(validationResult,'not')}" th:style="|color: red|" th:text="${validationResult}"></p>
+<p th:unless="${validationResult != null && #strings.contains(validationResult,'not')}" th:style="'color: green'" th:text="${validationResult}"></p>
+
+<div th:if="${fox == null || fox.getTricks().isEmpty()}">
+    <p>No tricks learned yet</p>
+</div>
 
 */
+
+head change - link css related + thymeleaf
+-------------------------------------------------
+
+Fragment html files are pieces of html set aside because they repeat on multiple html pages, so to avoid redundancy, they get referenced from another time.
+
+fragment file: starts with th:fragment and gets referred to in other html files with th:replace="fragmentFile::section"
+
+no head, no body, first element is always fragment:
+
+<nav th:fragment="navigation">
+   or 
+<ul th:fragment="navigationLinks">
+
+   and possibly, other fragments:
+
+<form th:fragment="loginForm" action="/login" method="post">
+
+-------------------------------------------------
+
+Path Variable syntax:  "/filter/only%20available"
+
+    <a th:href="@{/filter/{filterButton}(filterButton='only available')}" th:class="navElements"> ONLY AVAILABLE</a>
+
+Request Parameter syntax: "/information?usernameLogin=Lenka"
+
+<form action="/information"
+      th:action="@{/information(usernameLogin=${usernameLogin})}"
+      method="post">
+
+="@{/filter/{filterButton}('only available')}"
+="@{/info(usernameLogin=${usernameLogin})}"
+-------------------------------------------------
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -84,14 +125,51 @@ head change - link css related + thymeleaf
 
 <p class="is-king">CSS formatted text here</p>
 
+<div class = "verticalSidebars">
+
+<div class = "verticalMainBar">
+<span th:replace="~{myfragmentfile::navigation}"></span>
+<!-- below 'literals' can be replaced with |syntax|:  |Average stock: ${averageStock}|  -->
+<th:block="${filterButton == 'averageStock'} ? 'Average stock: ' + ${averageStock}"></th:block>
+<th:block="${filterButton == 'mostExpensiveAvailable'} ? 'Most expensive item: ' +${mostExpensiveAvailable} "></th:block>
+</div>
+
+<ul class = "navigation">
+  <li id = "firstNavRow">
+
+<!-- replace a href with a th:href without the need of a dummy href value:
+    <a href ="/dummyValue" th:href="@{/filter/{filterButton}(filterButton='only available')}" th:class="navElements"> ONLY AVAILABLE</a>  
+the syntax {filterButton}(value) transports into endpoint method parameters as: 
+	@PathVariable String filterButton = "only available"   -->
+
+    <a th:href="@{/filter/{filterButton}(filterButton='only available')}" th:class="navElements"> ONLY AVAILABLE</a>
+    <a th:href="@{/filter/{filterButton}(filterButton='discounted')}" th:class="navElements"> DISCOUNTED</a>
+    <a  th:href ="@{/filter/{filterButton}(filterButton='cheapestFirst')}" th:class="navElements">CHEAPEST FIRST</a>
+  </li>
+
+  <li id="secondNavRow">
+    <form th:action="@{/customSearch}" method="POST">
+	<div class = "search">
+	<label clas="searchClass" for="searchWindow">Search for:</label>
+	<input type="text" id="searchWindow" name="searchTerm" placeholder="...enter a search term">
+	</div>
+	<div class = "button">
+	<button type="submit">Search</button>
+	</div>
+    </form>
+  </li>
+</ul>
+
 <table>
   <tr>
     <th>Name</th>
     <th>Balance</th>
   </tr>
   <tr th:object="${bankAccount}">		//linked @ModelAttribute or model.addAttribute("bankAccount"; myAccount)
-    <td th:text="*{name}"></td>			// bankAccount's object has field String name 
+    <td th:text="*{name}"></td>			// ONLY for th:object, * is being used to reference the object's field
+    <td th:text="*{bankAccount.type}">
     <td th:inline="text">[[${#numbers.formatDecimal(bankAccount.balance,1,2,'POINT')}]] Eur </td>   //formats int balance field to a decimal
+   <td th:text="${bankAccount.getOwner()}"></td> 
   </tr>
 </table>
 
@@ -105,7 +183,7 @@ head change - link css related + thymeleaf
 <!--        ALTERNATIVE - refer to a formatting class within style.css called .is-king   -->
 <!--    <tr th:each="account: ${accountList}" th:class="${account.isKing()} ? 'is-king'" >-->
 
-  <td th:text="${account.animalType}"></td>	//alternative to "*{animalType}" in the above table, for-each requires references with the variable name (account)
+  <td th:text="${account.animalType}"></td>	//unlike th:object, with th:each, the variable's fields gets referred by "${acount.animalType}" 
   <td th:switch="${#strings.toLowerCase(account.name)}">
     <text th:case="'scar'">Bad Guy</text>
     <text th:case="*">Good Guy</text>
@@ -132,12 +210,17 @@ head change - link css related + thymeleaf
 
   <!-- Label points to the id element - when label text clicked on website, associated element id gets selected. Screen readers read labels when input field is focused, improves accessibility for visually impaired -->
   <label for="accountName">New Account Name</label>
-  <input id="accountName" type="text", name="name"> // 'name' must match the Model Attribute's field (BankAccount newAccount.name), or property th:field must be present + matching (below)
-
+  <input id="accountName" type="text", name="name" placeholder="...enter account name"> // 'name' must either match Model Attribute's field (BankAccount newAccount.name), or th:field must be present + matching (below)
+  <label for="decodeByNumber"></label>
+<!-- positive numbers only on form level: min = "0" below:   -->
+    <input id="decodeByNumber" type="number" placeholder="enter a decoding number" min="0" name="numberToDecode"> 
   <label for="animalType">New Account Animal Type</label>
 <!-- 'name' property is redundant with th:field, as the field matches the Model attribute's field name(or specified in brackets): @ModelAttribute(name="newAccount") BankAccount newAccount -->
   <input id="animalType" type="text", th:field="*{animalType}">  // BankAccount newAccount.animalType field
-  <button type="submit">Save</button>
+<!-- input type submit will look and behave like a button. Can contain text only. Uses "value" to define its text. Input buttons can transfer a value into an endpoint method parameter (e.g. @RequestParam String buttonPressed) -->
+  <input type="submit" name="buttonPressed" value="decode!">    
+  <input type="submit" name="buttonPressed" value="save">
+  <input type = "submit" name="buttonPressed" value="delete">
 </form>
 
 
@@ -148,8 +231,12 @@ head change - link css related + thymeleaf
 <input id="title" type="text" required th:object="*{title}"/>
 <label for="releaseYear">Release Year</label>
 <input id="releaseYear" type="text" th:object="*{releaseYear}" required/>
+<!-- if omitted, button will default to type "submit" by default. Also, can contain images, text, or other html (as a sub-tag) -->
 <button type="submit">Register book</button>
 </form>
+
+<div class = "verticalSidebars">
+</div>
 
 </body>
 </html>

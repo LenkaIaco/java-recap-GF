@@ -1,0 +1,144 @@
+
+Spring MVC 
+
+MVC web app has model-view-controller layers that have distinct roles and interact with each other. Controller class contains endpoint methods with URIs that execute when a concrete web url gets hit in the browser, might call Service and other app classes in the process.
+View is the final rendered html template to be displayed in the browser (incl. css, js).
+Model is anything that represents and/or manages data - Entities, DTOs(java objects between Entity and View, meant for outward representation of selected data from Entities, only data that is meant to be shared outward by endpoints), Services, Repositories
+
+Receives HTTP request via its DispatcherServlet, which delegates it for parsing( to: handler mapping find controller, handler adapter invoke controller, DataBinder binds form fields/query parameters to java objects, http message converter (@RequestBody) convert JSON/XML into java objects): URL parameters, form fields, JSON... converting into java objects(via @ModelAttribute, converters, data binding) and routing it to the appropriate controller + endpoint method.
+
+Calls controller method
+Prepares the model
+
+------------------------------------------------------------
+MVC in web app context: 	App start -> Embedded server:
+						- start Acceptor thread (server's inbound I/O) and start worker thread pool
+						- start listening socket
+						-> Acceptor Thread create client socket  -> Worker thread (App level) -> Server's outbound I/O
+------------------------------------------------------------
+
+
+
+
+
+------------------------------------------------------------
+APP START -> server I/O: ACCEPTOR THREAD
+
+	0. Servlet Container - Dispatcher Servlet communication
+
+	When app starts running, embedded server 
+		opens a tcp connection on app-defined port e.g. 8080 for HTTP or 8443 for HTTPS and 
+		starts acceptor thread 
+		starts a listening socket 
+		awaits incoming TCP connections.
+
+	The listening socket is like an infinite while loop re-checking if a request arrived
+	Start acceptor thread: Tomcat usually has 1–2 acceptor threads.
+	Each acceptor thread runs a blocking accept loop:
+
+    	while (serverRunning) {
+      	Socket client = serverSocket.accept(); // OS blocking system call - marks the thread as waiting and sleep until something happens
+      	handOffToWorkerThread(client);    // happens after thread wakes up: above accept() method returns the socket for the incoming http request. The Socket is handed over to a worker thread from thread pool which executes the http parsing, running application logic, and creating a response
+   	 }
+
+	After acceptor thread hands the socket over to the worker thread again, the output does not comes back to acceptor thread. 
+	It is being further processed by worker thread and in the end the result goes into I/O of the OS. 
+
+------------------------------------------------------------
+Server I/O: Client socket management: The server decides whether the client socket is closed after the HTTP response, or kept alive(either way, the worker thread is returned to thread pool and the client socket, if kept alive, is returned to Server's I/O subsystem, idle until a new request is detected on it (Server I/O's poller/selector) and then it is assigned any free worker thread from the thread pool.
+	while (socketIsOpen) {
+    HttpRequest req = readHttpRequest(socket);
+    HttpResponse res = processWithWorkerThread(req);
+    writeHttpResponse(socket, res);
+
+    if (shouldCloseConnection(req, res)) {
+        socket.close();
+        break;
+    }
+}
+------------------------------------------------------------
+WORKER THREAD: HTTP request lifecycle
+	parsing HTTP request from the socket(embedded server), handoff to dispatcherservlet
+
+	HTTP/HTTPS go via TCP which handles reliable delivery of a byte stream, which is built on IP, which handles routing packets across networks(between 2 machines, uses IP addresses)). 
+	For HTTPS, the listening socket contains also a TLS added layer (encrypts the socket) and performs a TLS handshake and only afterwards starts reading the HTTP request.
+
+	HTTP Request arrives at Servlet container implementation:
+
+ 	 1. TLS handshake: Client and server negotiate encryption algorithms.
+  	Server sends its certificate (e.g., for www.google.com).
+  	Client verifies the certificate (trusted CA, correct domain).
+  	Both sides generate shared encryption keys.
+  	All further communication is encrypted(all of the HTTP request data).
+
+  	2. Parsing HTTP request:
+  	Server reads first incoming bytes from TCP stream: 
+		GET /users/5?page=2 HTTP/1.1
+		Host: example.com
+		User-Agent: Chrome
+ 	 As this is an HTTP server, it can parse HTTP requests arriving via TCP connection correctly:
+		first word → HTTP method
+		next part → path
+		next → protocol version
+		following lines → headers
+		blank line → end of headers
+		remaining bytes → body
+
+
+
+	------------------------------------------------------------
+
+	After embedded server parsing the accepted HTTP request, 
+	server constructs a HttpServletRequest and hands it to DispatcherServlet:
+		dispatcherServlet.service(request, response*);
+		* at this point HttpServletResponse is an empty object, which will be written into later, at the very end of MVC process, by DispatcherServlet
+
+	-------------------------------------------------------------------------
+	Any filters run here - before HTTPServletRequest is handed to Dispatcherservlet
+	modify headers, block/redirect, body wrappers, security checks, logging
+	----------------------------------------------------------------------------
+
+	MVC starts here
+	------------------------------------------------------------
+
+	DispatcherServlet is a coordinating class, design pattern FrontController, because centralizes http request handling in in web applications. 
+	Extends java's HTTPServlet and is similar to Mediator from behavioral design patterns as it coordinates many other components.
+	DispatcherServlet locates the correct controller and the correct endpoint.
+
+	1. Dispatcher Servlet request rooting and conversion management
+	Data from http request arrives at the endpoint method.
+	  - DataBinder converter convert URI to java objects(method parameters @ModelAttribute, @PathVariable, @RequestParam (databinders java objects) 
+	  - HttpMessageConverters convert the body (of HTTP request and HTTP response) @ResponseBody(http message converters: XML/JSON) )
+	And the endpoint processes the input with some application logic(saving into database, applying filters, verifications...)
+
+
+	2.Dispatcher servlet - View Resolver - Thymeleaf communication
+	Calls ViewResolver to locate the correct HTML template
+	Dispatcher servlet hands the template and all data to Thymeleaf for HTML rendering
+
+	3.Thymeleaf 
+		Takes model attributes(Java objects) from Model, if any 
+		Inserts them into the HTML template (along with css, javascript)
+		(one-direction only: Objects -> HTML, not vice versa)
+		Produces final HTML
+
+	5. Dispatcher Servlet - Servlet Container communication
+	DispatcherServlet writes the final HTML response data from Thymeleaf into the pre-created HttpServletResponse.
+	And then hands it to the Servlet Container for sending it out via HTTP
+	(the response sending is coordinated by Jakarta Servlet implementation, not Spring MVC)
+
+	-----------------------------------------------------------------------------
+	Any filters run here - before HTTPServletResponse is handed to embedded server
+	-----------------------------------------------------------------------------
+
+
+WORKER THREAD -> SERVER I/O
+---------------------------------------
+	6. Servlet Container(Jakarta Servlet implementation) like Tomcat, Jetty, UnderTow, sends the HTTP response (parses HttpServletResponse and converts it to a HTTP format which it sends over TCP: writes Bytes to TCP socket; decides whether to keep the connection alive.
+		HTTP/1.1 200 OK
+		Content-Type: text/html;charset=UTF-8
+		Content-Length: 42
+
+		<html>...</html>
+
+Server I/O: Client socket management: The server decides whether the client socket is closed after the HTTP response, or kept alive(either way, the worker thread is returned to thread pool and the client socket, if kept alive, is returned to Server's I/O subsystem, idle until a new request is detected on it (Server I/O's poller/selector) and then it is assigned any free worker thread from the thread pool.

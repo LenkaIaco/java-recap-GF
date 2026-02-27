@@ -1,0 +1,13 @@
+@Getter,
+@Setter
+@NonNull adds null check:
+		if (repo == null) { throw new NullPointerException("repo is marked non-null but is null"); }
+In Spring apps it is used for dependency injection constructors, which are meant to throw an error to stop app from running faulty, if misconfigured
+
+@RequiredArgsConstructor  - all fields that are either final, or annotated lombook's @NonNull				
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
+
+@Log, @Log4j, @Log4j2

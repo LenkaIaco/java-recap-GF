@@ -1,0 +1,66 @@
+Spring manages its beans creation, injection and lifecycle without the need to explicitly instantiate these components in your code.
+The Inversion of control is referring to the point where the application hands the control over objects creation and wiring to Spring, hence inverted from traditional in-code control of these objects.
+The dependency injection means that when spring is instantiating classes marked as components, which have as parameters other components, spring injects the other components automatically, as they are all managed by spring.
+You inject dependencies via constructor (happens even without the need of @Autowired), or via @Autowired annotation (field injections not recommended anymore, but it can be used on a method level, for setter methods).
+Classes that can be injected by spring are ONLY components managed by IOC container (@Component, @Repository, @Service, @Controller, or @Configuration class with instatiation methods marked @Bean)
+
+@Component
+public class MyComponent{
+
+}
+
+@Configuration
+public class MyConfigClass{
+  @Bean
+  public MyComponent createMyComponent(){
+  return new MyComponent();
+  }
+}
+
+If a dependency is already known(available) in its required form to function properly as a component's dependency at the time when the component is created, and is required for component's creation (is relevant component data), it should be a dependency managed by Spring and injected automatically.
+The sequence of component creation via IOC and dependency injection can be controlled - all components via constructor injection are being created first. Setter injections (@Autowired setters) follow after. Later, @PostConstruct methods are being created.
+Also, the injection optionality can be controlled via autowiring:
+
+@Autowired(required = false) 
+public void setOptionalDep(OptionalDep dep) { ... }
+
+
+Setter autowiring is useful for optional dependencies, reconfigurable dependencies, circular dependencies. Although circular dependencies are not allowed by default by Spring since 5.3 and will throw an exception (BeanCurrentlyInCreationException)
+
+
+@PostConstruct is activating after everything has already been initialized and wired successfully, but before the bean has been used anywhere:
+
+@Component 
+public class CacheLoader { 
+  @PostConstruct 
+  public void warmUpCache() {
+   // load cache from DB 
+  } 
+}
+
+
+--------------------------------------------------------------------------
+
+@Controller
+public class WebShopController {
+    private final ItemListService items;
+
+    public WebShopController(ItemListService items) {
+        this.items = items;     }
+
+    @GetMapping("/")
+    public String displayWebShop(Model model) {
+        model.addAttribute("items", items.getItems());
+        return "index";
+    }
+}
+
+@Service
+public class ItemListService{
+private List<String> list;
+
+public ItemListService(){
+
+list = new ArrayList<>();
+}
+}

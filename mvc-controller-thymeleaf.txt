@@ -44,8 +44,34 @@ Good for POST/REDIRECT/GET pattern (usually browser obtains 302(old ambiguous re
 	@PostMapping("/accountList/createAccount")
   	public String createAccount(@ModelAttribute(name="newAccount") BankAccount newAccount, 	Model model){
     	  aL.add(newAccount);
-          return "redirect:/accountList";
+          return "redirect:/accountList"; 	//use only to redirect GET with no model attributes transfer(nature of redirect)
 	}
+
+
+// for keeping Model and @RequestParameters while transferring, use forward:
+@PostMapping("/useful/decodeText ")
+public String decodeTextPart(@RequestParam String text, @RequestParam Integer number){
+
+String formatted = textService.applyFormatting(text);
+modelAttribute.add("formattedText", formatted);
+return "forward:/useful/decodeNumberPart";
+}
+
+//if the transferred value is just a simple field (text, number...), even without @ModelAttribute, the value will be transferred to the method parameter
+//this is called 'implicit binding' and works for Strings, primitives, wrapper types(Integer, Long, Double, Boolean, BigInteger, BigDecimal) and their Lists, Enums, LocalDate/LocalDateTime
+
+@PostMapping("/customSearch")
+public String searchShopBy(Model model, String searchTerm){
+List<Item> results = new ArrayList<>();
+if (searchTerm ==null) {
+model.addAttribute("items", )
+}
+ = userService.getFilteredResults(searchTerm);
+
+model.addAttribute("items",results);
+
+return "browseItems";
+}
 
 
 @GetMapping("/books")

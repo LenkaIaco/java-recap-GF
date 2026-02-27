@@ -1,0 +1,80 @@
+Gradle 
+1. builds your code, resolves dependencies, produces classpaths based on dependencies' configuration specification
+
+2. can run an application using the JDK configured for Gradle:
+
+Option 1:
+IntelliJ → runs your code locally using the classpaths Gradle defined
+
+Option 2:
+Gradle runs application or runs tests depending on task executed (tasks: ./gradlew bootRun 	./gradlew test )
+Gradle uses system’s JAVA_HOME for JDK resolution, or when importing a Gradle project in IntelliJ, IntelliJ configures Gradle's JDK to-use, based on its settings.
+
+Option 3:
+you could execute the packaging and running manually, running javac, java/java -jar commands in your CLI tool (gitbash, windows cmd)
+
+3. Your application (Spring Boot) → starts up inside the JVM regardless whichever JVM launches it
+
+--------------------------------------
+
+Contains build information for gradle to work with: which language and version to use to parse and compile your code, which additional gradle build plugins to use(apart from language build plugins),
+ which dependencies to include while compiling, which versions.
+
+Written in groovy(build.gradle) or kotlin (build.gradle.kts)
+The below example are Groovy
+
+tells what kind of language, language version and frameworks the application is using. Decides what the app will be packaged as ('java' jar; 'war' war; 'org.springframework.boot' fat jar(unless war plugin specified)
+
+plugins{
+id 'java'  
+id 'org.springframework.boot'  version '3.1.3' //this automatically downloads Spring's BOM(Bill of materials) which contains a tested set of versions for hundreds of libraries(dependencies) that work together. Each Spring Boot version has its own BOM:
+	Boot 3.0.x → one set
+	Boot 3.1.x → another set 
+	Each BOM is basically a list of: dependency name + number of version. No libraries pre-downloaded.
+
+id 'io.spring.dependency.management'  version '1.1.3'  //Tells gradle to use Spring's BOM for dependency versions resolution. “When a dependency has no version(section dependencies), look up its version in the imported BOM.”
+}
+
+java {
+sourceCompatibility '17'
+}
+
+------------------------------------------------------
+Gradle does not automatically ensure that all dependencies in your application are mutually compatible. It gives you the tools to declare dependencies, but it does not validate that those dependencies work together or match your Java version. 
+Gradle resolves only transitive dependencies(your direct dependency pulls their own dependencies).  It resolves dependency conflict to the highest version, unless overridden by BOM
+
+Gradle downloads the dependencies from Maven repository
+
+repositories{
+mavenCentral()
+}
+
+There are separate classpaths that Gradle assembles depending on what you are doing: compiling main code, running the app, compiling tests, or running tests.
+Based on configuration value (implementation, testImplementation, compileOnly, runtimeOnly, developmentOnly, annotationProcessor) gradle decides which dependencies include in its classpath at which moment.
+
+------------------------------------------------------
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor  /*Annotation processing is a separate phase of compilation. Therefore it needs to be treated as a separate subprocess (compileOnly includes standard libraries during compilation, however Annotation Processors are not standard libraries. javac scans the classpath for annotation processors, loads them into the compiler’s JVM.
+Annotation processors inspect your source code, generate new .java files. The compiler then compiles both your code and the generated code.
+    javac itself is a Java program. It runs inside a separate JVM instance than when running already compiled code. Inside that JVM, the compiler:
+	loads your source files, loads the compile classpath, loads annotation processors
+	generates new source files
+	compiles everything into .class files
+  */
+    }
+}
+
+------------------------------------------------------
+
+dependencies {
+implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+implementation 'org.springframework.boot:spring-boot-starter-web'
+testImplementation 'org.springframework.boot:spring-boot-starter-test'
+compileOnly 'org.projectlombok:lombok'
+annotationProcessor 'org.projectlombok:lombok'		// tells Gradle to run Lombok’s annotation processor during compilation. Annotation processing is a separate phase of compilation.
+developmentOnly 'org.springframework.boot:spring-boot-dev-tools'
+runtimeOnly 'com.mysql:mysql-connector-j'
+}
+
+

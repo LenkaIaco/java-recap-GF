@@ -38,7 +38,45 @@ Parts of spring:
 @Repository  (just a core function to represent a class where the operations on entities are to be performed. 
 	The CRUD operation methods have to be written manually v=caaling the Entity manager and supplying it with entities, 
 	as well as methods for JPQL parsing need to be written by calling entity's manager jpql creation method while jpql parsing logic needs to be specified manually.
+@Service contains business logic
+	@Qualifier - if multiple service classes implement the same parent interface, while referring to the service in another class via this interface, you can specify the qualifier and Spring will inject the right service.
+You can theoretically use qualifiers for one and only class, but at that point it is just redundant use of a unique class identifier. For that purpose we already use unique class name. Use the qualifier if decoupling a parameter, but a common interface is just too broad as not all classes apply, and an unique class is just not broad enough.
+
 @Service
+@Qualifier("blue")
+public class MyServiceOne implements MyInterface{
+// service logic ...
+}
+
+
+@Service
+@Qualifier("blue")
+public class MyServiceTwo implements MyInterface{
+// service logic ...
+}
+
+@Service
+@Qualifier("green")
+public class MyServiceThree implements MyInterface{
+// service logic ...
+}
+
+
+
+@Controller
+public class MyController {
+MyInterface myService;
+
+public MyController(@Qualifier("blue")MyInterface myService){		//insert the qualifier at the point of dependency injection (constructor/setter)
+this.myService = myService;
+}
+
+@GetMapping("/myEndpoint")
+public String displayEndpoint(MyInterface myService)
+
+}
+
+
 
 2. Spring MVC - HTTP-based applications:
 web framework of Spring — the dispatcher, routing, request mapping, argument resolution, return‑value handling, exception handling, filters, interceptors, etc.
@@ -59,7 +97,6 @@ Orchestrates calling controllers and the process of resolving views:
 
 
 
-
 @Controller(MVC controller - server-side rendered views: endpoint returns a view name(e.g. thymeleaf templates) -> using view resolvers to render html), 
 @RestController(REST APIs (JSON/XML/binary streams responses) - method returns data, not views, serializes data into JSON automatically via Jackson): REST APIs(exchanging data with other software: Mobile apps backends-mobile app, SPA backends-frontend(react, angular, vue), internal microservices, external other backends). @RestController = @Controller + @ResponseBody  (DispatcherServlet skips the ViewResolver and writes the data directly into HttpResponse (using HttpMessageConverter to convert into JSON format).
 
@@ -69,7 +106,18 @@ Orchestrates calling controllers and the process of resolving views:
 	REST MVC
 	Controller → HttpMessageConverter → JSON    //based on client's HTTP request accept header, Spring automatically converts the data into desired format: " GET /users  Accept: application/json". If none specified, default JSON.
 
-@RequestMapping, 
+@RequestMapping("/path"),@RequestMapping("path") - spring internally normalizes paths, so the starting slash is optional. Both examples below normalize to "/admin/gfa":
+
+	@RequestMapping("admin") public class MyClass{
+ 	  @GetMapping("gfa") 
+	  public String myMethod(){...}
+	}
+	@RequestMapping("/admin/") public class MyClass{
+	  @GetMapping("/gfa")
+	  public String myMethod(){...}
+	}
+
+
 @GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping //PUT and PATCH are idempotent because every time they run they produce the same result: PUT replaces or creates a resource and PATCH modifies a part of a resource. POST is NOT idempotent - every time run, it produces a distinct result
 @PathVariable,@RequestParam, @RequestBody, @ResponseBody
 @ModelAttribute

@@ -4,3 +4,62 @@ font-size: 20px;
 background-color: yellow;
 }
 
+body{
+display:flex;
+flex-direction: row;  //what should be the main axis for item positioning
+font-family:Verdana;
+}
+
+.verticalSideBars{
+width:15%;
+height: 100%;
+}
+
+.horizontalSideBar{
+width:70%;
+height: 100%;
+}
+
+
+h1{
+color: blue;
+border-bottom: 1px solid blue;
+font-size: 50 px;
+}
+
+ul{
+padding = 0;
+}
+
+li{
+list-style-type:none;
+height: 35%;
+width: 100%;
+display: flex;
+justify-content: space-between;	/* how items should be positioned along the main axis*/
+align-items: stretch; // elemets grow to fill the container's height
+margin: 2% 0;
+}
+
+display: flex;
+justify-content: space-between;
+align-items: stretch;
+ 
+.nav-Elements{
+background-color:red;
+color:white;
+border-radius: 5px;
+border: none;
+text-decoration: none; //no underlines + removing default formatting, like links
+padding: 5px 5px;
+}
+
+#firstNavRow{
+height: 30px; 
+}
+
+th{
+background-color = aquamarine;
+padding: 20 px 40 px;
+}
+
