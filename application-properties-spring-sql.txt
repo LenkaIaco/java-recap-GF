@@ -15,7 +15,7 @@ Contains settings on database used + connection details + dialect, schema handli
 3) Server configuration
 These settings control the embedded server (Tomcat/Jetty/Netty):
 
-server.port=8081  // configuring the port for the application
+server.port=8081  // configuring the port for the application. Can also refer to env. variable:  server.port=${SERVER_PORT}
 server.servlet.context-path=/api
 ------------------------------------
 spring.profiles.active=dev  // prod / dev / test

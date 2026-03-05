@@ -81,7 +81,7 @@ The manifest we specify:
 2. Specify MANIFEST's Class-Path variable: 
 			Manifest-Version: 1.0   
 			Main-Class: my.package.Main
-			Class-Path: lib/first.jar lib/second.jar    // You need to list each jar individually, wildcards DO NOT work in manifest files(lib/*) ! The manifest classpath is relative to the JAR LOCATION AT RUNTIME:  app1/
+			Class-Path: lib/first.jar lib/secosnd.jar    // You need to list each jar individually, wildcards DO NOT work in manifest files(lib/*) ! The manifest classpath is relative to the JAR LOCATION AT RUNTIME:  app1/
  					  ├── app1.jar
 					  └── lib/
    After which, the jar can be run with the jar command option: java -jar myapp.jar
