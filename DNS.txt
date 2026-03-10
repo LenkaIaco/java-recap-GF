@@ -1,4 +1,48 @@
 
+In dns terminology, Domain is a (human-readable)name of a network resource (e.g. a website, or email server, API). While submitting a web request, the browser uses DNS( domain name system) to lookup the IP address associated to that domain. 
+
+A domain = name of a resource
+The server = the actual host with an IP where the resource is located
+
+
+
+After that, the client opens a TCP connection (and TLS handshake if HTTPS) to that IP. The HTTP request is then sent over that connection:
+
+    When I visit https://www.mycoolapp.com/hello/world
+
+    Scheme is https:// — this determines the protocol
+    The host is www.mycoolapp.com. 
+    Domain is mycoolapp.com 
+    path is /hello/world. 
+    Optionally, after the path comes a query string starting wiht ? for query parameters, = for value and & for chaining multiple parameters 
+
+	Host: www.mycoolapp.com
+	GET /hello/world
+
+The host marked in the http request is the website which should be visited on that IP address. 
+If the IP address marks a server hosting multiple websites, it takes the Host Name to locate the host - the website app that should accept the http request. This web app then further routes and handles the request internally, according to the URI associated with the http request.
+
+A server is:
+
+a computer connected to the internet
+with an IP address (like 123.45.67.89)
+running one or more websites or apps
+
+A server can host: 
+1 domain/10 domains/1,000 domains
+All pointing to the same IP. 
+
+Virtual hosting = one IP, many websites - differentiated by the Host header.
+
+---------------------
+IP is a group of numbers, separated by dots, identifying a server on the internet:
+- IPv4: 4 groups of numbers, each between 0 and 255: 134.209.82.14
+  That is 256^4 possible combinations = ~4.3 billion
+- IPv6: 8 groups of 4 hexadecimal* characters: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+	* using 16 symbols: 0 1 2 3 4 5 6 7 8 9 a b c d e f
+  Each number is one of 16 options, this pattern repeats for each digit individually (8*4 digits):
+  That is 16^32 possible combinations = effectively inexhaustible (36 zeroes after 1)
+----------------------
 
 Summary of the full DNS lookup chain
 Step	Layer	What is being checked
@@ -7,16 +51,13 @@ Step	Layer	What is being checked
 3	Hosts file	Manual overrides*
 4	Recursive resolver	ISP DNS server or custom DNS server you pick
 5	Root servers	Where is .com?
-6	TLD servers	Where is example.com?
-7	Authoritative server(2nd level domain, subdomain)	What is the IP?
+6	TLD servers	Where is example.com? (top-level domain)
+7	Authoritative server(2nd level domain, subdomain)	
 8–10	Caching	Resolver → OS → Browser
 
 * If a domain appears in this file, the OS will always use the IP address written there and will never ask DNS for that domain.
 
-
-
-
-
+----------------------
 
 so the workflow is: browser DNS cache -> OS dns cache -> OS hosts file (overrides) ->ISP provider's DNS server cache -> ISP's DNS server(=resolver)'s recursive resolution: domain parts start from bottom to top level www.myaddress.com: com is TopLevelDomain and has location of the next 2nd level domain ..then subdomain... until you get to the lowest level domain part that actually has the resource and you obtain IP (Internet Protocol address) from There. 
 Process: 1. Resolver asks Root servers where to find TLD. Reply: TLD servers for that domain. 2. Resolver contacts  servers, where to find the second-level domain(example.com). Resolver gets reply with authoritative name servers for that second level domain. 3. Usually same authoritative servers than subdomain. Resolver asks to give the location of the subdomain(www.example.com), or if within same server than 2nd level, then asks directly for IP address of the subdomain. Resolver obtains a reply with IP address (10 or 12 spaces). 4. Resolver caches the result for default period(seconds to hours) and gives it to OS. OS caches the result in DNS OS cache and gives it to browser. Browser caches result and uses the IP address to connect to an address on the internet corresponding to that IP - it opens a TCP connection to port 80 or 443(HTTPS) - IP server's listening port for incoming connection requests via HTTP or HTTPS protocol. TCP handshake to start connection. For HTTPS, then it performs a TLS handshake. After, it sends an HTTP request (GET /) The server responds with HTML, CSS, JS, images, etc. The browser renders the webpage.

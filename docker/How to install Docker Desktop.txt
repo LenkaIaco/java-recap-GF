@@ -1,0 +1,31 @@
+How to install Docker Desktop (recommended path)
+Based on the instructions from the page :
+
+1) Download Docker Desktop for Windows (x86_64)
+Use the download button at the top of the page.
+
+2) Run the installer
+Double‑click Docker Desktop Installer.exe.
+
+3) Choose backend
+You will see a checkbox:
+
+Use WSL 2 instead of Hyper‑V
+
+Leave it checked unless you have a specific reason to use Hyper‑V.
+
+4) Follow the wizard
+It will:
+
+Install Docker Desktop
+
+Enable required components (WSL2 if needed)
+
+Ask you to accept the Docker terms
+
+5) Start Docker Desktop
+Search for Docker Desktop in the Start menu.
+
+6) (Optional) Add your user to the docker-users group
+Only needed if your Windows user is not an admin. The page explains how to do this .
+

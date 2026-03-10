@@ -1,0 +1,275 @@
+Tutorial on docker: https://www.youtube.com/watch?v=JprTjTViaEA
+
+Docker is a containerization platform - it lets you package, transport and run applications in a platform-independent and isolated environment:
+- It uses images where applications are packaged with their dependencies and configuration 
+- It offers lightweight and isolated containers, where applications images can run instances based on their predefined configurations in a secure and predictable manner.
+
+Docker removes the problem where the application and its related services (database, server) each require a different version of the OS(compatibility issues).
+Also, removes the need to manually set up dependencies with the correct versions and each of the related services on each of the developer's computers individually.
+Using docker, it creates the a compatible OS environment per application. Running applications with standardized containerized architecture reduces risk of side effects(different unintended behavior) based on differences in environment and dependencies inter-compatibility.
+
+--------------------------------------------------------------------
+
+Docker image is all files, libraries and dependencies (applications, plugins, confirguration files) needed to start running an application
+Docker container is an isolated running instance of a docker image.
+
+Docker Hub is where all downloadable docker images can be found: 
+ Docker hub is a public online registry where, after logging in, you can upload or download docker images (public), or private
+
+When you download an image from hub to your docker, it will be available offline.
+
+--------------------------------------------------------------------
+
+Docker running on OS kernel, however:
+
+- Docker always uses the underlying OS kernel because
+- Docker containers are linux based and require a Linux kernel to run* 
+- Therefore, if you want to run Linux containers, Docker must have a Linux kernel — even on Windows or macOS.
+Docker does not install any VM, it uses pre-installed VM provided on the OS systems which are different than Linux:
+     On Windows → Docker uses WSL2 (a lightweight Linux VM pre-installed on windows)
+     On macOS → a Linux VM (pre-installed maxOs VM versions Hyper-Kit(older versions) / Lima)
+     On Linux → the host kernel directly
+
+Docker is not meant to run different operating systems with different kernels (Windows, Linux) on the same hardware (like hypervisors, virtual machine).
+Its main purpose is to containerize, ship and run applications.
+
+* Containers are a Linux invention and thus a 99%+ of docker containers are Linux based. Very close to 0% of all containers pulled and run through Docker Hub are non‑Linux containers. Almost the entire ecosystem is Linux‑based, and Windows containers represent only a tiny niche. 
+So although Windows Professional OS series enables running Docker on Windows kernel, it will support ONLY Windows-based containers.
+--------------------------------------------------------------------
+
+ OS Kernel is the lowest software level responsible for coordinating how software runs of hardware without having software components interfering with each other's performance.
+It manages CPU, RAM, hardware components(USB, display, mouse, other)> Kernel decides when to pause a concrete process, allocates/frees RAM for/from processes, how to share CPU cores fairly for processes.
+All software (locally installed applications) sits on top of OS kernel.
+
+Docker also sits on top of OS kernel. It enables communicating with this low-level layer on a high level via docker commands and docker interface.
+When downloading docker on a computer, need to pick a version compatible with the kernel (windows* / Linux / Mac) and docker can then run on any of OS type built on this kernel (versions of windows, Linux..)
+
+Each docker container only has the additional software that sit on top of the kernel (different OS types have different combination/type of software*) + knows how to communicate with the common OS kernel of the docker host computer.
+		
+	*even though windows OS versions all share the same windows NT kernel, certain features are disabled on Windows Home OS version. 
+	Therefore, " Windows 10 / 11 Home " contains WSL 2(windows subsystem for Linux 2) - a lightweight VM and a real Linux OS kernel, while the VM enables to run the Linux kernel on windows home. 
+	So for docker installation on windows 10 home or w. 11 h., the downloaded docker version needs to be WSL2 - and afterwards, the docker run locally will run LINUX containers, via the Linux subsystem installed on Windows home
+  
+
+
+
+
+
+--------------------------------------------------------------------
+
+Docker image = environment configuration template; docker container = running instance OF AN ENVIRONMENT in which the app can run. Container is an ISOLATED PROCESS - running isolatedly from your computer processes.
+Each container has an isolated environment(processes, applications). However, Docker has less isolation than VMs as containers share the same kernel. 
+There is also a possibility to wrap a group of containers in a network. Containers can then communicate with each other like real computers in a network(usually via TCP IP, where not the shared computer's IP is used, but each container has its virtual IP). 
+Containers do NOT PERSIST any STATE upon restarts!
+However, you might use Volumes - an underlying data layer that can be used for multiple containers.
+
+Each image has its own configuration, which was built only once. Now everyone can download the image published on docker hub (https://hub.docker.com/) and just start running the app with docker run command.
+Create multiple running instances of the same template and use as backup if something goes wrong.
+
+There is only one unique image downloaded locally.
+However there can be multiple containers of the same image (running/not running currently)
+
+Docker containers run on virtual ports - those ports exist inside the container only. They are not automatically reachable from your computer:
+	host machine ports (your real computer)
+	internal container ports (inside the isolated sandbox)
+	published ports (a bridge between the two)
+
+Because of the sandboxed nature of the container ports, browsers cannot reach the container ports by default. You need to 'publish' the port to make it visible to the computer.
+Port specification can be defined ONLY at container CREATION time, so any existing containers CANNOT be modified to have their ports published. 
+Since the image contains the container's filesystem, it must include everything needed to run the application, so the container can run in an isolated filesystem environment,
+
+--------------------------------------------------------------------
+DOCKER COMMANDS
+--------------------------------------------------------------------
+
+docker run docker/getting-started 	// pulls the docker image( if not exist locally) and/or starts a new container based on that image
+
+docker pull mysql	// pulling image from docker hub, without running it (if you need port publishing(MySQL default 3306) first, see commands below) 
+
+docker image inspect mysql   //display summary data on the image
+
+
+//If the container continues running 
+
+-d flag makes the running container run but does not print status into the console (frees console to accept other commands):
+docker run -d docker/getting-started 
+
+//Each time ' docker run + image ' command is run, a new container is being created. To delete a container you don't need, stop the container and then run:
+
+docker rm 9b0df59d28ca	//removing a stopped container
+docker rm $(docker ps -a -f status=exited -q)   // removing filtered-out status exited containers from local docker, q = quiet mode - output only container ids
+
+docker rmi myimage // for this command to work, all containers based on that image need to be removed first
+docker images  // displays all downloaded images
+docker ps -a  // displays all containers overview: container id, image name, non-running, status, ports
+docker ps -q  // displays only: container ids,  for: running containers
+
+docker start <container id>  //For already existing containers. Find container id by displaying list of all containers: docker ps -a 
+
+
+docker run myimage  //starts a new container
+docker run --name mycontainer myimage	// starts a new container with a custom-defined name
+
+
+docker stop <container id>   //stop one running container. Find container id by displaying list of all containers: docker ps -a 
+docker stop (docker ps -q)  // stop all running containers
+
+--------------------------------------------------------------------
+// To publish ports:
+--------------------------------------------------------------------
+
+1. run 'docker ps' to see the currently running containers and their ports, or run info command below and find 'Exposed Ports':
+	 docker image inspect <image name>  
+
+2. mysql docker image runs on port 3306. To run the image specified with a port specification:
+
+	docker run <container port> : <host comp port>  <image name> 
+
+	docker run -dp 3307:3306 mysql	 // publish virtual port 80 on a comp.port 3307
+
+	mysql container will prompt you to specify password as the container's environment variable.
+	Default username is 'root' (root@localhost comes up while initializing a container in the feedback command summary)
+	To do so, use -e flag and specify the MYSQL_ROOT_PASSWORD variable. 
+	At the end of the command, add 'mysql' (image name):
+	
+	docker run -dp 3307:3306 -e MYSQL_ROOT_PASSWORD=password mysql
+
+3. When visiting the port in your browser, the app's webpage will be displayed http://localhost:3307
+
+--------------------------------------------------------------------
+Run a container from CLI:
+--------------------------------------------------------------------
+1. Enter container input stream:
+  -i : standard input  
+  -t : allocate terminal
+  exec: run command within a running container
+  - u username
+  - p tells MYSQL ask for password
+
+docker exec -it <container id> <image> -u <username> -p  
+docker exec -it 3f2a1b9c8d12 mysql -u root -p
+
+2. Exit container input stream (2 options):
+exit
+\q
+
+--------------------------------------------------------------------
+Run a container with a custom name
+------------------------------------------------------------------
+docker run --name mycontainername1 hello-world
+
+--------------------------------------------------------------------
+Run a container with Volume to backup container data
+--------------------------------------------------------------------
+
+A volume is docker's storage space outside of a container, but still inside Docker (stored as a folder inside the VM that docker is run in)
+
+0. To see which is the storage folder within a container, run the inspect image command to see image summary:
+docker inspect image mysql
+Section on volumes:
+	"Volumes": {
+                "/var/lib/mysql": {}
+            },
+
+MySQL stores all real data (tables, rows, indexes) in:
+/var/lib/mysql
+Inside the container, this folder is temporary.
+A Docker volume maps that folder to your computer, so the data survives.
+
+
+1. Create a volume for data backup
+docker volume create mysql_data 
+
+2. Already existing container cannot have any volume attached.
+Rerun image, creating a new container, it including -v for the volume association:
+-v <volume>:<container storage>
+
+docker run -dp 3307:3306 \
+  -e MYSQL_ROOT_PASSWORD=secret \
+  -v mysql_data:/var/lib/mysql \
+  MySQL
+
+
+  If you do NOT run docker on Window's Subsystem for Linux (WSL), you can also save the volume on your local computer, copy the desired path and run a separate container:
+	docker run -dp 3305:3306 -e MYSQL_ROOT_PASSWORD=password -v C:\Users\lenka\Documents\JavaProjects\DataStructureAlgorithms:/var/lib/mysql --name mysqlContainer1 mysql
+The WSL is a linux system installed on Windows OS. When Docker is downloaded, it runs on Linux WSL. However, when referencing a path to the Window's original OS, there has to be
+a connection bridge to the original system's filesystem established (a mount). How mounts behave for different OS:
+  - Linux host → fully Linux-native
+  - macOS host
+    Docker runs a Linux VM, but 
+    macOS filesystem is translated into a Linux filesystem inside the VM
+  - Windows host
+    Docker runs Linux containers inside WSL2
+    Windows folders are exposed to Linux as /mnt/c/
+    but they remain windows filesystem, do not get converted to linux
+
+The only mounting discrepancy happens in Windows, because windows files cannot be read properly by a Linux container, who is equipped to read linux files.
+Therefore, the references to Windows' OS when dealing with Docker running on WSL will always fail.
+WSL is not a VM but a real linux kernel which runs inside a very small optimized VM, that does not behave like a separate OS installation but is developed to work closely with windows OS.
+
+3. make a test db, test table:
+CREATE DATABASE testdb;
+USE testdb;
+CREATE TABLE goods (
+id INT primary key AUTO_INCREMENT,
+name VARCHAR (255),
+price FLOAT NOT NULL
+);
+
+INSERT INTO goods (name, price) VALUES 
+('milk', 1.02),
+('bread', 1.5),
+('eggs 10 x M', 2.7)
+;
+
+SELECT * from goods;
+
+4. Stop container and re-run:
+	A. SELECT * FROM testdb.goods;
+	B. USE testdb; SELECT * FROM goods;
+
+
+--------------------------------------------------------------------
+Inspect a container (container-related system data)
+--------------------------------------------------------------------
+When a container is running, execute the below to link input stream to a basic Linux shell available in almost all docker images(it will be either sh or bash):
+docker exec -it <container-id> sh
+docker exec -it 88f69f82e847 bash
+
+-------------------------------------
+
+ - cat /etc/os-release  // linux distribution version the container is using (NAME="Oracle Linux Server", or Alpine, Ubuntu, Debian, BusyBox...)
+-------------------------------------
+dock
+Check container's web server  (if any)
+
+ 1.  ps aux   // what web server the container runs on
+    If this command is not known to the sh / bash version, try 2.
+
+2. Display running processes:
+	bash-5.1# ls /proc | grep '^[0-9]'
+
+Answer:
+	1
+	128
+	137
+	138
+Pick one process ID and query for the arguments it runs with (that would include a web server, if any)
+
+	/proc/1/cmdline
+
+If there is no response, the process started without any arguments. That means this container does not run on a web server.
+
+
+-------------------------------------
+Where are the web app files?
+-------------------------------------
+Code below lists every file under root directory recursively
+ls -R /
+
+You will see:
+  /var/lib/mysql → database files
+  /etc → configuration
+  /usr → binaries
+  /bin, /sbin, /lib → system files
+

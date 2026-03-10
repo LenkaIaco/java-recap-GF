@@ -1,0 +1,140 @@
+Build process reads the docker file instructions and builds a layered filesystem (every instruction produces a new read only layer) based on the instructions.
+The final image is a stack of layers, packaged together in an image format. Example, for a web app:
+
+Base OS + runtime (e.g., Node, Python, Java)
+Your app files
+Installed dependencies
+Build artifacts  // produced by image build steps: packaged .jar app/compiled classes if no jar, processed templates, build-generated config files
+If any, static assets (frontend build with Angular, Vue - ready webpage are served as is) are already part of build output 
+(as opposed to templating engine that is being processed and generated at runtime by the templating engine (dynamic content) )
+Metadata  // instructions for docker: env. variables, ports, app entry point, default work.dir.
+
+
+CONVERTING CRLF into LF (crlf line endings are windows-specific, while containers run Linux files which have LF endings)
+    - Dockerfile = fine as-is. Docker and most tools handle CRLF in the Dockerfile syntax just fine on modern versions.
+    - Any shell scripts, entrypoints, or text files destined for a Linux container = convert to LF.
+
+
+------------------
+
+//alpine is a basic lightweight Linux OS, preferred in production containers because of size(5–8 MB) opposed to ubuntu (80-100MB). Although some of the omitted libraries and native extension dependencies might cause friction in development containers.
+Also bash cmd tool is missing, instead BusYBox cmd CLI is contained in alpine, so specific sh commands might not work.
+A middle ground worth knowing about: ubuntu:slim and Debian's debian:bookworm-slim images are significantly smaller than full Ubuntu (~30–40 MB) while keeping glibc and apt, which makes them a popular compromise when Alpine's musl causes headaches.
+
+FROM alpine //FROM specify base image from which you are building your docker image. Alpine is an existing image on docker hub
+# why are all files below being copied into default docker folder? 
+# Because while running "docker build . " docker reads all files from the default directory
+COPY put.py /put.py  (copies file in the local folder into default image folder)
+COPY src . (everything inside src folder into current folder) 
+COPY *.txt .      # all .txt files 
+COPY . .
+
+CMD ["echo", "hello world!", "python", "/put.py"]  // cmd is the command array where each command to be executed in the dockerfile is an element of this array (cmd line command + its argument)
+
+------------------
+after the dockerfile is ready, the below cmd will build the file into an UNNAMED ("dangling") image:
+
+	docker build . //the command argument is the folder in which should be built
+These images are normally not visible in the list of named images. Therefore, your image should have a name:
+  - Define name at creation with -t (tag): 
+    docker build -t myimage1 .
+  - Add a tag(name) after creation to a dangling image:
+    docker images -f dangling=true   // pick the long SHA ID displayed for your image
+    docker tag 3d6d359ca4916707bad8500ef557bbae106 myimage:latest   
+- Every image has a repository name (myimage) and a tag(latest) -label for image version. If you do not add any tag(version), docker automatically uses 'latest' as default:
+    docker tag 3d6d359ca4916707bad8500ef557bbae106 myimage
+- Remove all dangling images:
+    docker image prune
+
+------------------
+
+Whole list of dockerfile commands:
+https://docs.docker.com/reference/dockerfile
+
+
+docker images       // shows all named images
+docker images - a   // shows named + unnamed (dangling) images
+---------------------
+
+removing images:
+
+first remove all associated containers:
+  docker rm <container-id>  // if one container exists
+  docker rm $(docker ps -a -q --filter ancestor=myimage)   // if multiple containers exist
+
+afterwards, remove the image:
+  docker rmi myimage1            //removes myimage1:latest (default tag added)
+  docker rmi myimage1:version1   //removes a specific tag
+
+
+
+------------------
+Building docker based on a custom script
+------------------
+  1.
+  - create a script file filename.sh  
+  - Inside the file, first line format tells the OS which program should execute it.
+    Subsequent lines are the shell script instructions
+    	-----------
+	#! bin/sh
+
+	echo hello world from script file
+
+	top	//shell cmd to display all running processes on your system. To stop it, press Ctrl + C or open a new shell CLI and run docker stop + container id
+	-----------
+  - Convert the file's CRLF into LF with the below shell command
+    so that windows does not add hidden CRLF signs at end of each line, causing the script message to be misread
+    Execute this command:
+	dos2unix myfirstscript.sh
+
+  2. 
+
+  In the Dockerfile, add COPY command to import the script file commands: 
+
+  COPY myfirstscript.sh myfirstscript.sh   //second destination separated by a space = file destination within the docker image 
+
+ RUN chmod +x /myfirstscript.sh   // chmod changes file permissions; +x adds the execute permission. It cannot be run on the original windows .sh file, as it needs linux permissions
+ 
+  // in a dockerfile, only the LAST CMD command is executed, previous CMD lines get ignored
+
+  CMD ["/myfirstscript.sh"]    // the slash / is compulsory so that the file is recognizable as a path
+
+
+
+------------------
+DOCKER LAYERING OPTIMIZATION DURING REBUILDS
+------------------
+
+Below dokerfile commands (instructions) create layers:
+
+RUN
+COPY
+ADD
+
+You can group certain commands to achieve layering optimization at a later image rebuild stage.
+	
+	Example dockerfile:
+	------------------
+	FROM node
+
+	WORKDIR /app
+
+	COPY package.json .
+	COPY package-lock.json .
+
+	RUN npm install          # ← only package.json and package-lock.json exist at this point
+
+	COPY app.js .            # ← app.js copied after
+
+	CMD ["npm", "start"]
+
+	------------------
+	COPY app.js AFTER RUN  = Docker layer caching optimization. 
+	Docker builds images layer by layer, and caches each layer. If a layer hasn't changed, Docker reuses the cache and skips rebuilding it.
+	The logic is:
+
+	package.json changes rarely — only when you add/remove dependencies
+	app.js changes frequently — every time you write code
+	Without the strategic COPY app.js positioning, every time it changes, 
+	docker would have to run npm install and rebuild would slow down.
+	npm = Node Package Manager, comes bundled with node.js

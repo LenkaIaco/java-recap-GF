@@ -1,0 +1,45 @@
+CPU contains 
+central processing unit (ALU + control unit, registers)
+	Registers are CPU's memory storage for interim values, operands, results during instruction execution. When CPU needs to execute instructions, which contains multiple pipeline stages (like sub-instructions, applies actually to any of CPU instruction), it stores related data for the instruction in the register. It is CPU's own fast-access memory (opposed to RAM is farther from CPU + has a different electric design)
+
+		Each CPU instruction is a chain of sub-operations(fetch, decode, execute, memory access, write back) linked together into a pipeline, composing the final instruction. 
+		Each sub-operation has its own separate circuit of logical gates constructed together to form a concrete sub-operation. 
+		The CPU executes 1 suboperation in one cycle (= one tick of CPU time: each timing pulse tells CPU when to capture values and then clear the CPU's operation circuits for the next cycle: ).
+		To reach the cycle pattern, there is:
+			- Continuous electrical activity : Based on the clock signal  HIGH -LOW - HIGH - LOW (transistors switching all the time)
+			- Clock cycles (timing boundaries that organize the duration of a tick)
+
+
+
+RAM is the memory where runtime processes are stored. When stopping running, the ram for the process is released.
+CPU stores instructions, variables, variable values, on RAM.
+CPU accesses RAM via a System bus, which contains:
+
+ - address bus (memory addresses cpu - ram) where to read/write
+ - data bus( carries data between cpu - ram)  what to read/write
+ - control bus (carries instructions (read write commands and timing) whether to read/write and when
+
+
+CPU - address bus - memory controller (converts ram memory sequence number into actual position on RAM x/y axis grid)
+
+64 bit CPU has:
+64‑bit wide address bus → can address vastly more memory
+64‑bit registers → can process larger values in one step
+
+
+32 bit CPU 
+can represent 4 GB of different addresses (2 ^ 32)  cca. 4 * 10 ^9 bytes
+
+64 bit CPU 
+
+can perform arithmetic on 64 bit numbers in one operation:
+  - can handle large integers
+  - can handle large pointers (represents 2 ^64 different addresses -> 16 exabites (10 ^18 bytes = 10 ^9 GB)
+
+
+
+----------
+
+OS Kernel is the lowest software level responsible for coordinating how software runs of hardware without having software components interfering with each other's performance.
+It manages CPU, RAM, hardware components(USB, display, mouse, other)> Kernel decides when to pause a concrete process, allocates/frees RAM for/from processes, how to share CPU cores fairly for processes.
+All software (locally installed applications) sits on top of OS kernel.
