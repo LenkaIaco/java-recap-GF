@@ -1,0 +1,3 @@
+Calculate String Rotation - https://www.codewars.com/kata/5596f6e9529e9ab6fb000014 
+
+Pascal’s Triangle - https://www.codewars.com/kata/5226eb40316b56c8d500030f 
