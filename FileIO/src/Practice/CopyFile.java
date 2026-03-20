@@ -15,7 +15,7 @@ public class CopyFile {
     //  - path and name of the target file
     // It should return a boolean that shows whether the copy was successful or not.
     public static void main(String[] args){
-        System.out.println(copy("inputs/practice/sourceFile.txt", "outputs/practice/targetFile.txt"));
+//        System.out.println(copy("inputs/practice/sourceFile.txt", "outputs/practice/targetFile.txt"));
 
         System.out.println(copyByClasspath("my-file.txt", "targetFile.txt"));
 

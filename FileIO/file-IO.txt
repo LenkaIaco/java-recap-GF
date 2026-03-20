@@ -156,8 +156,13 @@ Throwable
  └── Error
 
 ------------------------------------
-StandardCopyOption.COPY_ATTRIBUTES  - Throws FileAlreadyExists (subclass of IOException) ! For non-existing target files(to be created). Copy contents incl. timestamps, permissions
-StandardCopyOption.REPLACE_EXISTING - CREATES FILE IF NOT EXISTING. And replaces contents if already existing
+StandardCopyOption.COPY_ATTRIBUTES  -  For non-existing target files(to be created). Copy contents incl. timestamps, permissions
+in combo with Files.copy(path1,path2, StandardCopyOption.COPY_ATTRIBUTES):
+- DOES NOT COPY CONTENT!!!
+- throws FileAlreadyExists (subclass of IOException) if target file exists
+(but not because of content overwriting - because copying file attributes to already existing files in Windows is not permitted.)
+
+StandardCopyOption.REPLACE_EXISTING - Replaces contents if already existing. CREATES FILE IF NOT EXISTING. 
 
 StandardOpenOption CREATE</th>
 * new file is created or
