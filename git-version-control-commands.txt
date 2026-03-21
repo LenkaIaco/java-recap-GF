@@ -24,6 +24,7 @@ git add *.java					add all java files to staging
 git add .			CURRENT FOLDER: add new/modified files/folders from cur.dir.
 git add --all		Compares changes between working directory vs staging area(index) and adds to staging:
 			 - CURRENT AND SUBFOLDERS changes ++ deletions(prev.present file deleted in folder) and renames. 
+git restore --staged .				removes everything from current folder + SUBFOLDERS from staging area
 git status					what is in staging area?
 git diff					literal changes in files, not yet added
 git log						details on last commit incl commit hash
