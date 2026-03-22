@@ -183,6 +183,7 @@ The reason is that while running a Jar file, JVM automatically looks inside the 
 5. Run the JAR: java -jar MyAppFat.jar
 
 --------------------------------------------------------
+
 Editing JAR file:
 If an error in the application is detected: 1. Correct java class 2. Re-compile correct classes 3. Re-create JAR with correct classes
 
@@ -199,7 +200,10 @@ mkdir 		create folder
 rmdir 		remove EMPTY dir.
 rm -rf folder\with\content 	remove folder recursively forcefully - BYPASS TRASH, delete PERMANENTLY (alternatively use mv to move to trash, if you have the specific path to trash bin)
 rm 1.txt 2.txt	remove file(s)
-rm -f */*.java */*/*.java	as rm -r does not work with matching search patterns, the subfolder level needs to be specified (= del. any java file in 1st and 2nd level subfolders)		
+rm -f */*.java */*/*.java	as rm -r does not work with matching search patterns, the subfolder level needs to be specified (= del. any java file in 1st and 2nd level subfolders)	
+rm ./**/file.txt		remove all files called file.txt in whichever subfolder level under the current folder (**)
+find -name data.txt -type f -delete    alternative to removing with rm
+	
 printf "1\n2\n3" > file.txt	writes formatted(\n) text into existing/new file
 touch file.txt 		creates file
 nano newfile.txt 	creates/modifies file + reading/writing line-by-line in terminal (ctrl+s save changes, ctrl+x close /ctl+c cancel a file modif. command / ctrl+q quit writing mode)
@@ -210,7 +214,6 @@ mv old-folder-name new-folder-name		//rename folder / file
 cp FileToCopy C:\Absolute\Or\Relative\Path.txt	
 cp -avr MyFolder  Into\Address		-r incl. sub-folder content; -a archive(preserve permissions, timestamps); -v verbose (write out what has been copied-for verification)7
 cp -avr . ../out 			copying everything from current(src) into out folder (creates out if not exists)
-ja
 man		manual w commands (?windows?)
 
 history		commands used previously
