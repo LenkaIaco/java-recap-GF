@@ -1,7 +1,7 @@
 package exams.fishtank;
 
 public abstract class Fish {
-
+//adding
     private String name;
     private int weight;
    private String color;

@@ -1,6 +1,7 @@
 package exams.fishtank;
 
 public class Tang extends Fish{
+    //adding
     private boolean shortMemoryLoss;
     public Tang(){}
 

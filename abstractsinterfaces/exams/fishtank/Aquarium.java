@@ -13,7 +13,7 @@ public class Aquarium {
     public Aquarium(List<Fish> fishes){
         if(fishes==null){fishes=new ArrayList<>();}
         for (Fish f: fishes){
-            fishes.add(f);
+            fishes.add(f); //adding
         }
     }
 

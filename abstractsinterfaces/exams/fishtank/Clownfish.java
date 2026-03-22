@@ -1,6 +1,7 @@
 package exams.fishtank;
 
 public class Clownfish extends Fish{
+    //adding
     private String stripeColor;
 
     public Clownfish(){
