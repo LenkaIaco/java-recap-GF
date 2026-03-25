@@ -3,7 +3,7 @@ package designGurus;
 import java.util.Stack;
 
 public class BinaryConversion {
-    /*    --STACK--
+    /*
     Given a positive integer n, write a function that returns its binary equivalent as a string.
     The function should not use any in-built binary conversion function.
      */

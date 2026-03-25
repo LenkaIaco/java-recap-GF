@@ -5,7 +5,6 @@ import java.util.Comparator;
 
 public class AppleRedDistributionBoxes {
       /*
-        --- SORTING ---
         You are given an array apple of size n, where the apple[i] represents the number of apples in ith pack.
         You are also given an array capacity of size m, where capacity[j] is a number of apples that can be stored
          in the jth box.

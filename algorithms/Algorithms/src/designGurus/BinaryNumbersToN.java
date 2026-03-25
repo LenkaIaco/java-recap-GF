@@ -4,7 +4,6 @@ import java.util.*;
 
 public class BinaryNumbersToN {
     /*
-    ---QUEUE---
         Given an integer N, generate all binary numbers from 1 to N and return them as a list of strings.
         Input: N = 2
         Output: ["1", "10"]
