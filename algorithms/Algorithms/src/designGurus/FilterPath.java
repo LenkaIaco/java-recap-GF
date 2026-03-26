@@ -17,6 +17,11 @@ public class FilterPath {
         Input: path = "/../"
         Expected Output: "/"
          */
+    /*
+    Time complexity O(n) for n = string length
+    Space complexity O(n) path stack and stringbulider + O(n^2) in while loop, for lastIndexOf() is O(n)
+     */
+
     public static void main(String[] args) {
         String path = "/a//b////c/d//././/..";
         System.out.println(resolveAbsolute(path)); //exp. out.: "/a/b/c"
@@ -65,4 +70,33 @@ public class FilterPath {
         }
         return sb.toString();
     }
+
+    /*
+    public static String resolveAbsolute(String originalPath) {
+    if (originalPath == null) return null;
+    if (originalPath.length() <= 1) return originalPath;
+
+    String[] parts = originalPath.split("/");
+    Deque<String> stack = new ArrayDeque<>();
+
+    // Traverse in forward order — O(n) total
+    for (String part : parts) {
+        if (part.equals("..")) {
+            if (!stack.isEmpty()) stack.pop(); // go up one level
+        } else if (!part.isEmpty() && !part.equals(".")) {
+            stack.push(part);                  // normal segment
+        }
+    }
+
+    // Build result — O(n)
+    StringBuilder sb = new StringBuilder();
+    List<String> segments = new ArrayList<>(stack);
+    Collections.reverse(segments);
+    for (String seg : segments) {
+        sb.append("/").append(seg);
+    }
+
+    return sb.length() == 0 ? "/" : sb.toString();
+}
+     */
 }
