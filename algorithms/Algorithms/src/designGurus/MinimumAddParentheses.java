@@ -1,6 +1,6 @@
 package designGurus;
 
-public class MinimumParentheses {
+public class MinimumAddParentheses {
     /*
     Given a string str containing '(' and ')' characters, find the minimum number of parentheses that need
         to be added to a string of parentheses to make it valid.
