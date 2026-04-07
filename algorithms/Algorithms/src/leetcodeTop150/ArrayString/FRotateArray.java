@@ -22,6 +22,10 @@ Output: [3,99,-1,-100]
 0 <= k <= 105
      */
 
+    /*
+    Time complexity O(n^2)
+    Space complexity O(1)
+     */
     public static void main(String[] args) {
         int[] nums = {1, 2, 3, 4, 5, 6, 7};
         int[] nums1 = {-1, -100, 3, 99};

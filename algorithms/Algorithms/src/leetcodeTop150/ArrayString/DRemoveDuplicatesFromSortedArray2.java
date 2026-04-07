@@ -26,6 +26,10 @@ Output: 7, nums = [0,0,1,1,2,3,3,_,_]
 -104 <= nums[i] <= 104
 nums is sorted in non-decreasing order.
      */
+    /*
+    time complexity O(n)
+    space complexity O(1)
+     */
     public static void main(String[] args) {
         int[] nums = {1,1,1,2,2,3};
         int[] nums1 = {0,0,1,1,1,1,2,3,3};

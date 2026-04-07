@@ -9,8 +9,6 @@ You want to maximize your profit by choosing a single day to buy one stock and c
 
 Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
 
-
-
 Examples:
 Input: prices = [7,1,5,3,6,4]
 Output: 5
@@ -27,17 +25,32 @@ Constraints:
 0 <= prices[i] <= 104
      */
 
-//    public int maxProfit(int[] prices) {
-//        if (prices.length == 1) {
-//            return 0;
-//        }
-//        int max = 0;
-//        for (int i = 0; i < prices.length; i++) {
-//            for (int y = i + 1; y < prices.length; y++) {
-//
-//            }
-//        }
-//
-//
-//    }
+    /*
+    Time complexity O(n^2)
+    Space complexity O(1)
+     */
+    public static void main(String[] args) {
+    int[] prices = {7,1,5,3,6,4};//exp.out: 5
+    int[] prices1 = {7,6,4,3,1};//ex.o.:// 0
+        System.out.println(maxProfit(prices));
+        System.out.println(maxProfit(prices1));
+    }
+
+    public static int maxProfit(int[] prices) {
+        if (prices.length == 1) {
+            return 0;
+        }
+        int max = 0;
+
+        for (int i = 0; i < prices.length; i++) {
+            for (int y = i + 1; y < prices.length; y++) {
+                if (prices[i]<prices[y]){
+                    int diff = prices[y]-prices[i];
+                    if (diff >max){max = diff;}
+                }
+            }
+        }
+
+    return max;
+    }
 }

@@ -74,11 +74,6 @@ The input is generated such that a majority element will exist in the array.
     }
 
     public static int majorityElement2(int[] nums) {
-        int sum =0;
-        for (int i = 0;i< nums.length;i++){
-            sum+=nums[i];
-        }
-        int average = sum/nums.length+1;
         int num = 0;
         int count =0;
 
