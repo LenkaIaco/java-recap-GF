@@ -1,4 +1,4 @@
-package leetcodeTop150.ArrayString;
+package leetcodeTop150.arrayString;
 
 import java.util.*;
 
