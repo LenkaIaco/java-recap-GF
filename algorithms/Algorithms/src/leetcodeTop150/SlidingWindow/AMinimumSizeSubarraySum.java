@@ -35,6 +35,7 @@ Follow up: If you have figured out the O(n) solution, find solution with time co
         System.out.println(minSubArrayLen(4, nums1)); //1
         System.out.println(minSubArrayLen(11, nums2)); //0
         System.out.println(minSubArrayLen(213, nums3)); //8
+
     }
 
     public static int minSubArrayLen(int target, int[] nums) {
@@ -59,4 +60,7 @@ Follow up: If you have figured out the O(n) solution, find solution with time co
 
         return countHits>0 ? minDist : 0;
     }
+
+
+
 }
