@@ -22,34 +22,43 @@ The number of nodes in both lists is in the range [0, 50].
 Both list1 and list2 are sorted in non-decreasing order.
      */
     public static void main(String[] args) {
-        ListNode lOne = new ListNode(); lOne.val = 1;
-        ListNode lOne1 = new ListNode(); lOne1.val = 2;
-        ListNode lOne2 = new ListNode(); lOne2.val = 4;
+        ListNode lOne = new ListNode();
+        lOne.val = 1;
+        ListNode lOne1 = new ListNode();
+        lOne1.val = 2;
+        ListNode lOne2 = new ListNode();
+        lOne2.val = 4;
         lOne.next = lOne1;
         lOne1.next = lOne2;
 
-        ListNode lTwo =new ListNode(); lTwo.val = 1;
-        ListNode lTwo1 =new ListNode(); lTwo1.val = 3;
-        ListNode lTwo2 =new ListNode(); lTwo2.val = 4;
+        ListNode lTwo = new ListNode();
+        lTwo.val = 1;
+        ListNode lTwo1 = new ListNode();
+        lTwo1.val = 3;
+        ListNode lTwo2 = new ListNode();
+        lTwo2.val = 4;
         lTwo.next = lTwo1;
         lTwo1.next = lTwo2;
 
-//        ListNode result =  mergeTwoLists(lOne, lTwo);
-//        ListNode currPrint = result;
-//        while(currPrint!=null){
-//            System.out.println(currPrint.val);
-//            currPrint = currPrint.next;
-//        }
+        ListNode result = mergeTwoLists(lOne, lTwo);
+        ListNode currPrint = result;
+        while (currPrint != null) {
+            System.out.println(currPrint.val);
+            currPrint = currPrint.next;
+        }
 
-        ListNode l1 = new ListNode(); l1.val = 2;
-        ListNode l2 = new ListNode(); l2.val = 1;
-        ListNode result2 = mergeTwoLists(l1,l2);
+        ListNode l1 = new ListNode();
+        l1.val = 2;
+        ListNode l2 = new ListNode();
+        l2.val = 1;
+        ListNode result2 = mergeTwoLists(l1, l2);
         ListNode currPrint2 = result2;
-        while(currPrint2!=null){
+        while (currPrint2 != null) {
             System.out.println(currPrint2.val);
             currPrint2 = currPrint2.next;
         }
     }
+
     public static ListNode mergeTwoLists(ListNode list1, ListNode list2) {
         if (list1 == null) {
             return list2;
@@ -58,46 +67,59 @@ Both list1 and list2 are sorted in non-decreasing order.
             return list1;
         }
         ListNode resultHead = new ListNode();
-        ListNode current = resultHead;
+        ListNode current = null;
         ListNode curr1 = list1;
         ListNode curr2 = list2;
 
         while (curr1 != null && curr2 != null) {
-            if (current.next!=null){
-                current.next.next = new ListNode();
-                current = current.next.next;
+            if (current ==null){
+                current = resultHead;
             }
-            current.val = curr1.val;
-            current.next = new ListNode();
-            current.next.val = curr2.val;
+            else if (current.next == null) {
+                current.next = new ListNode();
+                current = current.next;
+            }
+            if (curr1.val < curr2.val) {
+                current.val = curr1.val;
+                curr1 = curr1.next;
 
-            curr1 = curr1.next;
-            curr2 = curr2.next;
+            } else {
+                current.val = curr2.val;
+                curr2 = curr2.next;
+            }
+
         }
 
         if (curr1 != null) {
-            current.next.next = new ListNode();
-            current = current.next.next;
+            if (current.next == null) {
+                current.next = new ListNode();
+                current = current.next;
+            }
             while (curr1 != null) {
                 current.val = curr1.val;
                 curr1 = curr1.next;
-                if (curr1!=null){
+                if (curr1 != null) {
                     current.next = new ListNode();
                     current = current.next;
                 }
             }
-        } else if (curr2!=null){
-            current.next.next = new ListNode();
-            current = current.next.next;
-            while (curr2!=null){
+
+
+        } else if (curr2 != null) {
+            if (current.next == null) {
+                current.next = new ListNode();
+                current = current.next;
+            }
+            while (curr2 != null) {
                 current.val = curr2.val;
                 curr2 = curr2.next;
-                if (curr2!=null){
+                if (curr2 != null) {
                     current.next = new ListNode();
                     current = current.next;
                 }
             }
         }
+
         return resultHead;
     }
 }
