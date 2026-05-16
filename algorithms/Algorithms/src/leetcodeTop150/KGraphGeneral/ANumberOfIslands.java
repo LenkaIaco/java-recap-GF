@@ -1,4 +1,4 @@
-package leetcodeTop150.IGraphGeneral;
+package leetcodeTop150.KGraphGeneral;
 
 public class ANumberOfIslands {
     /*
